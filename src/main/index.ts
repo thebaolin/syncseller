@@ -2,6 +2,14 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { createListing } from './ebay';
+
+
+// Listen for the 'create-listing' message from the renderering thing
+ipcMain.handle('create-listing', async () => {
+ await createListing();
+ return 'Listing creation triggered';
+});
 
 function createWindow(): void {
     // Create the browser window.
