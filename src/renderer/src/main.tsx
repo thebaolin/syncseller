@@ -1,32 +1,26 @@
 // import './assets/main.css'
 
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+// import App from './App';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+import '../index.css';
+import Layout from './pages/Layout';
+import ListingForm from './pages/ListingForm';
+import ListingHistory from './pages/ListingHistory';
+import Analytics from './pages/Analytics';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
-        <App />
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Layout />}>
+                    <Route path="/listinghistory" element={<ListingHistory />}/>
+                    <Route path="/analytics" element={<Analytics />}/>
+                    <Route path="/listingform" element={<ListingForm />}/>
+                </Route>
+            </Routes>
+        </BrowserRouter>
     </React.StrictMode>
 )
-
-const { app, BrowserWindow } = require('electron');
-const url = require('url');
-const path = require('path');
-
-function createMainWindow() {
-    const mainWindow = new BrowserWindow({
-        title: 'SyncSeller',
-        width: 1000,
-        height: 600
-    });
-
-    const startUrl = url.format({
-        pathname: path.join(__dirname, 'index.html'),
-        protocol: 'file',
-    });
-
-    mainWindow.loadUrl(startUrl);
-}
-
-app.whenReady().then(createMainWindow);
