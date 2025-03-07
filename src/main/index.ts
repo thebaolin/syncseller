@@ -4,7 +4,6 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { createListing } from './ebay';
 
-
 // Listen for the 'create-listing' message from the renderering thing
 ipcMain.handle('create-listing', async () => {
  await createListing();
@@ -21,7 +20,9 @@ function createWindow(): void {
         ...(process.platform === 'linux' ? { icon } : {}),
         webPreferences: {
             preload: join(__dirname, '../preload/index.js'),
-            sandbox: false
+            sandbox: false,
+            contextIsolation: true,
+            nodeIntegration: false
         }
     })
 
@@ -80,3 +81,8 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+console.log("main process is running")
+ipcMain.on('submit:todoForm', (event, args) => {
+    console.log('Received form data:', args);
+});
