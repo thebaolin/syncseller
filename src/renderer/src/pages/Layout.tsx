@@ -1,4 +1,3 @@
-import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
 
 const Layout = () => {
@@ -7,6 +6,9 @@ const Layout = () => {
             <nav>
                 <h1>SyncSeller</h1>
                 <ul>
+                    <li>
+                        <Link to="/home">Home</Link>
+                    </li>
                     <li>
                         <Link to="/analytics">Analytics</Link>
                     </li>
