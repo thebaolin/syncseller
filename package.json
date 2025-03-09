@@ -27,10 +27,8 @@
         "better-sqlite3-multiple-ciphers": "^11.8.1",
         "dotenv": "^16.4.7",
         "electron-updater": "^6.3.9",
-        "formik": "^2.4.6",
         "react-router-dom": "^7.2.0",
-        "xml2js": "^0.6.2",
-        "yup": "^1.6.1"
+        "xml2js": "^0.6.2"
     },
     "devDependencies": {
         "@electron-toolkit/eslint-config-prettier": "^3.0.0",

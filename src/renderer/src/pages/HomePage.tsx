@@ -1,4 +1,4 @@
 const HomePage = () => {
-    return <div>This is home page content</div>
+    return <div>[UNDER CONSTRUCTION] This is home page</div>
 }
 export default HomePage;
