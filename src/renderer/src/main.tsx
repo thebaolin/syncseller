@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 // import content from other files
+import './style.css'
 import Layout from './pages/Layout';
 import HomePage from './pages/HomePage';
 import ListingForm from './pages/ListingForm';
