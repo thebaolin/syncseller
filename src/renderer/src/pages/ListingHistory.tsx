@@ -1,14 +1,15 @@
 const ListingHistory = () => {
     return( 
         <div>
+            <h1 className="heading">Listing History</h1>
             <table>
                 <thead>
                     <tr>
-                        <th>Date Created</th>
-                        <th>Title</th>
-                        <th>Category</th>
-                        <th>Status</th>
-                        <th>Platforms</th>
+                        <th className="w-1/8">Date Created</th>
+                        <th className="w-3/8">Title</th>
+                        <th className="w-1/8">Category</th>
+                        <th className="w-1/8">Status</th>
+                        <th className="w-3/16">Platforms</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -23,7 +24,7 @@ const ListingHistory = () => {
                         <td>10/11/2024</td>
                         <td>Stuffed doggo</td>
                         <td>Toys</td>
-                        <td>Sold on Facebook Marketplace</td>
+                        <td>Sold</td>
                         <td>Facebook Marketplace, Depop, eBay</td>
                     </tr>
                 </tbody>

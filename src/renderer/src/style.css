@@ -1,1 +1,51 @@
 @import "tailwindcss";
+
+.heading {
+    text-align: center;
+    font-size: 24px;
+    font-family: monospace;
+}
+table, form {
+    width: 90%;
+    margin: auto;
+    font-family: monospace;
+    font-size: 16px;
+}
+
+th, td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid gray
+}
+
+tbody tr:hover {
+    background-color: gray;
+    color: white;
+}
+
+form input, textarea {
+    border: 1px solid gray;
+    border-radius: 10px;
+    padding: 2px;
+    box-shadow: 10px;
+}
+
+form section {
+    padding: 10px 0;
+}
+
+button {
+    border:1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+}
+
+button:hover {
+    background-color: gray;
+    color: white;
+}
+
+.platforms label{
+    padding-left: 10px;
+}
