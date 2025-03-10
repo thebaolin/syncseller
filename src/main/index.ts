@@ -3,12 +3,17 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { createListing } from './ebay';
+import path from 'path';
+import Database from 'better-sqlite3';
 
 // Listen for the 'create-listing' message from the renderering thing
 ipcMain.handle('create-listing', async () => {
  await createListing();
  return 'Listing creation triggered';
 });
+
+
+const db = new Database(path.join(__dirname, 'test.db'), { verbose: console.log });
 
 function createWindow(): void {
     // Create the browser window.
@@ -69,6 +74,20 @@ app.whenReady().then(() => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
 })
+
+// Function to get all table names
+ipcMain.handle('get-table-names', () => {
+    const tables = db.prepare("SELECT name FROM sqlite_master WHERE type = 'table'").all();
+    return tables.map((table: { name: string }) => table.name); // Return just the table names
+  });
+  
+  // Function to get rows of a specific table
+  ipcMain.handle('get-table-rows', (_event, tableName: string) => {
+    const rows = db.prepare(`SELECT * FROM ${tableName}`).all();
+    return rows; // Return rows of the specified table
+  });
+
+
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

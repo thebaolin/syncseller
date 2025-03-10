@@ -18,6 +18,9 @@ const Layout = () => {
                     <li>
                         <Link to="/listingform">Listing Form</Link>
                     </li>
+                    <li>
+                        <Link to="/dbview"> TEMP DB Viewer</Link>
+                    </li>
                 </ul>
             </nav>
             <Outlet />

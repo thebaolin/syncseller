@@ -1,30 +1,30 @@
-import { contextBridge, ipcRenderer } from 'electron' 
-import { electronAPI } from '@electron-toolkit/preload'
+import { contextBridge, ipcRenderer } from 'electron';
+import { electronAPI } from '@electron-toolkit/preload';
 
-console.log("preload is running")
+console.log("preload is running");
 
 // Custom APIs for renderer
-const api = {}
+const api = {};
 
-// Use `contextBridge` APIs to expose Electron APIs to
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
+// Expose APIs through `contextBridge` only if context isolation is enabled
 if (process.contextIsolated) {
-    try {
-        contextBridge.exposeInMainWorld('electron', {
-            // electronAPI,
-            send: (channel, data) => ipcRenderer.send(channel, data),
-            on: (channel, func) => 
-                ipcRenderer.on(channel, (event, ...args) => func(...args)),
-        });
-        // contextBridge.exposeInMainWorld('electron', electronAPI)
-        // contextBridge.exposeInMainWorld('api', api)
-    } catch (error) {
-        console.error(error)
-    }
+  try {
+    contextBridge.exposeInMainWorld('electron', {
+      // Function to fetch the table names
+      getTableNames: () => ipcRenderer.invoke('get-table-names'),
+      // Function to fetch rows for a specific table
+      getTableRows: (tableName: string) => ipcRenderer.invoke('get-table-rows', tableName),
+      send: (channel: string, data: any) => ipcRenderer.send(channel, data),
+      on: (channel: string, func: Function) =>
+        ipcRenderer.on(channel, (event, ...args) => func(...args)),
+    });
+  } catch (error) {
+    console.error('Error exposing Electron API:', error);
+  }
 } else {
-    // @ts-ignore (define in dts)
-    window.electron = electronAPI
-    // @ts-ignore (define in dts)
-    window.api = api
+  // Fallback for non-isolated context (Not recommended for production)
+  // @ts-ignore (define in dts)
+  window.electron = electronAPI;
+  // @ts-ignore (define in dts)
+  window.api = api;
 }
