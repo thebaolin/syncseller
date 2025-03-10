@@ -1,33 +1,69 @@
 const ListingForm = () => {    
-    // listing object
-    function Listing(title:string, brand:string, price:number, description:string, platforms:Array<string>) {
-        this.title_ = title;
-        this.brand_= brand;
-        this.price_ = price;
-        this.description_  = description;
-        this.platforms_ = platforms;
+    // UNDER CONSTRUCTION listing object is created when a form is submitted
+    class Listing {
+        constructor(title:string, brand:string, price:number, description:string, platforms:Array<string>){
+            this.title = title;
+            this.brand= brand;
+            this.price = price;
+            this.description  = description;
+            this.platforms = platforms;
+            this.status = getStatus();
+            this.date = getDate();
+        }
+        getDate
     }
 
     function validatePost() {
-        console.log("hi")
+        // get values from form
         let title = document.forms["listing-form"]["title"].value;
         let brand = document.forms["listing-form"]["brand"].value;
         let price = document.forms["listing-form"]["price"].value;
         let description = document.forms["listing-form"]["description"].value;
-        let platforms = document.forms["listing-form"]["platforms"].value;
-        console.log("hi")
+        let ebay = document.forms["listing-form"]["ebay"].value;
+        console.log("eBBBay:", ebay);
+        
+        // validate form
+        if (title == ''){
+            alert("Title must be filled before posting")
+            return false;
+        }
+        else if (brand == ''){
+            alert("Brand must be filled before posting")
+            return false;
+        }
+        else if (price == ''){
+            alert("Price must be filled before posting")
+            return false;
+        }
+        else if (description == ''){
+            alert("Description must be filled before posting")
+            return false;
+        }
+
+        // populate platforms
+        if (!ebay){
+            alert("Select platforms to post listing")
+            return false;
+        }
+        // if (ebay) {
+
+        // }
+        // let platforms =
+
+        // create a listing object
+        // let listing = new Listing(title, brand, price, description)
     }
 
-    function validateDraft() {
+    // function validateDraft() {
 
-    }
+    // }
 
     
 
     return(
         <div>
             <h1 className="heading">Create a listing</h1>
-            <form onSubmit={ validatePost }>
+            <form onSubmit={ validatePost } id="listing-form" autoComplete="on">
                 {/* Title */}
                 <section>   
                     <label htmlFor="title">Title</label><br/>
@@ -41,7 +77,7 @@ const ListingForm = () => {
                     </div>
                     <div className="w-3/8">   
                         <label htmlFor="price">Price<br/>$ </label>
-                        <input className="w-1/2" id="price" name="price" type="number" min="0.00" step="0.01"></input>
+                        <input className="w-[100px]" id="price" name="price" type="number" min="0.00" step="0.01"></input>
                     </div>
                 </section>
                 {/* Description */}
@@ -72,8 +108,8 @@ const ListingForm = () => {
                 </section>
                 {/* Buttons */}
                 <section className="flex justify-center">
-                    <button>Post listing</button>
-                    <button>Save as draft</button>
+                    <button form="listing-form">Post Listing</button>
+                    <button form="listing-form">Save as draft</button>
                 </section>
             </form>
         </div>
