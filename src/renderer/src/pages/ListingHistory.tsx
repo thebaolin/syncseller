@@ -1,6 +1,6 @@
 const ListingHistory = () => {
     return( 
-        <div>
+        <div className="content">
             <h1 className="heading">Listing History</h1>
             <table>
                 <thead>

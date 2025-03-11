@@ -61,7 +61,7 @@ const ListingForm = () => {
     
 
     return(
-        <div>
+        <div className="content">
             <h1 className="heading">Create a listing</h1>
             <form onSubmit={ validatePost } id="listing-form" autoComplete="on">
                 {/* Title */}
