@@ -1,6 +1,7 @@
 const ListingHistory = () => {
     return( 
         <div className="content">
+            <input type="text"></input>
             <h1 className="heading">Listing History</h1>
             <table>
                 <thead>

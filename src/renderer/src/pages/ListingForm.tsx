@@ -20,7 +20,6 @@ const ListingForm = () => {
         let price = document.forms["listing-form"]["price"].value;
         let description = document.forms["listing-form"]["description"].value;
         let ebay = document.forms["listing-form"]["ebay"].value;
-        console.log("eBBBay:", ebay);
         
         // validate form
         if (title == ''){
@@ -67,17 +66,17 @@ const ListingForm = () => {
                 {/* Title */}
                 <section>   
                     <label htmlFor="title">Title</label><br/>
-                    <input className="w-3/4" id="title" name="title" type="text" pattern="[a-zA-Z0-9]+"></input>
+                    <input className="w-3/4" id="title" name="title" type="text"></input>
                 </section>
                 {/* Brand + Price */}
                 <section className="flex">
                     <div className="pr-[20px] w-3/8">   
                         <label htmlFor="brand">Brand</label><br/>
-                        <input className="w-full" id="brand" name="brand" type="text" pattern="[a-zA-Z0-9]+"></input>
+                        <input className="w-full" id="brand" name="brand" type="text"></input>
                     </div>
                     <div className="w-3/8">   
                         <label htmlFor="price">Price<br/>$ </label>
-                        <input className="w-[100px]" id="price" name="price" type="number" min="0.00" step="0.01"></input>
+                        <input className="w-[100px]" id="price" name="price" type="number" min="0.00" step="0.01" placeholder="0.00"></input>
                     </div>
                 </section>
                 {/* Description */}
