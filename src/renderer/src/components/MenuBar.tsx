@@ -6,6 +6,9 @@ const MenuBar = () => {
         
         <div className="menu-bar">
             <button className="create-listing">Create listing</button>
+            <div>
+                <h1 className="flex justify-center bg-center absolute w-[300px] h-[60px] bg-amber-50 text-4xl">SyncSeller</h1>
+            </div>
             <div className="menu-functions right-[0px]">
                 <img src="" alt="profile picture"/>
             </div>
