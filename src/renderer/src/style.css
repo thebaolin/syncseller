@@ -5,9 +5,7 @@
     font-size: 24px;
     font-family: monospace;
     width: 100%;
-    /* position: relative; */
     border-bottom: 1px solid black;
-    /* background-color: white; */
 }
 
 .sidebar {
@@ -15,25 +13,9 @@
     width: 30%;
     background-color: pink;
     position:fixed;
-    height: 100vh;
-    overflow: auto;
+    height: 100%;
     border: 5px solid white;
     border-radius: 10px;
-}
-
-.sidebar a {
-    display:block;
-    padding: 16px;
-}
-
-.sidebar a.active {
-    background-color: blue;
-    color: white;
-}
-
-.sidebar a:hover:not(.active) {
-    background-color: gray;
-    color:white;
 }
 
 .content {
@@ -46,16 +28,26 @@
     background-color: pink;
     border: 5px solid white;
     border-radius: 10px;
-    overflow: scroll;
+    overflow-y:scroll;
 }
 
 .sidebar-icon {
-    height:100px;
-    width: 90%;
-    background-color: white;
-    margin:10px auto;
-    border-radius: 10px;
-    box-shadow:1px 1px 2px;
+    height:80px;
+    border-bottom: 1px solid white;
+    display:block;
+    padding: 16px;
+    font-family: monospace;
+    font-size: 16px;
+}
+
+.sidebar-icon:hover{
+    background-color: gray;
+    color: white;
+}
+
+.sidebar-icon:active{
+    background-color: gray;
+    color: white;
 }
 
 table, form {
@@ -63,7 +55,6 @@ table, form {
     margin: auto;
     font-family: monospace;
     font-size: 16px;
-    overflow: hidden;
     max-width: 1600px;
 }
 
@@ -119,7 +110,7 @@ button:hover {
 .menu-bar {
     width: 100%;
     height: 60px;
-    background-color: aquamarine;
+    background-color: white;
     position: absolute;
 }
 
@@ -129,6 +120,6 @@ button:hover {
     position: absolute;
     height: 50px;
     width: 50px;
-    background-color: antiquewhite;
+    background-color: pink;
     border-radius: 50%;
 }

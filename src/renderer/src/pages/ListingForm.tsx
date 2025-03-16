@@ -1,19 +1,28 @@
 const ListingForm = () => {    
     // UNDER CONSTRUCTION listing object is created when a form is submitted
+    
     class Listing {
-        constructor(title:string, brand:string, price:number, description:string, platforms:Array<string>){
+        title:string;
+        brand:string;
+        price:number;
+        description:string;
+        platforms:Array<string>;
+        date: Date;
+        
+        constructor(title, brand, price, description, platforms){
             this.title = title;
             this.brand= brand;
             this.price = price;
             this.description  = description;
             this.platforms = platforms;
-            this.status = getStatus();
-            this.date = getDate();
+            this.date = new Date();
         }
-        getDate
     }
-
-    function validatePost() {
+    
+    const validatePost = async(e) => {
+        e.preventDefault()
+        console.log('validating form')
+        
         // get values from form
         let title = document.forms["listing-form"]["title"].value;
         let brand = document.forms["listing-form"]["brand"].value;
@@ -40,24 +49,19 @@ const ListingForm = () => {
         }
 
         // populate platforms
+        const platforms = new Array()
         if (!ebay){
             alert("Select platforms to post listing")
             return false;
         }
-        // if (ebay) {
-
-        // }
-        // let platforms =
-
+        if (ebay) {
+            platforms.push("ebay");
+        }
+        
         // create a listing object
-        // let listing = new Listing(title, brand, price, description)
+        let listing = new Listing(title, brand, price, description, platforms)
+        console.log(listing)
     }
-
-    // function validateDraft() {
-
-    // }
-
-    
 
     return(
         <div className="content">
@@ -78,6 +82,11 @@ const ListingForm = () => {
                         <label htmlFor="price">Price<br/>$ </label>
                         <input className="w-[100px]" id="price" name="price" type="number" min="0.00" step="0.01" placeholder="0.00"></input>
                     </div>
+                </section>
+                {/* Image */}
+                <section>
+                    <label>Upload images<br/></label>
+                    <input type="file"></input>
                 </section>
                 {/* Description */}
                 <section>   
@@ -107,7 +116,7 @@ const ListingForm = () => {
                 </section>
                 {/* Buttons */}
                 <section className="flex justify-center">
-                    <button form="listing-form">Post Listing</button>
+                    <button onClick={ validatePost } form="listing-form" type="submit">Post Listing</button>
                     <button form="listing-form">Save as draft</button>
                 </section>
             </form>

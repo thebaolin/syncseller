@@ -1,16 +1,14 @@
 import { Outlet } from 'react-router-dom';
+import SideBar from '@renderer/components/SideBar';
 import MenuBar from '@renderer/components/MenuBar';
+import HomePage from './HomePage';
 
 const Layout = () => {
     return(
-        <div>
+        <div className='bg-amber-50'>
             <MenuBar/>
-            <nav className='sidebar'>
-                <a className="sidebar-icon" href="/home">Home</a>
-                <a className="sidebar-icon" href="/listinghistory">Listing History</a>
-                <a className="sidebar-icon" href="/analytics">Analytics</a>
-                <a className="sidebar-icon" href="/listingform">Listing Form</a>
-            </nav>
+            <SideBar/>
+            <HomePage/>
             <Outlet />
         </div>
     )
