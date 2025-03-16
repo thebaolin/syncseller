@@ -6,6 +6,7 @@ const SideBar = () => {
                 <a className="sidebar-icon" href="/listinghistory">Listing History</a>
                 <a className="sidebar-icon" href="/analytics">Analytics</a>
                 <a className="sidebar-icon" href="/listingform">Listing Form</a>
+                <a className="sidebar-icon" href="/dbview">Temp DB View</a>
             </nav>
         </div>
     )
