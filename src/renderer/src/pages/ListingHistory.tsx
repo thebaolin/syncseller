@@ -1,5 +1,5 @@
 const ListingHistory = () => {
-    return( 
+    return (
         <div className="content">
             <input type="text"></input>
             <h1 className="heading">Listing History</h1>
@@ -33,4 +33,4 @@ const ListingHistory = () => {
         </div>
     )
 }
-export default ListingHistory;
+export default ListingHistory

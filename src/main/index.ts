@@ -2,13 +2,13 @@ import { app, shell, BrowserWindow, ipcMain, protocol } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { createListing } from './ebay';
+import { createListing } from './ebay'
 
-// Listen for the 'create-listing' message from the renderering thing
+// Listen for the 'create-listing' message from the rendering thing
 ipcMain.handle('create-listing', async () => {
- await createListing();
- return 'Listing creation triggered';
-});
+    await createListing()
+    return 'Listing creation triggered'
+})
 
 function createWindow(): void {
     // Create the browser window.
@@ -83,7 +83,7 @@ app.on('window-all-closed', () => {
 // code. You can also put them in separate files and require them here.
 
 // FOR TESTING, not being used
-console.log("main process is running")
+console.log('main process is running')
 ipcMain.on('submit:todoForm', (event, args) => {
-    console.log('Received form data:', args);
-});
+    console.log('Received form data:', args)
+})

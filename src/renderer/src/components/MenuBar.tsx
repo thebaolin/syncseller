@@ -13,4 +13,4 @@ const MenuBar = () => {
         </div>
     )
 }
-export default MenuBar;
+export default MenuBar
