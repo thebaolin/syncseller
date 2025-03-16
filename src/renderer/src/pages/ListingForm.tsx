@@ -1,32 +1,32 @@
-import { useState } from "react"
+import { useState } from 'react'
 
 const ListingForm = () => {
     // UNDER CONSTRUCTION listing object is created when a form is submitted
-    
+
     class Listing {
-        title:string;
-        brand:string;
-        price:number;
-        description:string;
-        platforms:Array<string>;
-        status: string;
-        date: Date;
-        
-        constructor(title, brand, price, description, platforms, status){
-            this.title = title;
-            this.brand= brand;
-            this.price = price;
-            this.description  = description;
-            this.platforms = platforms;
-            this.status = status;
-            this.date = new Date();
+        title: string
+        brand: string
+        price: number
+        description: string
+        platforms: Array<string>
+        status: string
+        date: Date
+
+        constructor(title, brand, price, description, platforms, status) {
+            this.title = title
+            this.brand = brand
+            this.price = price
+            this.description = description
+            this.platforms = platforms
+            this.status = status
+            this.date = new Date()
         }
     }
-    
-    const validatePost = async(e) => {
+
+    const validatePost = async (e) => {
         e.preventDefault()
         console.log('validating form')
-        
+
         // get values from form
         let title = document.forms['listing-form']['title'].value
         let brand = document.forms['listing-form']['brand'].value
@@ -51,23 +51,23 @@ const ListingForm = () => {
 
         // populate platforms
         const platforms = new Array()
-        if (!ebay){
-            alert("Select platforms to post listing")
-            return false;
+        if (!ebay) {
+            alert('Select platforms to post listing')
+            return false
         }
         if (ebay) {
-            platforms.push("ebay");
+            platforms.push('ebay')
         }
-        
+
         // create a listing object
-        let listing = new Listing(title, brand, price, description, platforms, "Live")
+        let listing = new Listing(title, brand, price, description, platforms, 'Live')
         console.log(listing)
     }
 
-    const validateDraft = async(e) => {
+    const validateDraft = async (e) => {
         e.preventDefault()
         console.log('validating draft')
-        
+
         // get values from form
         let title = document.forms['listing-form']['title'].value
         let brand = document.forms['listing-form']['brand'].value
@@ -84,15 +84,15 @@ const ListingForm = () => {
         // populate platforms
         const platforms = new Array()
         if (ebay) {
-            platforms.push("ebay");
+            platforms.push('ebay')
         }
-        
+
         // create a listing object
-        let listing = new Listing(title, brand, price, description, platforms, "Draft")
+        let listing = new Listing(title, brand, price, description, platforms, 'Draft')
         console.log(listing)
     }
 
-    return(
+    return (
         <div className="content">
             <h1 className="heading">Create a listing</h1>
             <form id="listing-form" autoComplete="on">
@@ -136,7 +136,10 @@ const ListingForm = () => {
                 </section> */}
                 {/* Image */}
                 <section>
-                    <label>Upload images<br/></label>
+                    <label>
+                        Upload images
+                        <br />
+                    </label>
                     <input type="file"></input>
                 </section>
                 {/* Description */}
@@ -173,8 +176,12 @@ const ListingForm = () => {
                 </section>
                 {/* Buttons */}
                 <section className="flex justify-center">
-                    <button onClick={ validatePost } form="listing-form" type="submit">Post Listing</button>
-                    <button onClick={ validateDraft} form="listing-form" type="submit">Save as draft</button>
+                    <button onClick={validatePost} form="listing-form" type="submit">
+                        Post Listing
+                    </button>
+                    <button onClick={validateDraft} form="listing-form" type="submit">
+                        Save as draft
+                    </button>
                 </section>
             </form>
         </div>

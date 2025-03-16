@@ -3,6 +3,8 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { createListing } from './ebay'
+import { BaseWindow, WebContentsView } from 'electron/main'
+import EbayAuthToken from 'ebay-oauth-nodejs-client'
 
 // Listen for the 'create-listing' message from the rendering thing
 ipcMain.handle('create-listing', async () => {
@@ -68,6 +70,49 @@ app.whenReady().then(() => {
         // dock icon is clicked and there are no other windows open.
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
+
+    // copied and pasted from electron docs on webcontentsview
+    // https://www.electronjs.org/docs/latest/api/web-contents-view
+    const win = new BaseWindow({ width: 400, height: 400 })
+    const view1 = new WebContentsView()
+    win.contentView.addChildView(view1)
+
+    // hardcoded, should have values extracted from database
+    const ebayAuthToken = new EbayAuthToken({
+        clientId: 'PaulinaC-syncsell-SBX-d39433da4-724d7cb9',
+        clientSecret: 'SBX-39433da48341-4a4f-4a4d-9860-dcab',
+        redirectUri: 'Paulina_Chang-PaulinaC-syncse-mqstgd',
+        env: 'SANDBOX'
+    })
+    // oauth scopes for what api calls you can make
+    const scopes = [
+        'https://api.ebay.com/oauth/api_scope/sell.inventory.readonly',
+        'https://api.ebay.com/oauth/api_scope/sell.inventory'
+    ]
+    const oauth_url = ebayAuthToken.generateUserAuthorizationUrl('SANDBOX', scopes, {
+        prompt: 'login'
+    })
+
+    // gets an authorization token from the user
+    view1.webContents.loadURL(oauth_url).then(() => {
+        view1.webContents.addListener('did-redirect-navigation', async (details) => {
+            for (const match of details.url.split('&')) {
+                if (match.startsWith('code=')) {
+                    const accessToken = await ebayAuthToken.exchangeCodeForAccessToken(
+                        'SANDBOX',
+                        match.replace('code=', '')
+                    )
+                    console.log(accessToken)
+                    console.log(i)
+                    break
+
+                    // store into the db somehow
+                }
+            }
+        })
+    })
+
+    view1.setBounds({ x: 0, y: 0, width: 400, height: 400 })
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
