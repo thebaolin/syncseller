@@ -18,6 +18,9 @@ const Layout = () => {
                 <a className="sidebar-icon" href="/listingform">
                     Listing Form
                 </a>
+                <a className="sidebar-icon" href="/dbview">
+                    TEMP DB View
+                </a>
             </nav>
             <Outlet />
         </div>
