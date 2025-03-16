@@ -9,7 +9,7 @@ import HomePage from './pages/HomePage'
 import ListingForm from './pages/ListingForm'
 import ListingHistory from './pages/ListingHistory'
 import Analytics from './pages/Analytics'
-
+import DBView from './pages/testDBView'
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
         <BrowserRouter>
@@ -19,6 +19,8 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                     <Route path="/listinghistory" element={<ListingHistory />} />
                     <Route path="/analytics" element={<Analytics />} />
                     <Route path="/listingform" element={<ListingForm />} />
+                    <Route path="/dbview" element={<DBView />} />
+                    
                 </Route>
             </Routes>
         </BrowserRouter>
