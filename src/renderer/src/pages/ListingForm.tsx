@@ -1,3 +1,5 @@
+import { useState } from "react"
+
 const ListingForm = () => {
     // UNDER CONSTRUCTION listing object is created when a form is submitted
     
@@ -7,14 +9,16 @@ const ListingForm = () => {
         price:number;
         description:string;
         platforms:Array<string>;
+        status: string;
         date: Date;
         
-        constructor(title, brand, price, description, platforms){
+        constructor(title, brand, price, description, platforms, status){
             this.title = title;
             this.brand= brand;
             this.price = price;
             this.description  = description;
             this.platforms = platforms;
+            this.status = status;
             this.date = new Date();
         }
     }
@@ -56,14 +60,42 @@ const ListingForm = () => {
         }
         
         // create a listing object
-        let listing = new Listing(title, brand, price, description, platforms)
+        let listing = new Listing(title, brand, price, description, platforms, "Live")
+        console.log(listing)
+    }
+
+    const validateDraft = async(e) => {
+        e.preventDefault()
+        console.log('validating draft')
+        
+        // get values from form
+        let title = document.forms['listing-form']['title'].value
+        let brand = document.forms['listing-form']['brand'].value
+        let price = document.forms['listing-form']['price'].value
+        let description = document.forms['listing-form']['description'].value
+        let ebay = document.forms['listing-form']['ebay'].value
+
+        // validate form
+        if (title == '') {
+            alert('Title must be filled before posting')
+            return false
+        }
+
+        // populate platforms
+        const platforms = new Array()
+        if (ebay) {
+            platforms.push("ebay");
+        }
+        
+        // create a listing object
+        let listing = new Listing(title, brand, price, description, platforms, "Draft")
         console.log(listing)
     }
 
     return(
         <div className="content">
             <h1 className="heading">Create a listing</h1>
-            <form onSubmit={validatePost} id="listing-form" autoComplete="on">
+            <form id="listing-form" autoComplete="on">
                 {/* Title */}
                 <section>
                     <label htmlFor="title">Title</label>
@@ -93,6 +125,15 @@ const ListingForm = () => {
                         ></input>
                     </div>
                 </section>
+                {/* Category - comment out */}
+                {/* <section className="w-100%">
+                    <label htmlFor="category">Category<br/></label>
+                    <select className="w-3/8" id="category" name="category">
+                        <option value="other">Other</option>
+                        <option value="clothing">Clothing</option>
+                        <option value="toy">Toy</option>
+                    </select>
+                </section> */}
                 {/* Image */}
                 <section>
                     <label>Upload images<br/></label>
@@ -133,7 +174,7 @@ const ListingForm = () => {
                 {/* Buttons */}
                 <section className="flex justify-center">
                     <button onClick={ validatePost } form="listing-form" type="submit">Post Listing</button>
-                    <button form="listing-form">Save as draft</button>
+                    <button onClick={ validateDraft} form="listing-form" type="submit">Save as draft</button>
                 </section>
             </form>
         </div>
