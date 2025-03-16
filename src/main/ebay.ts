@@ -1,19 +1,18 @@
-import axios from 'axios';
-import * as xml2js from 'xml2js';
+import axios from 'axios'
+import * as xml2js from 'xml2js'
 import dotenv from 'dotenv'
 
 dotenv.config()
-const authToken = process.env.EBAY_AUTH_TOKEN;
+const authToken = process.env.EBAY_AUTH_TOKEN
 
-const sandboxEndpoint = 'https://api.sandbox.ebay.com/ws/api.dll'; // Sandbox environment endpoint
+const sandboxEndpoint = 'https://api.sandbox.ebay.com/ws/api.dll' // Sandbox environment endpoint
 
 // Set the headers required by the eBay API
 const headers = {
- 'X-EBAY-API-SITEID': '0',  // US is default to 0
- 'X-EBAY-API-CALL-NAME': 'AddItem',
- 'X-EBAY-API-COMPATIBILITY-LEVEL': '967',  // Compatibility Level
-};
-
+    'X-EBAY-API-SITEID': '0', // US is default to 0
+    'X-EBAY-API-CALL-NAME': 'AddItem',
+    'X-EBAY-API-COMPATIBILITY-LEVEL': '967' // Compatibility Level
+}
 
 // Example payload to create an item listing in XML
 const xmlPayload = `
@@ -100,39 +99,37 @@ const xmlPayload = `
    <ConditionID>1000</ConditionID>
 </Item>
 </AddItemRequest>
-`;
-
+`
 
 export async function createListing() {
- try {
-   const response = await axios.post(sandboxEndpoint, xmlPayload, { headers });
-  
-   // Parse the XML response from eBay
-   xml2js.parseString(response.data, (err, result) => {
-     if (err) {
-       console.error('Error parsing XML response:', err);
-     } else {
-       console.log('Listing created response:', result);
+    try {
+        const response = await axios.post(sandboxEndpoint, xmlPayload, { headers })
 
+        // Parse the XML response from eBay
+        xml2js.parseString(response.data, (err, result) => {
+            if (err) {
+                console.error('Error parsing XML response:', err)
+            } else {
+                console.log('Listing created response:', result)
 
-       // Check if there were errors in the eBay API response
-       if (result.AddItemResponse.Ack[0] === 'Failure') {
-         console.error('Listing creation failed:', result.AddItemResponse.Errors);
-         console.log("eBay Auth Token:", authToken);
-       } else {
-         console.log('Listing created successfully:', result);
-       }
-     }
-   });
- } catch (error) {
-   if (error.response) {
-     console.error('Error response:', error.response.data);
-     console.error('Error status:', error.response.status);
-     console.error('Error headers:', error.response.headers);
-   } else if (error.request) {
-     console.error('No response received:', error.request);
-   } else {
-     console.error('Error message:', error.message);
-   }
- }
+                // Check if there were errors in the eBay API response
+                if (result.AddItemResponse.Ack[0] === 'Failure') {
+                    console.error('Listing creation failed:', result.AddItemResponse.Errors)
+                    console.log('eBay Auth Token:', authToken)
+                } else {
+                    console.log('Listing created successfully:', result)
+                }
+            }
+        })
+    } catch (error) {
+        if (error.response) {
+            console.error('Error response:', error.response.data)
+            console.error('Error status:', error.response.status)
+            console.error('Error headers:', error.response.headers)
+        } else if (error.request) {
+            console.error('No response received:', error.request)
+        } else {
+            console.error('Error message:', error.message)
+        }
+    }
 }
