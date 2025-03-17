@@ -96,16 +96,14 @@ app.whenReady().then(() => {
     // gets an authorization token from the user
     view1.webContents.loadURL(oauth_url).then(() => {
         view1.webContents.addListener('did-redirect-navigation', async (details) => {
-            for (const match of details.url.split('&')) {
-                if (match.startsWith('code=')) {
+            for (const part of details.url.split('&')) {
+                if (part.startsWith('code=')) {
                     const accessToken = await ebayAuthToken.exchangeCodeForAccessToken(
                         'SANDBOX',
-                        match.replace('code=', '')
+                        part.replace('code=', '')
                     )
                     console.log(accessToken)
-                    console.log(i)
                     break
-
                     // store into the db somehow
                 }
             }
