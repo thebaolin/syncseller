@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, protocol } from 'electron'
+import { app, shell, BrowserWindow, ipcMain} from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -7,7 +7,6 @@ import { BaseWindow, WebContentsView } from 'electron/main'
 import EbayAuthToken from 'ebay-oauth-nodejs-client'
 import crypto from 'crypto'
 import { request } from 'https'
-
 
 const ETSY_CLIENT_ID = 'syncseller'
 const ETSY_REDIRECT_URI = 'https://yourapp.com/oauth/callback'
@@ -167,17 +166,15 @@ app.whenReady().then(() => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
 
-    // copied and pasted from electron docs on webcontentsview
-    // https://www.electronjs.org/docs/latest/api/web-contents-view
     const win = new BaseWindow({ width: 400, height: 400 })
     const view1 = new WebContentsView()
     win.contentView.addChildView(view1)
 
-    // hardcoded, should have values extracted from database
+    // hardcoded, should have values extracted from database; entered from user
     const ebayAuthToken = new EbayAuthToken({
-        clientId: 'PaulinaC-syncsell-SBX-d39433da4-724d7cb9',
-        clientSecret: 'SBX-39433da48341-4a4f-4a4d-9860-dcab',
-        redirectUri: 'Paulina_Chang-PaulinaC-syncse-mqstgd',
+        clientId: 'RandyLu-sand-SBX-e41907e53-a28e5f11',
+        clientSecret: 'SBX-41907e53e228-9004-4bbf-81f5-a63c',
+        redirectUri: 'Randy_Lu-RandyLu-sand-SB-domszhbw',
         env: 'SANDBOX'
     })
     // oauth scopes for what api calls you can make
@@ -189,7 +186,7 @@ app.whenReady().then(() => {
         prompt: 'login'
     })
 
-    // gets an authorization token from the user
+    // gets an authorization token for the user
     view1.webContents.loadURL(oauth_url).then(() => {
         view1.webContents.addListener('did-redirect-navigation', async (details) => {
             for (const part of details.url.split('&')) {
@@ -205,8 +202,90 @@ app.whenReady().then(() => {
             }
         })
     })
-
     view1.setBounds({ x: 0, y: 0, width: 400, height: 400 })
+
+    // extracted and populated from db entry x
+    const data = `{
+    "product": {
+        "title": "Test listing - do not bid or buy - awesome Apple watch test 2",
+        "aspects": {
+            "Feature":[
+              "Water resistance", "GPS"
+            ],
+            "CPU":[
+              "Dual-Core Processor"
+            ]
+        },
+        "description": "Test listing - do not bid or buy. Built-in GPS. Water resistance to 50 meters.1 A new lightning-fast dual-core processor. And a display that is two times brighter than before. Full of features that help you stay active, motivated, and connected, Apple Watch Series 2 is designed for all the ways you move ",
+        "upc": ["888462079525"],
+        "imageUrls": [
+            "http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/S/1/S1/42/S1-42-alu-silver-sport-white-grid?wid=332&hei=392&fmt=jpeg&qlt=95&op_sharpen=0&resMode=bicub&op_usm=0.5,0.5,0,0&iccEmbed=0&layer=comp&.v=1472247758975",
+            "http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/4/2/42/stainless/42-stainless-sport-white-grid?wid=332&hei=392&fmt=jpeg&qlt=95&op_sharpen=0&resMode=bicub&op_usm=0.5,0.5,0,0&iccEmbed=0&layer=comp&.v=1472247760390",
+            "http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/4/2/42/ceramic/42-ceramic-sport-cloud-grid?wid=332&hei=392&fmt=jpeg&qlt=95&op_sharpen=0&resMode=bicub&op_usm=0.5,0.5,0,0&iccEmbed=0&layer=comp&.v=1472247758007"
+        ]
+    },
+    "condition": "NEW",
+    "packageWeightAndSize": {
+        "dimensions": {
+            "height": 5,
+            "length": 10,
+            "width": 15,
+            "unit": "INCH"
+        },
+        "packageType": "MAILING_BOX",
+        "weight": {
+            "value": 2,
+            "unit": "POUND"
+        }
+    },
+    "availability": {
+        "shipToLocationAvailability": {
+            "quantity": 10
+        }
+    }
+}`
+    
+    // Define the options for the HTTPS request
+    const options = {
+        hostname: 'api.sandbox.ebay.com',
+        path: 'https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item/50',
+        method: 'PUT',
+        headers: {
+            Authorization:'Bearer v^1.1#i^1#p^3#f^0#I^3#r^0#t^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',
+            Accept: 'application/json',
+            'Content-Length': data.length,
+            'Content-Type': 'application/json',
+            'Content-Language': 'en-US'
+        }
+    }
+
+
+    // REPLACE WITH RESPONSE HANDLING CODE
+    // Create the request
+    const req = request(options, (res) => {
+        let responseBody = ''
+
+        // Listen for data from the response
+        res.on('data', (chunk) => {
+            responseBody += chunk
+        })
+
+        // Listen for the end of the response
+        res.on('end', () => {
+            console.log('Response:', responseBody)
+        })
+    })
+
+    // Handle any errors with the request
+    req.on('error', (e) => {
+        console.error(`Problem with request: ${e.message}`)
+    })
+
+    // Write data to the request body
+    req.write(data)
+
+    // End the request
+    req.end()
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common

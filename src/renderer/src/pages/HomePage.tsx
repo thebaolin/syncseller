@@ -23,7 +23,7 @@ const HomePage = () => {
         <div className="content">
             <h1 className="heading">Home</h1>
             <h1 className="home-heading">Hello Name, Welcome to SyncSeller!</h1>
-            
+
             {/* Temporary Etsy Login Button LOL*/}
             <button id="etsy-login-button" className="bg-blue-500 text-white px-4 py-2 rounded">
                 Connect to Etsy
