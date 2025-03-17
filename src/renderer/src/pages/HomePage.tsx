@@ -1,8 +1,34 @@
+import { useEffect } from 'react'
+
 const HomePage = () => {
+    useEffect(() => {
+        const loginButton = document.getElementById('etsy-login-button')
+        if (loginButton) {
+            loginButton.addEventListener('click', async () => {
+                const result = await window.electron.invoke('start-etsy-oauth')
+                console.log('OAuth result:', result)
+            })
+        }
+
+        return () => {
+            if (loginButton) {
+                loginButton.removeEventListener('click', async () => {
+                    await window.electron.invoke('start-etsy-oauth')
+                })
+            }
+        }
+    }, [])
+
     return (
         <div className="content">
             <h1 className="heading">Home</h1>
-            <h1 className="home-heading">Hello Name, Welcome to Syncseller!</h1>
+            <h1 className="home-heading">Hello Name, Welcome to SyncSeller!</h1>
+            
+            {/* Temporary Etsy Login Button LOL*/}
+            <button id="etsy-login-button" className="bg-blue-500 text-white px-4 py-2 rounded">
+                Connect to Etsy
+            </button>
+
             {/* Platforms */}
             <h1 className="home-heading">Platforms</h1>
             <section className="flex flex-col-4">
@@ -27,41 +53,8 @@ const HomePage = () => {
                     <p className="home-paragraph">16 listings</p>
                 </div>
             </section>
-            {/* Recent listings */}
-            <h1 className="home-heading">Recent Listings</h1>
-            <section className="flex flex-col-6">
-                <div className="w-1/6">
-                    <div className="home-row1-icon h-[100px] bg-white"></div>
-                    <h1 className="home-heading">item-title</h1>
-                    <p className="home-paragraph">item-category</p>
-                </div>
-                <div className="w-1/6">
-                    <div className="home-row1-icon h-[100px] bg-white"></div>
-                    <h1 className="home-heading">item-title</h1>
-                    <p className="home-paragraph">item-category</p>
-                </div>
-                <div className="w-1/6">
-                    <div className="home-row1-icon h-[100px] bg-white"></div>
-                    <h1 className="home-heading">item-title</h1>
-                    <p className="home-paragraph">item-category</p>
-                </div>
-                <div className="w-1/6">
-                    <div className="home-row1-icon h-[100px] bg-white"></div>
-                    <h1 className="home-heading">item-title</h1>
-                    <p className="home-paragraph">item-category</p>
-                </div>
-                <div className="w-1/6">
-                    <div className="home-row1-icon h-[100px] bg-white"></div>
-                    <h1 className="home-heading">item-title</h1>
-                    <p className="home-paragraph">item-category</p>
-                </div>
-                <div className="w-1/6">
-                    <div className="home-row1-icon h-[100px] bg-white"></div>
-                    <h1 className="home-heading">item-title</h1>
-                    <p className="home-paragraph">item-category</p>
-                </div>
-            </section>
         </div>
     )
 }
+
 export default HomePage
