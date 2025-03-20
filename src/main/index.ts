@@ -1,15 +1,25 @@
-import { app, shell, BrowserWindow, ipcMain, protocol } from 'electron'
+import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { createListing } from './ebay'
+
+import {getData,insertData} from './dbmanager'
 
 // Listen for the 'create-listing' message from the rendering thing
 ipcMain.handle('create-listing', async () => {
     await createListing()
     return 'Listing creation triggered'
 })
-
+// Handle "get-data" event
+ipcMain.handle('get-data', async () => {
+    return getData(); // Return data to the renderer
+  });
+  
+  // Handle "insert-data" event
+  ipcMain.handle('insert-data', async (_, name: string) => {
+    insertData(name);
+  });
 function createWindow(): void {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
@@ -19,7 +29,7 @@ function createWindow(): void {
         autoHideMenuBar: true,
         ...(process.platform === 'linux' ? { icon } : {}),
         webPreferences: {
-            preload: join(__dirname, '../preload/index.js'),
+            preload: join(__dirname,'../preload/index.js'),
             sandbox: false,
             contextIsolation: true,
             nodeIntegration: false
