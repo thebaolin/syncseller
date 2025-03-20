@@ -28,6 +28,7 @@
         "better-sqlite3": "^11.9.1",
         "better-sqlite3-multiple-ciphers": "^11.8.1",
         "dotenv": "^16.4.7",
+        "ebay-oauth-nodejs-client": "^1.2.2",
         "electron-updater": "^6.3.9",
         "react-router-dom": "^7.2.0",
         "xml2js": "^0.6.2"
@@ -37,6 +38,7 @@
         "@electron-toolkit/eslint-config-ts": "^3.0.0",
         "@electron-toolkit/tsconfig": "^1.0.1",
         "@electron/rebuild": "^3.7.1",
+        "@types/ebay-oauth-nodejs-client": "^1.2.4",
         "@types/node": "^22.13.9",
         "@types/react": "^18.3.18",
         "@types/react-dom": "^18.3.5",

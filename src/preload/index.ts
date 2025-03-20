@@ -10,22 +10,28 @@ const api = {}
 // renderer only if context isolation is enabled, otherwise
 // just add to the DOM global.
 
-
-
-
 if (process.contextIsolated) {
     try {
         contextBridge.exposeInMainWorld('electron', {
-            // electronAPI,
+            // Include the default Electron API
+            ...electronAPI,
+
+            // Expose "invoke" for api communication for etsy button
+            invoke: (channel, ...args) => ipcRenderer.invoke(channel, ...args),
+
+            // Existing methods
             send: (channel, data) => ipcRenderer.send(channel, data),
             on: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args))
-        })
+        
         //contextBridge.exposeInMainWorld('electron', electronAPI)
         //contextBridge.exposeInMainWorld('api', api)
         contextBridge.exposeInMainWorld('database', {
             getData: () => ipcRenderer.invoke('get-data'),
             insertData: (name: string) => ipcRenderer.invoke('insert-data', name)
-        })
+        
+
+        // Optionally expose other APIs
+        contextBridge.exposeInMainWorld('api', api)
     } catch (error) {
         console.error(error)
     }
