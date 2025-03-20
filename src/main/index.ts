@@ -3,7 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { createListing } from './ebay'
-import { app, BrowserWindow, ipcMain, BaseWindow, WebContentsView } from 'electron/main'
+import { app, BrowserWindow, ipcMain} from 'electron/main'
 import crypto from 'crypto'
 import EbayAuthToken from 'ebay-oauth-nodejs-client'
 import { request } from 'node:https'
@@ -44,7 +44,7 @@ ipcMain.handle('start-etsy-oauth', () => {
     etsyAuthWindow = new BrowserWindow({
         width: 800,
         height: 600,
-        webPreferences: { nodeIntegration: false }
+        webPreferences: { nodeIntegration: false, contextIsolation: true }
     })
 
     etsyAuthWindow.loadURL(authUrl) // Load authUrl into the new browser window
@@ -205,10 +205,11 @@ ipcMain.handle('ebay-listing', () => {
 
     // if ebay api is there but no oauth available
 
-    const win = new BaseWindow({ width: 800, height: 800 })
-    const view1 = new WebContentsView()
-    win.contentView.addChildView(view1)
-
+    const win = new BrowserWindow({
+        width: 800,
+        height: 800,
+        webPreferences: { nodeIntegration: false, contextIsolation: true }
+    })
     // pull all user values from the database
     const ebayAuthToken = new EbayAuthToken({
         clientId: 'RandyLu-sand-SBX-e41907e53-a28e5f11',
@@ -225,8 +226,8 @@ ipcMain.handle('ebay-listing', () => {
         prompt: 'login'
     })
 
-    view1.webContents.loadURL(ebay_url).then(() => {
-        view1.webContents.addListener('did-redirect-navigation', async (details) => {
+    win.loadURL(ebay_url).then(() => {
+        win.webContents.addListener('did-redirect-navigation', async (details) => {
             const access_code = new URL(details.url).searchParams.get('code')
             if (access_code) {
                 // is this https?, replace with own code
@@ -237,14 +238,14 @@ ipcMain.handle('ebay-listing', () => {
                 // store into db with time stamps
                 console.log(accessToken)
                 win.on('closed', () => {
-                    view1.webContents.close()
+                    win.webContents.close()
                 })
                 win?.close()
             }
         })
     })
 
-    view1.setBounds({ x: 0, y: 0, width: 800, height: 800 })
+    win.setBounds({ x: 0, y: 0, width: 800, height: 800 })
 
     // check if token is fresh otherwise refresh it
 
