@@ -22,16 +22,17 @@ if (process.contextIsolated) {
             // Existing methods
             send: (channel, data) => ipcRenderer.send(channel, data),
             on: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args))
-        
+        }),
         //contextBridge.exposeInMainWorld('electron', electronAPI)
         //contextBridge.exposeInMainWorld('api', api)
         contextBridge.exposeInMainWorld('database', {
             getData: () => ipcRenderer.invoke('get-data'),
             insertData: (name: string) => ipcRenderer.invoke('insert-data', name)
         
-
+    }),
         // Optionally expose other APIs
         contextBridge.exposeInMainWorld('api', api)
+        
     } catch (error) {
         console.error(error)
     }
