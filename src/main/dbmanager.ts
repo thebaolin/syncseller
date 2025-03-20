@@ -26,7 +26,7 @@ db.exec(`
 
 export function getData(): { id: number; status: string }[] {
     const stmt = db.prepare('SELECT * FROM L_Listing_Status')
-    console.log('Data fetched:', stmt.all())
+    //console.log('Data fetched:', stmt.all())
 
     return stmt.all() // Returns all rows as an array of objects
 }

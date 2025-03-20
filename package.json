@@ -25,7 +25,6 @@
         "@electron-toolkit/utils": "^4.0.0",
         "@tailwindcss/postcss": "^4.0.12",
         "axios": "^1.8.1",
-        "better-sqlite3": "^11.9.1",
         "better-sqlite3-multiple-ciphers": "^11.8.1",
         "dotenv": "^16.4.7",
         "ebay-oauth-nodejs-client": "^1.2.2",
