@@ -14,7 +14,7 @@ import Database from 'better-sqlite3-multiple-ciphers'
 //import Database from 'better-sqlite3';
 
 // Open or create a database file
-const db = new Database('test.db')
+const db = new Database('mydatabase.db')
 
 // Create a table if it doesn't exist
 db.exec(`
