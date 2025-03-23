@@ -1,4 +1,4 @@
-import { shell } from 'electron'
+import { shell, protocol, net } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'

@@ -11,7 +11,7 @@
 .sidebar {
     margin-top: 60px;
     width: 30%;
-    background-color: pink;
+    background-color: rgb(255, 221, 226);
     position: fixed;
     height: 100%;
     border: 5px solid white;
@@ -25,7 +25,7 @@
     width: 70%;
     margin-left: 30%;
     padding: 1px 16px;
-    background-color: pink;
+    background-color: rgb(255, 221, 226);
     border: 5px solid white;
     border-radius: 10px;
     overflow-y: scroll;
@@ -108,7 +108,7 @@ button:hover {
     position: absolute;
     right: 115px;
     padding: 10px;
-    background-color: pink;
+    background-color: rgb(255, 221, 226);
 }
 
 .menu-bar {
@@ -124,7 +124,7 @@ button:hover {
     position: absolute;
     height: 50px;
     width: 50px;
-    background-color: pink;
+    background-color: rgb(255, 221, 226);
     border-radius: 50%;
 }
 
