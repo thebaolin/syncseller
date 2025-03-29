@@ -163,7 +163,7 @@ app.whenReady().then(() => {
 
     initializeDatabase();
 })
-import { getData, insertData, initializeDatabase, getTableNames } from './dbmanager'
+import { getData, insertData, initializeDatabase, getTableNames, getEbayListing } from './dbmanager'
 
 // Listen for the 'create-listing' message from the rendering thing
 ipcMain.handle('create-listing', async () => {
@@ -183,6 +183,16 @@ ipcMain.handle('insert-data', async (_, name: string) => {
 ipcMain.handle('get-table-names', () => {
     return getTableNames()
 })
+
+ipcMain.handle('get-ebay-listing', async () => {
+    try {
+      const listing = getEbayListing();
+      return listing;
+    } catch (error) {
+      console.error('Error fetching eBay listing:', error);
+      throw error;
+    }
+  });
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

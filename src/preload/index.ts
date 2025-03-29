@@ -30,6 +30,8 @@ if (process.contextIsolated) {
                 getData: () => ipcRenderer.invoke('get-data'),
                 insertData: (name: string) => ipcRenderer.invoke('insert-data', name),
                 getTableNames: () => ipcRenderer.invoke('get-table-names'),
+                getEbayListing: () => ipcRenderer.invoke('get-ebay-listing'),
+
             }),
             // Optionally expose other APIs
             contextBridge.exposeInMainWorld('api', api)
@@ -42,3 +44,4 @@ if (process.contextIsolated) {
     // @ts-ignore (define in dts)
     window.api = api
 }
+
