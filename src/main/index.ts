@@ -101,22 +101,6 @@ async function exchangeEtsyCodeForToken(code: string) {
     })
 }
 
-import { getData, insertData } from './dbmanager'
-
-// Listen for the 'create-listing' message from the rendering thing
-ipcMain.handle('create-listing', async () => {
-    await createListing()
-    return 'Listing creation triggered'
-})
-// Handle "get-data" event
-ipcMain.handle('get-data', async () => {
-    return getData() // Return data to the renderer
-})
-
-// Handle "insert-data" event
-ipcMain.handle('insert-data', async (_, name: string) => {
-    insertData(name)
-})
 
 function createWindow(): void {
     // Create the browser window.
@@ -176,6 +160,24 @@ app.whenReady().then(() => {
         // dock icon is clicked and there are no other windows open.
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
+
+    initializeDatabase();
+})
+import { getData, insertData, initializeDatabase } from './dbmanager'
+
+// Listen for the 'create-listing' message from the rendering thing
+ipcMain.handle('create-listing', async () => {
+    await createListing()
+    return 'Listing creation triggered'
+})
+// Handle "get-data" event
+ipcMain.handle('get-data', async () => {
+    return getData() // Return data to the renderer
+})
+
+// Handle "insert-data" event
+ipcMain.handle('insert-data', async (_, name: string) => {
+    insertData(name)
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common

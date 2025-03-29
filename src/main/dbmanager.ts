@@ -1,37 +1,69 @@
-import Database from 'better-sqlite3-multiple-ciphers'
-// const path = require("path")
+import Database from 'better-sqlite3-multiple-ciphers';
+import fs from 'fs';
 
-// const dbPath =
-//     process.env.NODE_ENV === "development"
-//         ? "./test.db"
-//         : path.join(process.resourcesPath, "./test.db")
+const PASSWORD = 'poop'; // Prompt user to set this for encryption
+let db: Database;
 
-// const db = new Database(dbPath)
-// db.pragma("journal_mode = WAL")
+export function initializeDatabase() {
+  if (!fs.existsSync('app.db')) {
+    console.log('Database does not exist. Creating new database...');
 
-// exports.db = db
+    // Create and encrypt the database
+    db = new Database('app.db', {
+      verbose: console.log,
+    });
 
-//import Database from 'better-sqlite3';
+    db.pragma(`key='${PASSWORD}'`);
+    console.log('Database created and encrypted.');
 
-// Open or create a database file
-const db = new Database('mydatabase.db')
+    // Create tables
+    createTables();
+  } else {
+    console.log('Database already exists.');
+    
+    // Open existing database with encryption key
+    db = new Database('app.db', {
+      verbose: console.log,
+    });
+    db.pragma(`key='${PASSWORD}'`);
+  }
+}
 
-// Create a table if it doesn't exist
-db.exec(`
-  CREATE TABLE IF NOT EXISTS items (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL
-  )
-`)
+function createTables() {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS L_Listing_Status (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      status TEXT UNIQUE NOT NULL
+    );
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+  `);
+
+  console.log('Tables created successfully.');
+}
 
 export function getData(): { id: number; status: string }[] {
-    const stmt = db.prepare('SELECT * FROM L_Listing_Status')
-    //console.log('Data fetched:', stmt.all())
-
-    return stmt.all() // Returns all rows as an array of objects
+  if (!db) throw new Error('Database is not initialized.');
+  
+  const stmt = db.prepare('SELECT * FROM L_Listing_Status');
+  return stmt.all();
 }
 
 export function insertData(name: string): void {
-    const stmt = db.prepare('INSERT INTO L_Listing_Status (status) VALUES (?)')
-    stmt.run(name)
+  if (!db) throw new Error('Database is not initialized.');
+  
+  const stmt = db.prepare('INSERT INTO L_Listing_Status (status) VALUES (?)');
+  stmt.run(name);
 }
