@@ -163,7 +163,7 @@ app.whenReady().then(() => {
 
     initializeDatabase();
 })
-import { getData, insertData, initializeDatabase } from './dbmanager'
+import { getData, insertData, initializeDatabase, getTableNames } from './dbmanager'
 
 // Listen for the 'create-listing' message from the rendering thing
 ipcMain.handle('create-listing', async () => {
@@ -178,6 +178,10 @@ ipcMain.handle('get-data', async () => {
 // Handle "insert-data" event
 ipcMain.handle('insert-data', async (_, name: string) => {
     insertData(name)
+})
+
+ipcMain.handle('get-table-names', () => {
+    return getTableNames()
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common

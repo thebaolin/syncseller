@@ -28,7 +28,8 @@ if (process.contextIsolated) {
             //contextBridge.exposeInMainWorld('api', api)
             contextBridge.exposeInMainWorld('database', {
                 getData: () => ipcRenderer.invoke('get-data'),
-                insertData: (name: string) => ipcRenderer.invoke('insert-data', name)
+                insertData: (name: string) => ipcRenderer.invoke('insert-data', name),
+                getTableNames: () => ipcRenderer.invoke('get-table-names'),
             }),
             // Optionally expose other APIs
             contextBridge.exposeInMainWorld('api', api)

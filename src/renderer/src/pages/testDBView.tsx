@@ -8,7 +8,16 @@ interface Item {
 const DbView = () => {
     const [items, setItems] = useState<Item[]>([])
     const [newItem, setNewItem] = useState<string>('')
+    const [tables, setTables] = useState<string[]>([]);
 
+    useEffect(() => {
+    const fetchTables = async () => {
+      const result = await window.database.getTableNames();
+      setTables(result);
+    };
+
+    fetchTables();
+  }, []);
     useEffect(() => {
         loadData()
     }, [])
@@ -50,7 +59,17 @@ const DbView = () => {
                 placeholder="Enter new item"
             />
             <button onClick={handleInsert}>Add Item</button>
+
+            <h2>Database Tables:</h2>
+            <ul>
+                {tables.map((table,name) => (
+                <li key={name}>{table}</li>
+                ))}
+            </ul>
         </div>
+
+
+        
     )
 }
 
