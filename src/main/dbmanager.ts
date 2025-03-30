@@ -41,6 +41,10 @@ function createTables() {
       status TEXT NOT NULL
     );
 
+    INSERT INTO L_Listing_Status (status)
+      VALUES ('Active'), ('Sold'), ('Deleted'), ('Draft');
+
+    
     CREATE TABLE IF NOT EXISTS Ebay (
       ebay_listing_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
       item_id INTEGER NOT NULL,
@@ -68,7 +72,7 @@ function createTables() {
     12345,                    
     67890,                     
     'Sample Item',             
-    'Small', 
+    '{Small}', 
     'This is a sample item.', 
     123456789012,              
     'https://example.com/image.jpg', 
@@ -108,10 +112,15 @@ function createTables() {
       status_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
       status TEXT UNIQUE NOT NULL
     );
+    INSERT INTO L_Platform_Status (status)
+      VALUES ('Yes'), ('No');
+
     CREATE TABLE IF NOT EXISTS L_Platforms (
       platform_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL
     );
+    INSERT INTO L_Platforms (name)
+      VALUES ('Ebay'), ('Etsy');
 
     CREATE TABLE IF NOT EXISTS Credentials (
       client_id ANY PRIMARY KEY,
