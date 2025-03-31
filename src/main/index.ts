@@ -2,7 +2,6 @@ import { shell } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { createListing } from './ebay'
 import { app, BrowserWindow, ipcMain } from 'electron/main'
 import crypto from 'crypto'
 import EbayAuthToken from 'ebay-oauth-nodejs-client'
@@ -12,6 +11,63 @@ const ETSY_CLIENT_ID = 'syncseller'
 const ETSY_REDIRECT_URI = 'https://yourapp.com/oauth/callback'
 const ETSY_SCOPES = 'transactions_r listings_r'
 const STATE = crypto.randomBytes(16).toString('hex') // CSRF protection
+
+const BASE_URL = 'https://api.ebay.com/sell/account/v1'
+const HEADERS = (auth: string) => ({
+  Authorization: `Bearer ${auth}`,
+  'Content-Type': 'application/json',
+  Accept: 'application/json'
+})
+
+async function fetchPolicies(endpoint: string, auth: string) {
+    return new Promise((resolve, reject) => {
+      const options = {
+        hostname: 'api.ebay.com',
+        path: `/sell/account/v1/${endpoint}`,
+        method: 'GET',
+        headers: HEADERS(auth)
+      }
+  
+      const req = request(options, (res) => {
+        let responseBody = ''
+  
+        res.on('data', (chunk) => {
+          responseBody += chunk
+        })
+  
+        res.on('end', () => {
+          try {
+            const jsonData = JSON.parse(responseBody)
+            resolve(jsonData)
+          } catch (error) {
+            reject(error)
+          }
+        })
+      })
+  
+      req.on('error', (e) => reject(e))
+      req.end()
+    })
+  }
+  
+  async function getPolicyIDs(auth: string) {
+    try {
+      const [fulfillment, payment, returnPolicy] = await Promise.all([
+        fetchPolicies('fulfillment_policy', auth),
+        fetchPolicies('payment_policy', auth),
+        fetchPolicies('return_policy', auth)
+      ])
+  
+      return {
+        fulfillmentPolicyId: fulfillment.policies?.[0]?.fulfillmentPolicyId || null,
+        paymentPolicyId: payment.policies?.[0]?.paymentPolicyId || null,
+        returnPolicyId: returnPolicy.policies?.[0]?.returnPolicyId || null
+      }
+    } catch (error) {
+      console.error('Error fetching policy IDs:', error)
+      return null
+    }
+}
 
 let etsyAuthWindow: BrowserWindow | null = null
 
@@ -251,6 +307,9 @@ ipcMain.on('ebay', () => {
                 console.log(accessToken)
                 const auth = JSON.parse(accessToken).access_token
                 console.log(auth)
+
+                const policyIDs = await getPolicyIDs(auth)
+                console.log('Policy IDs:', policyIDs)
 
                 // extracted and populated from db entry x
                 const data = `{
