@@ -17,6 +17,9 @@ const SideBar = () => {
                 <a className="sidebar-icon" href="/dbview">
                     Temp DB View
                 </a>
+                <a className="sidebar-icon" href="/usercred">
+                    User Credentials
+                </a>
             </nav>
         </div>
     )

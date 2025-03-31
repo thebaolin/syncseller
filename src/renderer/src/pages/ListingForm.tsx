@@ -128,15 +128,6 @@ const ListingForm = () => {
                         ></input>
                     </div>
                 </section>
-                {/* Category - comment out */ }
-                {/* <section className="w-100%">
-                    <label htmlFor="category">Category<br/></label>
-                    <select className="w-3/8" id="category" name="category">
-                        <option value="other">Other</option>
-                        <option value="clothing">Clothing</option>
-                        <option value="toy">Toy</option>
-                    </select>
-                </section> */}
                 {/* Image */ }
                 <section>
                     <label>
