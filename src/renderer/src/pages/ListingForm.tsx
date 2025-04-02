@@ -1,8 +1,6 @@
 import { useState } from 'react'
 
 const ListingForm = () => {
-    // UNDER CONSTRUCTION listing object is created when a form is submitted
-
     class Listing {
         title: string
         brand: string
@@ -74,10 +72,10 @@ const ListingForm = () => {
         let brand = document.forms[ 'listing-form' ][ 'brand' ].value
         let price = document.forms[ 'listing-form' ][ 'price' ].value
         let description = document.forms[ 'listing-form' ][ 'description' ].value
-        let ebay = document.forms[ 'listing-form' ][ 'ebay' ].value
+        let ebay = document.forms[ 'listing-form' ][ 'ebay' ].checked
 
         // validate form
-        if ( title == '' ) {
+        if ( title === '' ) {
             alert( 'Title must be filled before posting' )
             return false
         }
@@ -93,7 +91,21 @@ const ListingForm = () => {
         console.log( listing )
     }
 
-
+    
+    const [selectedFile, setSelectedFile] = useState(null)
+    const [imagePreview, setImagePreview] = useState('')
+    const handleFileChange = (event) => {
+        const file = event.target.files[0]
+        if (file) {
+            setSelectedFile(file)
+            
+            const objectUrl = URL.createObjectURL(file)
+            setImagePreview(objectUrl)
+            
+            console.log('File selected:', file.name)
+            console.log('Image preview URL:', objectUrl)
+        }
+    }
 
     return (
         <div className="content">
@@ -128,13 +140,25 @@ const ListingForm = () => {
                         ></input>
                     </div>
                 </section>
-                {/* Image */ }
+                {/* Upload Images */ }
                 <section>
                     <label>
                         Upload images
                         <br />
                     </label>
-                    <input type="file"></input>
+                    <input 
+                        type="file" 
+                        id="fileUpload" 
+                        accept="image/*" 
+                        multiple
+                        onChange={handleFileChange}
+                    ></input>
+                </section>
+                {/* Images Preview */}
+                <section>
+                    <div className="h-[300px] w-[300px] border-2">
+                        <img id="output" src={imagePreview} alt="Preview" ></img>
+                    </div>
                 </section>
                 {/* Description */ }
                 <section>
@@ -168,7 +192,7 @@ const ListingForm = () => {
                     {/* etc... */ }
                     <br />
                 </section>
-                {/* Buttons */ }
+                {/* Submit buttons */ }
                 <section className="flex justify-center">
                     <button onClick={ validatePost } form="listing-form" type="submit">
                         Post Listing
