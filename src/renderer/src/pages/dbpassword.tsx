@@ -112,7 +112,7 @@ const PasswordScreen = () => {
     const navigate = useNavigate();
 
     const handleLogin = async () => {
-        if ( !password) {
+        if (!password) {
             setError('Please enter password.');
             return;
         }
