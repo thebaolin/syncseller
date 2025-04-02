@@ -2,22 +2,22 @@ const SideBar = () => {
     return (
         <div>
             <nav className="sidebar">
-                <a className="sidebar-icon" href="/home">
+                <a className="sidebar-icon" href="/app/home">
                     Home
                 </a>
-                <a className="sidebar-icon" href="/listinghistory">
+                <a className="sidebar-icon" href="/app/listinghistory">
                     Listing History
                 </a>
-                <a className="sidebar-icon" href="/analytics">
+                <a className="sidebar-icon" href="/app/analytics">
                     Analytics
                 </a>
-                <a className="sidebar-icon" href="/listingform">
+                <a className="sidebar-icon" href="/app/listingform">
                     Listing Form
                 </a>
-                <a className="sidebar-icon" href="/dbview">
+                <a className="sidebar-icon" href="/app/dbview">
                     Temp DB View
                 </a>
-                <a className="sidebar-icon" href="/usercred">
+                <a className="sidebar-icon" href="/app/usercred">
                     User Credentials
                 </a>
             </nav>

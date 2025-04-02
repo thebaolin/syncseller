@@ -192,6 +192,15 @@ function createWindow(): void {
     }
 }
 
+ipcMain.handle('initialize-db', async (_event, password: string) => {
+    try {
+        initializeDatabase(password);
+        return { success: true };
+    } catch (error) {
+        console.error('Database error:', error);
+        return { success: false, error: error.message };
+    }
+});
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -217,7 +226,7 @@ app.whenReady().then(() => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
 
-    initializeDatabase();
+    //initializeDatabase();
 })
 import { getData, insertData, initializeDatabase, getTableNames, getEbayListing } from './dbmanager'
 
