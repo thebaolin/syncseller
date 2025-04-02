@@ -123,7 +123,8 @@ const PasswordScreen = () => {
                 localStorage.setItem('authenticated', 'true'); // Store authentication
                 navigate('/app/home'); // Redirect to the app
             } else {
-                setError('Failed to open database: ' + response.error);
+                setError('Failed to open database. Password is incorrect');
+                console.log(response.error)
             }
         } catch (err) {
             setError('Error connecting to database.');

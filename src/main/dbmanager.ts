@@ -44,7 +44,16 @@ export function initializeDatabase(password: string) {
 } else {
     console.log('Database exists. Opening...');
     db = new Database('app.db', { verbose: console.log });
+
     db.pragma(`key='${password}'`);
+    const stmt = db.prepare("SELECT name FROM sqlite_master WHERE type='table' LIMIT 1");
+        const testResult = stmt.get();
+
+        if (!testResult) {
+            throw new Error("Decryption failed. Incorrect password.");
+        }
+
+        console.log('Database opened successfully.');
 }
 }
 
