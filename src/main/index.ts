@@ -13,149 +13,12 @@ const ETSY_SCOPES = 'transactions_r listings_r'
 const STATE = crypto.randomBytes(16).toString('hex') // CSRF protection
 
 const BASE_URL = 'https://api.ebay.com/sell/account/v1'
-const HEADERS = (auth: string) => ({
-  Authorization: `Bearer ${auth}`,
-  'Content-Type': 'application/json',
-  Accept: 'application/json'
-})
 
-async function fetchPolicies(endpoint: string, auth: string) {
-    return new Promise((resolve, reject) => {
-      const options = {
-        hostname: 'api.ebay.com',
-        path: `/sell/account/v1/${endpoint}`,
-        method: 'GET',
-        headers: HEADERS(auth)
-      }
-  
-      const req = request(options, (res) => {
-        let responseBody = ''
-  
-        res.on('data', (chunk) => {
-          responseBody += chunk
-        })
-  
-        res.on('end', () => {
-          try {
-            const jsonData = JSON.parse(responseBody)
-            resolve(jsonData)
-          } catch (error) {
-            reject(error)
-          }
-        })
-      })
-  
-      req.on('error', (e) => reject(e))
-      req.end()
-    })
-  }
-  
-  async function getPolicyIDs(auth: string) {
-    try {
-      const [fulfillment, payment, returnPolicy] = await Promise.all([
-        fetchPolicies('fulfillment_policy', auth),
-        fetchPolicies('payment_policy', auth),
-        fetchPolicies('return_policy', auth)
-      ])
-  
-      return {
-        fulfillmentPolicyId: fulfillment.policies?.[0]?.fulfillmentPolicyId || null,
-        paymentPolicyId: payment.policies?.[0]?.paymentPolicyId || null,
-        returnPolicyId: returnPolicy.policies?.[0]?.returnPolicyId || null
-      }
-    } catch (error) {
-      console.error('Error fetching policy IDs:', error)
-      return null
-    }
-}
-
-let etsyAuthWindow: BrowserWindow | null = null
-
-function generateCodeVerifier(): string {
-    return crypto.randomBytes(32).toString('base64url')
-}
-
-function generateCodeChallenge(verifier: string): string {
-    return crypto.createHash('sha256').update(verifier).digest('base64url')
-}
-
-//Request an Authorization Code
-ipcMain.handle('start-etsy-oauth', () => {
-    const codeVerifier = generateCodeVerifier()
-    const codeChallenge = generateCodeChallenge(codeVerifier)
-
-    // Store codeVerifier locally for now until Db is set up
-    require('fs').writeFileSync('etsy_code_verifier.txt', codeVerifier)
-
-    //https://developers.etsy.com/documentation/essentials/authentication#redirect-uris
-    const authUrl = `https://www.etsy.com/oauth/connect?
-        response_type=code&
-        client_id=${ETSY_CLIENT_ID}&
-        redirect_uri=${encodeURIComponent(ETSY_REDIRECT_URI)}&
-        scope=${encodeURIComponent(ETSY_SCOPES)}&
-        state=${STATE}&
-        code_challenge=${codeChallenge}&
-        code_challenge_method=S256`
-
-    etsyAuthWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
-        webPreferences: { nodeIntegration: false, contextIsolation: true }
-    })
-
-    etsyAuthWindow.loadURL(authUrl) // Load authUrl into the new browser window
-
-    // Listen for redirect navigation event (when Etsy redirects user back to redirect_uri after auth)
-    etsyAuthWindow.webContents.on('did-redirect-navigation', async (event, url) => {
-        const urlParams = new URL(url).searchParams
-        const authCode = urlParams.get('code')
-
-        if (authCode) {
-            const accessToken = await exchangeEtsyCodeForToken(authCode)
-            console.log('Etsy Access Token:', accessToken)
-
-            // Store access token
-            require('fs').writeFileSync('etsy_token.json', JSON.stringify(accessToken))
-
-            etsyAuthWindow?.close()
-            etsyAuthWindow = null
-        }
-    })
-})
-
-// Request Access Token
-// Exchanges the auth code for an access token using Etsy's API
-async function exchangeEtsyCodeForToken(code: string) {
-    const codeVerifier = require('fs').readFileSync('etsy_code_verifier.txt', 'utf-8')
-
-    return new Promise((resolve, reject) => {
-        const postData = `grant_type=authorization_code&
-            client_id=${ETSY_CLIENT_ID}&
-            redirect_uri=${encodeURIComponent(ETSY_REDIRECT_URI)}&
-            code=${code}&
-            code_verifier=${codeVerifier}`
-
-        const options = {
-            hostname: 'api.etsy.com',
-            path: '/v3/public/oauth/token',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Content-Length': Buffer.byteLength(postData)
-            }
-        }
-
-        const req = request(options, (res) => {
-            let data = ''
-            res.on('data', (chunk) => (data += chunk))
-            res.on('end', () => resolve(JSON.parse(data)))
-        })
-
-        req.on('error', reject)
-        req.write(postData)
-        req.end()
-    })
-}
+const POLICY_IDS = {
+    fulfillmentPolicyId: '6208766000',
+    paymentPolicyId: '6208767000',
+    returnPolicyId: '6208771000',
+};
 
 
 function createWindow(): void {
@@ -221,11 +84,7 @@ app.whenReady().then(() => {
 })
 import { getData, insertData, initializeDatabase, getTableNames, getEbayListing } from './dbmanager'
 
-// Listen for the 'create-listing' message from the rendering thing
-ipcMain.handle('create-listing', async () => {
-    await createListing()
-    return 'Listing creation triggered'
-})
+
 // Handle "get-data" event
 ipcMain.handle('get-data', async () => {
     return getData() // Return data to the renderer
@@ -308,13 +167,10 @@ ipcMain.on('ebay', () => {
                 const auth = JSON.parse(accessToken).access_token
                 console.log(auth)
 
-                const policyIDs = await getPolicyIDs(auth)
-                console.log('Policy IDs:', policyIDs)
-
                 // extracted and populated from db entry x
                 const data = `{
     "product": {
-        "title": "Test listing - do not bid or buy - awesome Apple watch test 2",
+        "title": "BEEWB BEEWB BEEWB",
         "aspects": {
             "Feature":[
               "Water resistance", "GPS"
@@ -355,7 +211,7 @@ ipcMain.on('ebay', () => {
                 // Define the options for the HTTPS request
                 const options = {
                     hostname: 'api.sandbox.ebay.com',
-                    path: 'https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item/50',
+                    path: 'https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item/505',
                     method: 'PUT',
                     headers: {
                         Authorization: 'Bearer ' + auth,
@@ -366,37 +222,43 @@ ipcMain.on('ebay', () => {
                     }
                 }
 
-                // REPLACE WITH RESPONSE HANDLING CODE
-                // Create the request
                 const req = request(options, (res) => {
                     let responseBody = ''
-
-                    // Listen for data from the response
-                    res.on('data', (chunk) => {
-                        responseBody += chunk
-                    })
-
-                    // Listen for the end of the response
-                    res.on('end', () => {
-                        console.log('Response:', responseBody)
+                    res.on('data', (chunk) => { responseBody += chunk })
+                    res.on('end', async () => {
+                        console.log('Inventory Created:', responseBody)
+                        const sku = '505'
+                        const offerOptions = {
+                            hostname: 'api.sandbox.ebay.com',
+                            path: '/sell/inventory/v1/offer',
+                            method: 'POST',
+                            headers: {
+                                Authorization: 'Bearer ' + auth,
+                                'Content-Type': 'application/json',
+                                'Content-Language': 'en-US'
+                            }
+                        }
+                        const offerData = JSON.stringify({
+                            sku,
+                            marketplaceId: 'EBAY_US',
+                            format: 'FIXED_PRICE',
+                            listingPolicies: POLICY_IDS,
+                            pricingSummary: { price: { currency: 'USD', value: '299.99' } },
+                            quantityLimitPerBuyer: 1
+                        })
+                        const offerReq = request(offerOptions, (offerRes) => {
+                            let offerBody = ''
+                            offerRes.on('data', (chunk) => { offerBody += chunk })
+                            offerRes.on('end', () => {
+                                console.log('Offer Created:', offerBody)
+                            })
+                        })
+                        offerReq.write(offerData)
+                        offerReq.end()
                     })
                 })
-
-                // Handle any errors with the request
-                req.on('error', (e) => {
-                    console.error(`Problem with request: ${e.message}`)
-                })
-
-                // Write data to the request body
                 req.write(data)
-
-                // End the request
                 req.end()
-
-                win.loadURL('https://sandbox.ebay.com/itm/110579720432')
-
-                // store into the db somehow
-                return
             }
         })
     })
