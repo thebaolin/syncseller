@@ -23,7 +23,7 @@ const UserCred = () => {
                         <input className="w-[100%]" id="redirect_uri" name="redirect_uri" type="text"></input>
                     </section> 
                     {/* Submit button */}
-                    <a href="/"><button form="user-cred-form">
+                    <a href="/app/home"><button form="user-cred-form">
                         Submit
                     </button></a>
                 </form>

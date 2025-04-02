@@ -6,7 +6,7 @@ const MenuBar = () => {
         <div className="menu-bar flex justify-center">
             {/* Log in/out button */}
             <section className="w-[30%]">
-                <a href="/usercred"><button className="bg-lightpink">
+                <a href="/app/usercred"><button className="bg-lightpink">
                     Log in
                 </button></a>
             </section>

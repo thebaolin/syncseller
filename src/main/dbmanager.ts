@@ -1,36 +1,53 @@
 import Database from 'better-sqlite3-multiple-ciphers';
 import fs from 'fs';
 
-const PASSWORD = 'poop'; // Prompt user to set this for encryption
+//const PASSWORD = 'poop'; // Prompt user to set this for encryption
 let db: Database | undefined;
 
-export function initializeDatabase() {
+// export function initializeDatabase() {
+//   if (!fs.existsSync('app.db')) {
+//     console.log('Database does not exist. Creating new database...');
+
+//     // Create and encrypt the database
+//     db = new Database('app.db', {
+//       verbose: console.log,
+//     });
+
+//     db.pragma('foreign_keys = ON');
+//     db.pragma(`key='${PASSWORD}'`);
+
+//     console.log('Database created and encrypted.');
+
+//     // Create tables
+//     createTables();
+//   } else {
+//     console.log('Database already exists.');
+
+//     // Open existing database with encryption key
+//     db = new Database('app.db', {
+//       verbose: console.log,
+//     });
+//     db.pragma(`key='${PASSWORD}'`);
+//   }
+// }
+
+export function initializeDatabase(password: string) {
+  //const dbPath = 'app.db';
+
   if (!fs.existsSync('app.db')) {
     console.log('Database does not exist. Creating new database...');
-
-    // Create and encrypt the database
-    db = new Database('app.db', {
-      verbose: console.log,
-    });
-
-    //db.pragma('journal_mode = WAL');
+    db = new Database('app.db', { verbose: console.log });
     db.pragma('foreign_keys = ON');
-    db.pragma(`key='${PASSWORD}'`);
-
-    console.log('Database created and encrypted.');
-
-    // Create tables
+    db.pragma(`key='${password}'`);
     createTables();
-  } else {
-    console.log('Database already exists.');
-
-    // Open existing database with encryption key
-    db = new Database('app.db', {
-      verbose: console.log,
-    });
-    db.pragma(`key='${PASSWORD}'`);
-  }
+    console.log('Database created and encrypted.');
+} else {
+    console.log('Database exists. Opening...');
+    db = new Database('app.db', { verbose: console.log });
+    db.pragma(`key='${password}'`);
 }
+}
+
 
 function createTables() {
   if (!db) throw new Error('Database is not initialized.');
@@ -71,7 +88,7 @@ function createTables() {
     ) VALUES (
     12345,                    
     67890,                     
-    'Sample Item',             
+    'ur mom Item',             
     '{Small}', 
     'This is a sample item.', 
     123456789012,              
