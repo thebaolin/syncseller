@@ -132,15 +132,20 @@ const PasswordScreen = () => {
     };
 
     return (
-        <div>
-            <h2>Enter Database Password</h2>
+        <div className="menu-bar flex justify-center">
+            <div className="flex flex-col m-auto w-[40%]">
+                <h1 className="text-4xl m-auto font-mono">SyncSeller</h1>
+            </div>
+        <div className="content-full">
+            <h2 className="heading">Enter Database Password</h2>
             {/* <input
                 type="text"
                 placeholder="Database Path"
                 value={dbPath}
                 onChange={(e) => setDbPath(e.target.value)}
             /> */}
-            <input
+            <div className="w-1/3 m-auto">
+            <input className="w-[100%]"
                 type="password"
                 placeholder="Password"
                 value={password}
@@ -148,6 +153,8 @@ const PasswordScreen = () => {
             />
             <button onClick={handleLogin}>Login</button>
             {error && <p style={{ color: 'red' }}>{error}</p>}
+        </div>
+        </div>
         </div>
     );
 };
