@@ -1,27 +1,22 @@
-const UserCred = () => {
+const UserCred = (props) => {
+    const InputSection = (args) => (
+        <section >
+            <label htmlFor={args.id}>{args.title}</label>
+            <br/>
+            <input className="w-[100%]" id={args.id} name={args.id} type="text"></input>
+        </section>
+    )
     return (
         <div className="content-full">
-            <h1 className="heading">Enter User Credentials</h1>
+            <h1 className="heading">{`Enter ${props.platform} Credentials`}</h1>
             <div className="w-1/3 m-auto">
                 <form>
                     {/* Client ID */}
-                    <section >
-                        <label htmlFor="client_id">Client ID</label>
-                        <br/>
-                        <input className="w-[100%]" id="client_id" name="client_id" type="text"></input>
-                    </section>
+                    <InputSection id="client_id" title="Client ID"/>
                     {/* Client secret */}
-                    <section>
-                        <label htmlFor="client_secret">Client Secret</label>
-                        <br/>
-                        <input className="w-[100%]" id="client_secret" name="client_secret" type="text"></input>
-                    </section>
+                    <InputSection id="client_secret" title="Client Secret"/>
                     {/* Redirect URI */}
-                    <section>
-                        <label htmlFor="redirect_uri">Redirect URI</label>
-                        <br/>
-                        <input className="w-[100%]" id="redirect_uri" name="redirect_uri" type="text"></input>
-                    </section> 
+                    <InputSection id="redirect_uri" title="Redirect URI"/>
                     {/* Submit button */}
                     <a href="/app/home"><button form="user-cred-form">
                         Submit

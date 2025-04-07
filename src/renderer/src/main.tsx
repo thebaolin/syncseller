@@ -37,7 +37,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                     <Route path="/app/analytics" element={<ProtectedRoute element={<Analytics />} />} />
                     <Route path="/app/listingform" element={<ProtectedRoute element={<ListingForm />} />} />
                     <Route path="/app/dbview" element={<ProtectedRoute element={<DBView />} />} />
-                    <Route path="/app/usercred" element={<ProtectedRoute element={<UserCred />} />} />
+                    <Route path="/app/usercred" element={<ProtectedRoute element={<UserCred platform="eBay"/>} />} />
                 </Route>
             </Routes>
         </BrowserRouter>

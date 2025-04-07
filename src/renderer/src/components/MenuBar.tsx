@@ -4,12 +4,7 @@ import profilePic from "../assets/images/dogpfp.jpg"
 const MenuBar = () => {
     return (
         <div className="menu-bar flex justify-center">
-            {/* Log in/out button */}
-            <section className="w-[30%]">
-                <a href="/app/usercred"><button className="bg-lightpink">
-                    Log in
-                </button></a>
-            </section>
+            <section className="w-[30%]"></section> 
             {/* Title */}
             <div className="flex flex-col m-auto w-[40%]">
                 <h1 className="text-4xl m-auto font-mono">SyncSeller</h1>
