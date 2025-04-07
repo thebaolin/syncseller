@@ -39,7 +39,7 @@ const NewUserScreen = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center h-screen space-y-4">
+        <div className="flex flex-col items-center justify-center h-screen space-y-4 bg-[#FFDDE2]">
             <h2 className="text-3xl font-mono mb-4">Your Secure Key</h2>
             <p className="text-center max-w-md mb-2">This is your secure access key. Please copy it and store it safely. You will need it to access your database in the future.</p>
             <input
