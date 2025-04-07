@@ -297,7 +297,9 @@ async function ebay_oauth_flow(): Promise<String | undefined> {
     })
 
     // extract from the database
-    const ebayAuthToken = new EbayAuthToken(getCredentials()[0])
+    console.log(getCredentials()[0])
+    console.log({ ...getCredentials ()[ 0 ], env: "SANDBOX"} )
+    const ebayAuthToken = new EbayAuthToken( { ...getCredentials ()[ 0 ], env: "SANDBOX"} )
     // oauth scopes for what api calls you can make
     const scopes = [
         'https://api.ebay.com/oauth/api_scope/sell.inventory.readonly',
@@ -337,9 +339,13 @@ async function get_ebay_token() {
 
     // if none
 }
-ipcMain.on('ebay', () => {
-    let ebay_oauth: String | undefined = get_ebay_oauth()
-    console.log(ebay_oauth === undefined)
+ipcMain.on('ebay', async () => {
+    const existing_oauth: String | undefined = get_ebay_oauth()
+    if (existing_oauth === undefined) {
+        const new_oauth: String | undefined = await ebay_oauth_flow()
+        if (new_oauth === undefined) return undefined
+    }
+
 
     const win = new BrowserWindow({
         width: 400,

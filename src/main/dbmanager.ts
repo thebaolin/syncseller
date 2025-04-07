@@ -148,9 +148,9 @@ function createTables() {
       VALUES ('Ebay'), ('Etsy');
 
     CREATE TABLE IF NOT EXISTS Credentials (
-      client_id ANY PRIMARY KEY,
-      client_secret ANY NOT NULL,
-      redirect_uri ANY NOT NULL
+      clientId ANY PRIMARY KEY,
+      clientSecret ANY NOT NULL,
+      redirectUri ANY NOT NULL
     );
     
     CREATE TABLE IF NOT EXISTS OAuth (
