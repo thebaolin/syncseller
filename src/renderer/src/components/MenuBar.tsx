@@ -1,10 +1,10 @@
-import notifIcon from "../assets/images/notifsicon.png"
-import profilePic from "../assets/images/dogpfp.jpg"
+import notifIcon from '../assets/images/notifsicon.png'
+import profilePic from '../assets/images/dogpfp.jpg'
 
 const MenuBar = () => {
     return (
         <div className="menu-bar flex justify-center">
-            <section className="w-[30%]"></section> 
+            <section className="w-[30%]"></section>
             {/* Title */}
             <div className="flex flex-col m-auto w-[40%]">
                 <h1 className="text-4xl m-auto font-mono">SyncSeller</h1>
@@ -12,11 +12,11 @@ const MenuBar = () => {
             <section className="w-[30%]">
                 {/* Profile picture */}
                 <div className="menu-functions right-[0px] bg-[notifIcon] overflow-auto">
-                    <img className="object-cover h-[50px]" src={profilePic}/>
+                    <img className="object-cover h-[50px]" src={profilePic} />
                 </div>
                 {/* Notifications */}
                 <div className="menu-functions right-[60px] ">
-                    <img src={notifIcon}/>
+                    <img src={notifIcon} />
                 </div>
             </section>
         </div>

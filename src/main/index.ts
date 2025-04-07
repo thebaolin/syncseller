@@ -14,58 +14,58 @@ const STATE = crypto.randomBytes(16).toString('hex') // CSRF protection
 
 const BASE_URL = 'https://api.ebay.com/sell/account/v1'
 const HEADERS = (auth: string) => ({
-  Authorization: `Bearer ${auth}`,
-  'Content-Type': 'application/json',
-  Accept: 'application/json'
+    Authorization: `Bearer ${auth}`,
+    'Content-Type': 'application/json',
+    Accept: 'application/json'
 })
 
 async function fetchPolicies(endpoint: string, auth: string) {
     return new Promise((resolve, reject) => {
-      const options = {
-        hostname: 'api.ebay.com',
-        path: `/sell/account/v1/${endpoint}`,
-        method: 'GET',
-        headers: HEADERS(auth)
-      }
-  
-      const req = request(options, (res) => {
-        let responseBody = ''
-  
-        res.on('data', (chunk) => {
-          responseBody += chunk
+        const options = {
+            hostname: 'api.ebay.com',
+            path: `/sell/account/v1/${endpoint}`,
+            method: 'GET',
+            headers: HEADERS(auth)
+        }
+
+        const req = request(options, (res) => {
+            let responseBody = ''
+
+            res.on('data', (chunk) => {
+                responseBody += chunk
+            })
+
+            res.on('end', () => {
+                try {
+                    const jsonData = JSON.parse(responseBody)
+                    resolve(jsonData)
+                } catch (error) {
+                    reject(error)
+                }
+            })
         })
-  
-        res.on('end', () => {
-          try {
-            const jsonData = JSON.parse(responseBody)
-            resolve(jsonData)
-          } catch (error) {
-            reject(error)
-          }
-        })
-      })
-  
-      req.on('error', (e) => reject(e))
-      req.end()
+
+        req.on('error', (e) => reject(e))
+        req.end()
     })
-  }
-  
-  async function getPolicyIDs(auth: string) {
+}
+
+async function getPolicyIDs(auth: string) {
     try {
-      const [fulfillment, payment, returnPolicy] = await Promise.all([
-        fetchPolicies('fulfillment_policy', auth),
-        fetchPolicies('payment_policy', auth),
-        fetchPolicies('return_policy', auth)
-      ])
-  
-      return {
-        fulfillmentPolicyId: fulfillment.policies?.[0]?.fulfillmentPolicyId || null,
-        paymentPolicyId: payment.policies?.[0]?.paymentPolicyId || null,
-        returnPolicyId: returnPolicy.policies?.[0]?.returnPolicyId || null
-      }
+        const [fulfillment, payment, returnPolicy] = await Promise.all([
+            fetchPolicies('fulfillment_policy', auth),
+            fetchPolicies('payment_policy', auth),
+            fetchPolicies('return_policy', auth)
+        ])
+
+        return {
+            fulfillmentPolicyId: fulfillment.policies?.[0]?.fulfillmentPolicyId || null,
+            paymentPolicyId: payment.policies?.[0]?.paymentPolicyId || null,
+            returnPolicyId: returnPolicy.policies?.[0]?.returnPolicyId || null
+        }
     } catch (error) {
-      console.error('Error fetching policy IDs:', error)
-      return null
+        console.error('Error fetching policy IDs:', error)
+        return null
     }
 }
 
@@ -157,7 +157,6 @@ async function exchangeEtsyCodeForToken(code: string) {
     })
 }
 
-
 function createWindow(): void {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
@@ -194,13 +193,13 @@ function createWindow(): void {
 
 ipcMain.handle('initialize-db', async (_event, password: string) => {
     try {
-        initializeDatabase(password);
-        return { success: true };
+        initializeDatabase(password)
+        return { success: true }
     } catch (error) {
-        console.error('Database error:', error);
-        return { success: false, error: error.message };
+        console.error('Database error:', error)
+        return { success: false, error: error.message }
     }
-});
+})
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -228,7 +227,15 @@ app.whenReady().then(() => {
 
     //initializeDatabase();
 })
-import { getData, insertData, initializeDatabase, getTableNames, getEbayListing } from './dbmanager'
+import {
+    getData,
+    insertData,
+    initializeDatabase,
+    getTableNames,
+    getEbayListing,
+    getCredentials,
+    get_ebay_oauth
+} from './dbmanager'
 
 // Listen for the 'create-listing' message from the rendering thing
 ipcMain.handle('create-listing', async () => {
@@ -251,13 +258,13 @@ ipcMain.handle('get-table-names', () => {
 
 ipcMain.handle('get-ebay-listing', async () => {
     try {
-      const listing = getEbayListing();
-      return listing;
+        const listing = getEbayListing()
+        return listing
     } catch (error) {
-      console.error('Error fetching eBay listing:', error);
-      throw error;
+        console.error('Error fetching eBay listing:', error)
+        throw error
     }
-  });
+})
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -279,7 +286,61 @@ ipcMain.on('submit:todoForm', (event, args) => {
 
 // Ebay Handling
 // general one, pass as params the type of call and item of db
+
+// returns the oauth token, and null if not
+//invariant: should be called only after ebay credentials are listed
+async function ebay_oauth_flow(): Promise<String | undefined> {
+    const win = new BrowserWindow({
+        width: 400,
+        height: 400,
+        webPreferences: { nodeIntegration: false, contextIsolation: true }
+    })
+
+    // extract from the database
+    const ebayAuthToken = new EbayAuthToken(getCredentials()[0])
+    // oauth scopes for what api calls you can make
+    const scopes = [
+        'https://api.ebay.com/oauth/api_scope/sell.inventory.readonly',
+        'https://api.ebay.com/oauth/api_scope/sell.inventory',
+        'https://api.ebay.com/oauth/api_scope/sell.account',
+        'https://api.ebay.com/oauth/api_scope/sell.account.readonly'
+    ]
+    const oauth_url = ebayAuthToken.generateUserAuthorizationUrl('SANDBOX', scopes, {
+        prompt: 'login'
+    })
+    // gets an authorization token for the user
+    win.loadURL(oauth_url).then(() => {
+        win.webContents.on('did-redirect-navigation', async (details) => {
+            const access_code = new URL(details.url).searchParams.get('code')
+            if (access_code) {
+                const accessToken = await ebayAuthToken.exchangeCodeForAccessToken(
+                    'SANDBOX',
+                    access_code
+                )
+                console.log(accessToken)
+                const auth = JSON.parse(accessToken).access_token
+                console.log(auth)
+                return accessToken
+            }
+        })
+    })
+    return undefined
+}
+
+async function get_ebay_token() {
+    // pull existing oauth from db
+    const existing_oauth: String | undefined = get_ebay_oauth()
+    if (existing_oauth === undefined) {
+        const new_oauth: String | undefined = await ebay_oauth_flow()
+        if (new_oauth === undefined) return undefined
+    }
+
+    // if none
+}
 ipcMain.on('ebay', () => {
+    let ebay_oauth: String | undefined = get_ebay_oauth()
+    console.log(ebay_oauth === undefined)
+
     const win = new BrowserWindow({
         width: 400,
         height: 400,

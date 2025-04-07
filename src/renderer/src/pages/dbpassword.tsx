@@ -8,7 +8,7 @@
 
 //     const handleLogin = () => {
 //         // TODO: Replace this with your actual decryption logic
-//         if (password === "ok") { 
+//         if (password === "ok") {
 //             localStorage.setItem("authenticated", "true");
 //             navigate('/app/home');  // Redirect to home
 //         } else {
@@ -19,9 +19,9 @@
 //     return (
 //         <div>
 //             <h2>Enter Database Password</h2>
-//             <input 
-//                 type="password" 
-//                 value={password} 
+//             <input
+//                 type="password"
+//                 value={password}
 //                 onChange={(e) => setPassword(e.target.value)}
 //                 placeholder="Enter password"
 //             />
@@ -102,61 +102,62 @@
 
 //---------------------------------------
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const PasswordScreen = () => {
-    const [password, setPassword] = useState('');
+    const [password, setPassword] = useState('')
     //const [dbPath, setDbPath] = useState('');
-    const [error, setError] = useState('');
-    const navigate = useNavigate();
+    const [error, setError] = useState('')
+    const navigate = useNavigate()
 
     const handleLogin = async () => {
         if (!password) {
-            setError('Please enter password.');
-            return;
+            setError('Please enter password.')
+            return
         }
 
         try {
-            const response = await window.database.initializeDatabase(password);
+            const response = await window.database.initializeDatabase(password)
             if (response.success) {
-                localStorage.setItem('authenticated', 'true'); // Store authentication
-                navigate('/app/home'); // Redirect to the app
+                localStorage.setItem('authenticated', 'true') // Store authentication
+                navigate('/app/home') // Redirect to the app
             } else {
-                setError('Failed to open database. Password is incorrect');
+                setError('Failed to open database. Password is incorrect')
                 console.log(response.error)
             }
         } catch (err) {
-            setError('Error connecting to database.');
+            setError('Error connecting to database.')
         }
-    };
+    }
 
     return (
         <div className="menu-bar flex justify-center">
             <div className="flex flex-col m-auto w-[40%]">
                 <h1 className="text-4xl m-auto font-mono">SyncSeller</h1>
             </div>
-        <div className="content-full">
-            <h2 className="heading">Enter Database Password</h2>
-            {/* <input
+            <div className="content-full">
+                <h2 className="heading">Enter Database Password</h2>
+                {/* <input
                 type="text"
                 placeholder="Database Path"
                 value={dbPath}
                 onChange={(e) => setDbPath(e.target.value)}
             /> */}
-            <div className="w-1/3 m-auto">
-            <input className="w-[100%]"
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
-            <button onClick={handleLogin}>Login</button>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+                <div className="w-1/3 m-auto">
+                    <input
+                        className="w-[100%]"
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <button onClick={handleLogin}>Login</button>
+                    {error && <p style={{ color: 'red' }}>{error}</p>}
+                </div>
+            </div>
         </div>
-        </div>
-        </div>
-    );
-};
+    )
+}
 
-export default PasswordScreen;
+export default PasswordScreen

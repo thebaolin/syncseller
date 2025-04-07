@@ -21,7 +21,7 @@ if (process.contextIsolated) {
 
             // Existing methods
             send: (channel, data) => ipcRenderer.send(channel, data),
-            on: ( channel, func ) => ipcRenderer.on( channel, ( event, ...args ) => func( ...args ) ),
+            on: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args)),
             ebay: () => ipcRenderer.send('ebay')
         }),
             //contextBridge.exposeInMainWorld('electron', electronAPI)
@@ -31,7 +31,8 @@ if (process.contextIsolated) {
                 insertData: (name: string) => ipcRenderer.invoke('insert-data', name),
                 getTableNames: () => ipcRenderer.invoke('get-table-names'),
                 getEbayListing: () => ipcRenderer.invoke('get-ebay-listing'),
-                initializeDatabase: (dbPath, password) => ipcRenderer.invoke('initialize-db', dbPath, password),
+                initializeDatabase: (dbPath, password) =>
+                    ipcRenderer.invoke('initialize-db', dbPath, password)
             }),
             // Optionally expose other APIs
             contextBridge.exposeInMainWorld('api', api)
@@ -44,4 +45,3 @@ if (process.contextIsolated) {
     // @ts-ignore (define in dts)
     window.api = api
 }
-
