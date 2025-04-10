@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const generateSecureKey = () => {
-    const array = new Uint8Array(32);
-    window.crypto.getRandomValues(array);
-    return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
-};
-
 const NewUserScreen = () => {
     const [generatedKey, setGeneratedKey] = useState('');
     const [copied, setCopied] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const key = generateSecureKey();
-        setGeneratedKey(key);
+        const fetchKey = async () => {
+            const key = await window.database.generateKey();
+            setGeneratedKey(key);
+        };
+    
+        fetchKey();
     }, []);
+    
 
     const handleCopy = async () => {
         await navigator.clipboard.writeText(generatedKey);
