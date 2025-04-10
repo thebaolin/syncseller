@@ -13,18 +13,18 @@ const PasswordScreen = () => {
         }
 
         try {
-            const response = await window.database.initializeDatabase(password);
+            const response = await window.database.initializeDatabase(password)
             if (response.success) {
-                localStorage.setItem('authenticated', 'true'); // Store authentication
-                navigate('/app/home'); // Redirect to the app
+                localStorage.setItem('authenticated', 'true') // Store authentication
+                navigate('/app/home') // Redirect to the app
             } else {
                 setError('Failed to open database. Key is incorrect.');
                 console.log(response.error);
             }
         } catch (err) {
-            setError('Error connecting to database.');
+            setError('Error connecting to database.')
         }
-    };
+    }
 
     return (
         <div className="flex flex-col items-center justify-center h-screen space-y-4 bg-[#FFDDE2]">
@@ -58,4 +58,4 @@ const PasswordScreen = () => {
     );
 };
 
-export default PasswordScreen;
+export default PasswordScreen

@@ -30,9 +30,9 @@ const HomePage = () => {
             </button>
 
             {/* Ebay login button */}
-            <a href="/app/usercred"><button className="bg-white">
-                Log in to eBay
-            </button></a>
+            <a href="/app/usercred">
+                <button className="bg-white">Log in to eBay</button>
+            </a>
 
             {/* Platforms */}
             <h1 className="home-heading">Platforms</h1>

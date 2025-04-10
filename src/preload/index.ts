@@ -21,10 +21,8 @@ if (process.contextIsolated) {
 
             // Existing methods
             send: (channel, data) => ipcRenderer.send(channel, data),
-            on: ( channel, func ) => ipcRenderer.on( channel, ( event, ...args ) => func( ...args ) ),
-            ebay: () => ipcRenderer.send('ebay'),
-
-
+            on: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args)),
+            ebay: () => ipcRenderer.send('ebay')
         }),
             //contextBridge.exposeInMainWorld('electron', electronAPI)
             //contextBridge.exposeInMainWorld('api', api)
@@ -48,4 +46,3 @@ if (process.contextIsolated) {
     // @ts-ignore (define in dts)
     window.api = api
 }
-

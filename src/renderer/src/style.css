@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 @theme {
-    --color-lightpink: #FFDDE2
+    --color-lightpink: #ffdde2;
 }
 
 .heading {

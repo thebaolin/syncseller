@@ -2,8 +2,9 @@ import Database from 'better-sqlite3-multiple-ciphers';
 import fs from 'fs';
 import crypto from 'crypto';
 
+
 //const PASSWORD = 'poop'; // Prompt user to set this for encryption
-let db: Database | undefined;
+let db: Database | undefined
 
 // export function initializeDatabase() {
 //   if (!fs.existsSync('app.db')) {
@@ -33,36 +34,35 @@ let db: Database | undefined;
 // }
 
 export function initializeDatabase(password: string) {
-  //const dbPath = 'app.db';
+    //const dbPath = 'app.db';
 
-  if (!fs.existsSync('app.db')) {
-    console.log('Database does not exist. Creating new database...');
-    db = new Database('app.db', { verbose: console.log });
-    db.pragma('foreign_keys = ON');
-    db.pragma(`key='${password}'`);
-    createTables();
-    console.log('Database created and encrypted.');
-} else {
-    console.log('Database exists. Opening...');
-    db = new Database('app.db', { verbose: console.log });
+    if (!fs.existsSync('app.db')) {
+        console.log('Database does not exist. Creating new database...')
+        db = new Database('app.db', { verbose: console.log })
+        db.pragma('foreign_keys = ON')
+        db.pragma(`key='${password}'`)
+        createTables()
+        console.log('Database created and encrypted.')
+    } else {
+        console.log('Database exists. Opening...')
+        db = new Database('app.db', { verbose: console.log })
 
-    db.pragma(`key='${password}'`);
-    const stmt = db.prepare("SELECT name FROM sqlite_master WHERE type='table' LIMIT 1");
-        const testResult = stmt.get();
+        db.pragma(`key='${password}'`)
+        const stmt = db.prepare("SELECT name FROM sqlite_master WHERE type='table' LIMIT 1")
+        const testResult = stmt.get()
 
         if (!testResult) {
-            throw new Error("Decryption failed. Incorrect password.");
+            throw new Error('Decryption failed. Incorrect password.')
         }
 
-        console.log('Database opened successfully.');
+        console.log('Database opened successfully.')
+    }
 }
-}
-
 
 function createTables() {
-  if (!db) throw new Error('Database is not initialized.');
+    if (!db) throw new Error('Database is not initialized.')
 
-  db.exec(`
+    db.exec(`
     CREATE TABLE IF NOT EXISTS L_Listing_Status (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       status TEXT NOT NULL
@@ -150,9 +150,9 @@ function createTables() {
       VALUES ('Ebay'), ('Etsy');
 
     CREATE TABLE IF NOT EXISTS Credentials (
-      client_id ANY PRIMARY KEY,
-      client_secret ANY NOT NULL,
-      redirect_uri ANY NOT NULL
+      clientId ANY PRIMARY KEY,
+      clientSecret ANY NOT NULL,
+      redirectUri ANY NOT NULL
     );
     
     CREATE TABLE IF NOT EXISTS OAuth (
@@ -165,16 +165,16 @@ function createTables() {
       refresh_token TEXT NOT NULL
     );
 
-  `);
+  `)
 
-  console.log('Tables created successfully.');
+    console.log('Tables created successfully.')
 }
 
 export function getData(): { id: number; status: string }[] {
-  if (!db) throw new Error('Database is not initialized.');
+    if (!db) throw new Error('Database is not initialized.')
 
-  const stmt = db.prepare('SELECT * FROM L_Listing_Status');
-  return stmt.all();
+    const stmt = db.prepare('SELECT * FROM L_Listing_Status')
+    return stmt.all()
 }
 
 // export function getOAuth(): { id: number; status: string }[] {
@@ -184,33 +184,33 @@ export function getData(): { id: number; status: string }[] {
 //   return stmt.all();
 
 export function insertData(status: string): void {
-  if (!db) throw new Error('Database is not initialized.');
+    if (!db) throw new Error('Database is not initialized.')
 
-  const stmt = db.prepare('INSERT INTO L_Listing_Status (status) VALUES (?)');
-  stmt.run(status);
+    const stmt = db.prepare('INSERT INTO L_Listing_Status (status) VALUES (?)')
+    stmt.run(status)
 }
 
 export function getTableNames(): string[] {
-  if (!db) throw new Error('Database is not initialized.');
+    if (!db) throw new Error('Database is not initialized.')
 
-  const stmt = db.prepare(`SELECT name FROM sqlite_master WHERE type='table'`);
-  const tables = stmt.all() as { name: string }[];
-  console.log(tables.map(table => table.name))
-  // return tables.map(table => table.name);
-  //console.log(tables)
-  return tables.map(table => table.name);
+    const stmt = db.prepare(`SELECT name FROM sqlite_master WHERE type='table'`)
+    const tables = stmt.all() as { name: string }[]
+    console.log(tables.map((table) => table.name))
+    // return tables.map(table => table.name);
+    //console.log(tables)
+    return tables.map((table) => table.name)
 }
 
 export function getEbayListing() {
-  const stmt = db.prepare(`
+    const stmt = db.prepare(`
     SELECT ebay_listing_id, item_id, listing_id, title, description, upc, imageURL, condition,
            height, length, width, unit, weight, weightUnit, quantity
     FROM Ebay
     WHERE item_id = 12345
-  `);
-  const row = stmt.all();
-  console.log(row)
-  return row;
+  `)
+    const row = stmt.all()
+    console.log(row)
+    return row
 }
 
 
@@ -219,4 +219,12 @@ export function generateSecurityKey() {
   const key = crypto.randomBytes(32).toString('hex');
   //console.log(key)
   return key
+}
+// for ebay app
+export function getCredentials() {
+    return db.prepare(`SELECT * FROM Credentials`).all()
+}
+
+export function get_ebay_oauth() {
+    return db.prepare(`SELECT * FROM OAuth WHERE platform_id = ?`).get(1)
 }

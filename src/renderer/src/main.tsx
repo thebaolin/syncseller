@@ -11,7 +11,7 @@ import ListingHistory from './pages/ListingHistory'
 import Analytics from './pages/Analytics'
 import DBView from './pages/testDBView'
 import UserCred from './pages/UserCred'
-import PasswordScreen from './pages/dbpassword'  // Import login page
+import PasswordScreen from './pages/dbpassword'  
 import WelcomeScreen from './pages/WelcomeScreen'
 import NewUserScreen from './pages/NewUserScreen'
 
@@ -19,13 +19,13 @@ import NewUserScreen from './pages/NewUserScreen'
 
 // Authentication check function
 const isAuthenticated = () => {
-    return localStorage.getItem('authenticated') === 'true';  // Change this logic as needed
-};
+    return localStorage.getItem('authenticated') === 'true' // Change this logic as needed
+}
 
 // Protected Route Component
 const ProtectedRoute = ({ element }: { element: React.ReactNode }) => {
-    return isAuthenticated() ? element : <Navigate to="/" />;
-};
+    return isAuthenticated() ? element : <Navigate to="/" />
+}
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
@@ -39,13 +39,25 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                 {/* Protected Routes (Require Authentication) */}
                 <Route path="/app" element={<Layout />}>
                     <Route path="/app/home" element={<ProtectedRoute element={<HomePage />} />} />
-                    <Route path="/app/listinghistory" element={<ProtectedRoute element={<ListingHistory />} />} />
-                    <Route path="/app/analytics" element={<ProtectedRoute element={<Analytics />} />} />
-                    <Route path="/app/listingform" element={<ProtectedRoute element={<ListingForm />} />} />
+                    <Route
+                        path="/app/listinghistory"
+                        element={<ProtectedRoute element={<ListingHistory />} />}
+                    />
+                    <Route
+                        path="/app/analytics"
+                        element={<ProtectedRoute element={<Analytics />} />}
+                    />
+                    <Route
+                        path="/app/listingform"
+                        element={<ProtectedRoute element={<ListingForm />} />}
+                    />
                     <Route path="/app/dbview" element={<ProtectedRoute element={<DBView />} />} />
-                    <Route path="/app/usercred" element={<ProtectedRoute element={<UserCred platform="eBay"/>} />} />
+                    <Route
+                        path="/app/usercred"
+                        element={<ProtectedRoute element={<UserCred platform="eBay" />} />}
+                    />
                 </Route>
             </Routes>
         </BrowserRouter>
     </React.StrictMode>
-);
+)
