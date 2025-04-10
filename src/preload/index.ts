@@ -31,8 +31,9 @@ if (process.contextIsolated) {
                 insertData: (name: string) => ipcRenderer.invoke('insert-data', name),
                 getTableNames: () => ipcRenderer.invoke('get-table-names'),
                 getEbayListing: () => ipcRenderer.invoke('get-ebay-listing'),
-                initializeDatabase: (dbPath, password) =>
-                    ipcRenderer.invoke('initialize-db', dbPath, password)
+                initializeDatabase: (dbPath, password) => ipcRenderer.invoke('initialize-db', dbPath, password),
+                generateKey: () => ipcRenderer.invoke('generate-key'),
+
             }),
             // Optionally expose other APIs
             contextBridge.exposeInMainWorld('api', api)

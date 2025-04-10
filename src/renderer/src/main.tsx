@@ -11,7 +11,11 @@ import ListingHistory from './pages/ListingHistory'
 import Analytics from './pages/Analytics'
 import DBView from './pages/testDBView'
 import UserCred from './pages/UserCred'
-import Password from './pages/dbpassword' // Import login page
+import PasswordScreen from './pages/dbpassword'  
+import WelcomeScreen from './pages/WelcomeScreen'
+import NewUserScreen from './pages/NewUserScreen'
+
+
 
 // Authentication check function
 const isAuthenticated = () => {
@@ -28,7 +32,9 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
         <BrowserRouter>
             <Routes>
                 {/* Login Screen (First Page) */}
-                <Route path="/" element={<Password />} />
+                <Route path="/" element={<WelcomeScreen />} />
+                    <Route path="/new-user" element={<NewUserScreen />} />
+                    <Route path="/existing-user" element={<PasswordScreen />} />
 
                 {/* Protected Routes (Require Authentication) */}
                 <Route path="/app" element={<Layout />}>

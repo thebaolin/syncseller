@@ -1,5 +1,7 @@
-import Database from 'better-sqlite3-multiple-ciphers'
-import fs from 'fs'
+import Database from 'better-sqlite3-multiple-ciphers';
+import fs from 'fs';
+import crypto from 'crypto';
+
 
 //const PASSWORD = 'poop'; // Prompt user to set this for encryption
 let db: Database | undefined
@@ -211,6 +213,13 @@ export function getEbayListing() {
     return row
 }
 
+
+
+export function generateSecurityKey() {
+  const key = crypto.randomBytes(32).toString('hex');
+  //console.log(key)
+  return key
+}
 // for ebay app
 export function getCredentials() {
     return db.prepare(`SELECT * FROM Credentials`).all()

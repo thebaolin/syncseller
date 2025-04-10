@@ -234,7 +234,8 @@ import {
     getTableNames,
     getEbayListing,
     getCredentials,
-    get_ebay_oauth
+    get_ebay_oauth,
+    generateSecurityKey
 } from './dbmanager'
 
 // Listen for the 'create-listing' message from the rendering thing
@@ -266,6 +267,9 @@ ipcMain.handle('get-ebay-listing', async () => {
     }
 })
 
+ipcMain.handle('generate-key',async () => {
+    return generateSecurityKey()
+})
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
