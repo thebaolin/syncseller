@@ -1,7 +1,6 @@
-import Database from 'better-sqlite3-multiple-ciphers';
-import fs from 'fs';
-import crypto from 'crypto';
-
+import Database from 'better-sqlite3-multiple-ciphers'
+import fs from 'fs'
+import crypto from 'crypto'
 
 //const PASSWORD = 'poop'; // Prompt user to set this for encryption
 let db: Database | undefined
@@ -149,7 +148,7 @@ function createTables() {
     INSERT INTO L_Platforms (name)
       VALUES ('Ebay'), ('Etsy');
 
-    CREATE TABLE IF NOT EXISTS Credentials (
+    CREATE TABLE IF NOT EXISTS EbayCredentials (
       clientId ANY PRIMARY KEY,
       clientSecret ANY NOT NULL,
       redirectUri ANY NOT NULL
@@ -213,18 +212,26 @@ export function getEbayListing() {
     return row
 }
 
-
-
 export function generateSecurityKey() {
-  const key = crypto.randomBytes(32).toString('hex');
-  //console.log(key)
-  return key
+    const key = crypto.randomBytes(32).toString('hex')
+    //console.log(key)
+    return key
 }
 // for ebay app
-export function getCredentials() {
-    return db.prepare(`SELECT * FROM Credentials`).all()
+export function getEbayCredentials() {
+    return db.prepare(`SELECT * FROM EbayCredentials`).all()
+}
+
+export function setEbayCredentials ( client_id, client_secret, redirect_uri ) {
+    db.prepare('INSERT INTO EbayCredentials (client_id, client_secret, redirect_uri) VALUES (?, ?, ?)').run(client_id, client_secret, redirect_uri)
 }
 
 export function get_ebay_oauth() {
     return db.prepare(`SELECT * FROM OAuth WHERE platform_id = ?`).get(1)
+}
+
+
+export function setEbayOauth ( oauth_token: string, oauth_expiry: number, refresh_token: string, refresh_expiry: number ) {
+    
+  
 }

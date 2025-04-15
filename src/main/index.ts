@@ -212,7 +212,9 @@ app.whenReady().then(() => {
     // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
     app.on('browser-window-created', (_, window) => {
         optimizer.watchWindowShortcuts(window)
-    })
+    } )
+    
+    ipcMain.handle('send-ebay-creds', setEbayCredentials)
 
     // IPC test
     ipcMain.on('ping', () => console.log('pong'))
@@ -233,7 +235,8 @@ import {
     initializeDatabase,
     getTableNames,
     getEbayListing,
-    getCredentials,
+    getEbayCredentials,
+    setEbayCredentials,
     get_ebay_oauth,
     generateSecurityKey
 } from './dbmanager'
@@ -267,7 +270,7 @@ ipcMain.handle('get-ebay-listing', async () => {
     }
 })
 
-ipcMain.handle('generate-key',async () => {
+ipcMain.handle('generate-key', async () => {
     return generateSecurityKey()
 })
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -291,19 +294,17 @@ ipcMain.on('submit:todoForm', (event, args) => {
 // Ebay Handling
 // general one, pass as params the type of call and item of db
 
-// returns the oauth token, and null if not
+// writes the oauth tokens to db
 //invariant: should be called only after ebay credentials are listed
-async function ebay_oauth_flow(): Promise<String | undefined> {
+async function ebay_oauth_flow() {
     const win = new BrowserWindow({
         width: 400,
         height: 400,
         webPreferences: { nodeIntegration: false, contextIsolation: true }
     })
 
-    // extract from the database
-    console.log(getCredentials()[0])
-    console.log({ ...getCredentials ()[ 0 ], env: "SANDBOX"} )
-    const ebayAuthToken = new EbayAuthToken( { ...getCredentials ()[ 0 ], env: "SANDBOX"} )
+    console.log({ ...getEbayCredentials()[0], env: 'SANDBOX' })
+    const ebayAuthToken = new EbayAuthToken({ ...getEbayCredentials()[0], env: 'SANDBOX' })
     // oauth scopes for what api calls you can make
     const scopes = [
         'https://api.ebay.com/oauth/api_scope/sell.inventory.readonly',
@@ -311,26 +312,34 @@ async function ebay_oauth_flow(): Promise<String | undefined> {
         'https://api.ebay.com/oauth/api_scope/sell.account',
         'https://api.ebay.com/oauth/api_scope/sell.account.readonly'
     ]
-    const oauth_url = ebayAuthToken.generateUserAuthorizationUrl('SANDBOX', scopes, {
-        prompt: 'login'
-    })
-    // gets an authorization token for the user
-    win.loadURL(oauth_url).then(() => {
-        win.webContents.on('did-redirect-navigation', async (details) => {
-            const access_code = new URL(details.url).searchParams.get('code')
-            if (access_code) {
-                const accessToken = await ebayAuthToken.exchangeCodeForAccessToken(
-                    'SANDBOX',
-                    access_code
-                )
-                console.log(accessToken)
-                const auth = JSON.parse(accessToken).access_token
-                console.log(auth)
-                return accessToken
-            }
+
+    try {
+        const oauth_url = ebayAuthToken.generateUserAuthorizationUrl('SANDBOX', scopes, {
+            prompt: 'login'
         })
-    })
-    return undefined
+
+        // gets an authorization token for the user
+        win.loadURL(oauth_url).then(() => {
+            win.webContents.on('did-redirect-navigation', async (details) => {
+                const access_code = new URL(details.url).searchParams.get('code')
+                if (access_code) {
+                    const accessToken = await ebayAuthToken.exchangeCodeForAccessToken(
+                        'SANDBOX',
+                        access_code
+                    )
+                    console.log(accessToken)
+                    const auth = JSON.parse(accessToken).access_token
+                    console.log(auth)
+                    // write access token to db
+                    
+
+                }
+            })
+        })
+    } catch (e) {
+        // message the renderer to try again
+        console.log(e.message)
+    }
 }
 
 async function get_ebay_token() {
@@ -349,7 +358,6 @@ ipcMain.on('ebay', async () => {
         const new_oauth: String | undefined = await ebay_oauth_flow()
         if (new_oauth === undefined) return undefined
     }
-
 
     const win = new BrowserWindow({
         width: 400,
