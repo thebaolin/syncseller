@@ -32,6 +32,137 @@ let db: Database | undefined
 //   }
 // }
 
+
+function createTables() {
+  if (!db) throw new Error('Database is not initialized.');
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS L_Listing_Status (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      status TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS Ebay (
+      ebay_listing_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      item_id INTEGER NOT NULL,
+      listing_id INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      aspects TEXT,
+      description TEXT NOT NULL,
+      upc INTEGER NOT NULL,
+      imageURL TEXT,
+      condition TEXT NOT NULL,
+      packageWeightAndSize TEXT,
+      height INTEGER,
+      length INTEGER,
+      width INTEGER,
+      unit TEXT,
+      packageType TEXT,
+      weight INTEGER,
+      weightUnit TEXT,
+      quantity INTEGER,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS Etsy (
+      etsy_listing_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      item_id INTEGER NOT NULL,
+      listing_id INTEGER NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS Items (
+      item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id TEXT UNIQUE NOT NULL,
+      onEbay INTEGER NOT NULL,
+      onEtsy INTEGER NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS Listings (
+      listing_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      item_id INTEGER NOT NULL,
+      platform_id INTEGER NOT NULL,
+      external_listing TEXT NOT NULL,
+      status_id INTEGER NOT NULL,
+      price REAL NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS L_Platform_Status (
+      status_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      status TEXT UNIQUE NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS L_Platforms (
+      platform_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS EbayCredentials (
+      clientId TEXT PRIMARY KEY,
+      clientSecret TEXT NOT NULL,
+      redirectUri TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS OAuth (
+      platform_id INTEGER,
+      oauth_expiry INTEGER NOT NULL,
+      refresh_expiry INTEGER NOT NULL,
+      oauth_created INTEGER NOT NULL,
+      refresh_created INTEGER NOT NULL,
+      oauth_token TEXT NOT NULL,
+      refresh_token TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS InventoryLocations (
+      location_id TEXT PRIMARY KEY,
+      name TEXT,
+      location_type TEXT,
+      location_web_url TEXT,
+      phone_number TEXT,
+
+      address_line_1 TEXT NOT NULL,
+      address_line_2 TEXT,
+      city TEXT NOT NULL,
+      state_or_province TEXT NOT NULL,
+      postal_code TEXT NOT NULL,
+      country_code TEXT NOT NULL,
+
+      operating_hours TEXT,
+      special_hours TEXT,
+      timezone TEXT,
+
+      ebay_synced BOOLEAN DEFAULT FALSE,
+      last_synced_at DATETIME,
+
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+  `)
+
+    console.log('Tables created successfully.')
+
+  db.prepare(`
+    INSERT OR IGNORE INTO L_Listing_Status (status)
+    VALUES ('Active'), ('Sold'), ('Deleted'), ('Draft')
+  `).run();
+
+  db.prepare(`
+    INSERT OR IGNORE INTO L_Platform_Status (status)
+    VALUES ('Yes'), ('No')
+  `).run();
+
+  db.prepare(`
+    INSERT OR IGNORE INTO L_Platforms (name)
+    VALUES ('Ebay'), ('Etsy')
+  `).run();
+}
+
 export function initializeDatabase(password: string) {
     //const dbPath = 'app.db';
 
@@ -58,116 +189,149 @@ export function initializeDatabase(password: string) {
     }
 }
 
-function createTables() {
-    if (!db) throw new Error('Database is not initialized.')
+// function createTables() {
+//     if (!db) throw new Error('Database is not initialized.')
 
-    db.exec(`
-    CREATE TABLE IF NOT EXISTS L_Listing_Status (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      status TEXT NOT NULL
-    );
+//     db.exec(`
+//     CREATE TABLE IF NOT EXISTS L_Listing_Status (
+//       id INTEGER PRIMARY KEY AUTOINCREMENT,
+//       status TEXT NOT NULL
+//     );
 
-    INSERT INTO L_Listing_Status (status)
-      VALUES ('Active'), ('Sold'), ('Deleted'), ('Draft');
+//     INSERT INTO L_Listing_Status (status)
+//       VALUES ('Active'), ('Sold'), ('Deleted'), ('Draft');
 
     
-    CREATE TABLE IF NOT EXISTS Ebay (
-      ebay_listing_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-      item_id INTEGER NOT NULL,
-      listing_id INTEGER NOT NULL,
-      title ANY NOT NULL,
-      aspects ANY,
-      description ANY NOT NULL,
-      upc INTEGER NOT NULL,
-      imageURL ANY,
-      condition TEXT NOT NULL,
-      packageWeightAndSize ANY,
-      height INTEGER,
-      length INTEGER,
-      width INTEGER,
-      unit TEXT,
-      packageType TEXT,
-      weight INTEGER,
-      weightUnit TEXT,
-      quantity INTEGER
-    );
-    INSERT INTO Ebay (
-    item_id, listing_id, title, aspects, description, upc, imageURL, condition, 
-    packageWeightAndSize, height, length, width, unit, packageType, weight, weightUnit, quantity
-    ) VALUES (
-    12345,                    
-    67890,                     
-    'ur mom Item',             
-    '{Small}', 
-    'This is a sample item.', 
-    123456789012,              
-    'https://example.com/image.jpg', 
-    'New',                     
-    '{"Weight": "2 lbs", "Dimensions": "12x8x4"}', 
-    12,                       
-    8,                         
-    4,                         
-    'in',                      
-    'Box',                    
-    2,                         
-    'lbs',                     
-    10                         
-);
-    CREATE TABLE IF NOT EXISTS Etsy (
-      etsy_listing_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-      item_id INTEGER NOT NULL,
-      listing_id INTEGER NOT NULL
-    );
+//     CREATE TABLE IF NOT EXISTS Ebay (
+//       ebay_listing_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+//       item_id INTEGER NOT NULL,
+//       listing_id INTEGER NOT NULL,
+//       title ANY NOT NULL,
+//       aspects ANY,
+//       description ANY NOT NULL,
+//       upc INTEGER NOT NULL,
+//       imageURL ANY,
+//       condition TEXT NOT NULL,
+//       packageWeightAndSize ANY,
+//       height INTEGER,
+//       length INTEGER,
+//       width INTEGER,
+//       unit TEXT,
+//       packageType TEXT,
+//       weight INTEGER,
+//       weightUnit TEXT,
+//       quantity INTEGER,
+//       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+//       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+//     );
+//     INSERT INTO Ebay (
+//     item_id, listing_id, title, aspects, description, upc, imageURL, condition, 
+//     packageWeightAndSize, height, length, width, unit, packageType, weight, weightUnit, quantity
+//     ) VALUES (
+//     12345,                    
+//     67890,                     
+//     'ur mom Item',             
+//     '{Small}', 
+//     'This is a sample item.', 
+//     123456789012,              
+//     'https://example.com/image.jpg', 
+//     'New',                     
+//     '{"Weight": "2 lbs", "Dimensions": "12x8x4"}', 
+//     12,                       
+//     8,                         
+//     4,                         
+//     'in',                      
+//     'Box',                    
+//     2,                         
+//     'lbs',                     
+//     10                         
+// );
+//     CREATE TABLE IF NOT EXISTS Etsy (
+//       etsy_listing_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+//       item_id INTEGER NOT NULL,
+//       listing_id INTEGER NOT NULL,
+//       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+//       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+//     );
 
-    CREATE TABLE IF NOT EXISTS Items (
-      item_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-      user_id ANY UNIQUE NOT NULL,
-      onEbay INTEGER NOT NULL,
-      onEtsy INTEGER NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS Listings (
-      listing_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      item_id INTEGER NOT NULL,
-      platform_id INTEGER NOT NULL,
-      external_listing ANY NOT NULL,
-      status_id INTEGER NOT NULL,
-      price ANY NOT NULL
-    );
+//     CREATE TABLE IF NOT EXISTS Items (
+//       item_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+//       user_id ANY UNIQUE NOT NULL,
+//       onEbay INTEGER NOT NULL,
+//       onEtsy INTEGER NOT NULL,
+//       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+//       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+//     );
+//     CREATE TABLE IF NOT EXISTS Listings (
+//       listing_id INTEGER PRIMARY KEY AUTOINCREMENT,
+//       item_id INTEGER NOT NULL,
+//       platform_id INTEGER NOT NULL,
+//       external_listing ANY NOT NULL,
+//       status_id INTEGER NOT NULL,
+//       price ANY NOT NULL,
+//       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+//       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+//     );
 
-    CREATE TABLE IF NOT EXISTS L_Platform_Status (
-      status_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-      status TEXT UNIQUE NOT NULL
-    );
-    INSERT INTO L_Platform_Status (status)
-      VALUES ('Yes'), ('No');
+//     CREATE TABLE IF NOT EXISTS L_Platform_Status (
+//       status_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+//       status TEXT UNIQUE NOT NULL
+//     );
+//     INSERT INTO L_Platform_Status (status)
+//       VALUES ('Yes'), ('No');
 
-    CREATE TABLE IF NOT EXISTS L_Platforms (
-      platform_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL
-    );
-    INSERT INTO L_Platforms (name)
-      VALUES ('Ebay'), ('Etsy');
+//     CREATE TABLE IF NOT EXISTS L_Platforms (
+//       platform_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+//       name TEXT NOT NULL
+//     );
+//     INSERT INTO L_Platforms (name)
+//       VALUES ('Ebay'), ('Etsy');
 
-    CREATE TABLE IF NOT EXISTS EbayCredentials (
-      clientId ANY PRIMARY KEY,
-      clientSecret ANY NOT NULL,
-      redirectUri ANY NOT NULL
-    );
+//     CREATE TABLE IF NOT EXISTS EbayCredentials (
+//       clientId ANY PRIMARY KEY,
+//       clientSecret ANY NOT NULL,
+//       redirectUri ANY NOT NULL
+//     );
     
-    CREATE TABLE IF NOT EXISTS OAuth (
-      platform_id INTEGER,
-      oauth_expiry INTEGER NOT NULL,
-      refresh_expiry INTEGER NOT NULL,
-      oauth_created INTEGER NOT NULL,
-      refresh_created INTEGER NOT NULL,
-      oauth_token TEXT NOT NULL,
-      refresh_token TEXT NOT NULL
-    );
+//     CREATE TABLE IF NOT EXISTS OAuth (
+//       platform_id INTEGER,
+//       oauth_expiry INTEGER NOT NULL,
+//       refresh_expiry INTEGER NOT NULL,
+//       oauth_created INTEGER NOT NULL,
+//       refresh_created INTEGER NOT NULL,
+//       oauth_token TEXT NOT NULL,
+//       refresh_token TEXT NOT NULL
+//     );
+    
+//     CREATE TABLE InventoryLocations (
+//       location_id TEXT PRIMARY KEY,                
+//       name TEXT,
+//       location_type TEXT,                          
+//       location_web_url TEXT,
+//       phone_number TEXT,
+      
+//       address_line_1 TEXT NOT NULL,
+//       address_line_2 TEXT,
+//       city TEXT NOT NULL,
+//       state_or_province TEXT NOT NULL,
+//       postal_code TEXT NOT NULL,
+//       country_code TEXT NOT NULL,                  
 
-  `)
+//       operating_hours TEXT,                        
+//       special_hours TEXT,                          
+//       timezone TEXT,
 
-    console.log('Tables created successfully.')
-}
+//       ebay_synced BOOLEAN DEFAULT FALSE,
+//       last_synced_at DATETIME,
+
+//       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+//       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+// );
+
+//   `)
+
+//     console.log('Tables created successfully.')
+// }
 
 export function getData(): { id: number; status: string }[] {
     if (!db) throw new Error('Database is not initialized.')
