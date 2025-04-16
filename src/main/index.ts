@@ -6,11 +6,20 @@ import { app, BrowserWindow, ipcMain } from 'electron/main'
 import crypto from 'crypto'
 import EbayAuthToken from 'ebay-oauth-nodejs-client'
 import { request } from 'node:https'
+import { ebay_oauth_flow } from './ebay'
 
 const ETSY_CLIENT_ID = 'syncseller'
 const ETSY_REDIRECT_URI = 'https://yourapp.com/oauth/callback'
 const ETSY_SCOPES = 'transactions_r listings_r'
-const STATE = crypto.randomBytes(16).toString('hex') // CSRF protection
+const STATE = crypto.randomBytes( 16 ).toString( 'hex' ) // CSRF protection
+
+// oauth scopes for what api calls you can make
+const scopes = [
+        'https://api.ebay.com/oauth/api_scope/sell.inventory.readonly',
+        'https://api.ebay.com/oauth/api_scope/sell.inventory',
+        'https://api.ebay.com/oauth/api_scope/sell.account',
+        'https://api.ebay.com/oauth/api_scope/sell.account.readonly'
+    ]
 
 const BASE_URL = 'https://api.ebay.com/sell/account/v1'
 const HEADERS = (auth: string) => ({
@@ -286,8 +295,6 @@ app.on('window-all-closed', () => {
     }
 })
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
 
 // FOR TESTING, not being used
 console.log('main process is running')
@@ -295,84 +302,10 @@ ipcMain.on('submit:todoForm', (event, args) => {
     console.log('Received form data:', args)
 })
 
-// Ebay Handling
-// general one, pass as params the type of call and item of db
 
-// writes the oauth tokens to db
-//invariant: should be called only after ebay credentials are listed
-async function ebay_oauth_flow() {
-    const win = new BrowserWindow({
-        width: 400,
-        height: 400,
-        webPreferences: { nodeIntegration: false, contextIsolation: true }
-    })
 
-    console.log({ ...getEbayCredentials()[0], env: 'SANDBOX' })
-    const ebayAuthToken = new EbayAuthToken({ ...getEbayCredentials()[0], env: 'SANDBOX' })
-    // oauth scopes for what api calls you can make
-    const scopes = [
-        'https://api.ebay.com/oauth/api_scope/sell.inventory.readonly',
-        'https://api.ebay.com/oauth/api_scope/sell.inventory',
-        'https://api.ebay.com/oauth/api_scope/sell.account',
-        'https://api.ebay.com/oauth/api_scope/sell.account.readonly'
-    ]
-    let flag = false
-    let access_code
 
-    console.log(ebayAuthToken)
-    const oauth_url = ebayAuthToken.generateUserAuthorizationUrl('SANDBOX', scopes, {
-        prompt: 'login'
-    })
-    console.log(oauth_url)
-
-    // gets an authorization token for the user
-    await win.loadURL(oauth_url)
-    win.webContents.on('will-redirect', async (details) => {
-        access_code = new URL(details.url).searchParams.get('code')
-        if (access_code && !flag) {
-            flag = true
-            const accessToken = await ebayAuthToken.exchangeCodeForAccessToken(
-                'SANDBOX',
-                access_code
-            )
-            console.log(accessToken)
-            const response = JSON.parse(accessToken)
-            // write access token to db
-            setEbayOauth(
-                response.access_token,
-                response.expires_in,
-                response.refresh_token,
-                response.refresh_token_expires_in
-            )
-            return
-        }
-    })
-}
-
-async function get_ebay_token() {
-    // pull existing oauth from db
-    const existing_oauth: String | undefined = get_ebay_oauth()
-    if (existing_oauth === undefined) {
-        const new_oauth: String | undefined = await ebay_oauth_flow()
-        if (new_oauth === undefined) return undefined
-    }
-
-    // if none
-}
 ipcMain.on('ebay', async () => {
-    const existing_oauth: String | undefined = get_ebay_oauth()
-    if (existing_oauth === undefined) {
-        const new_oauth: String | undefined = await ebay_oauth_flow()
-        if (new_oauth === undefined) return undefined
-    }
-
-    const win = new BrowserWindow({
-        width: 400,
-        height: 400,
-        webPreferences: { nodeIntegration: false, contextIsolation: true }
-    })
-
-    // hardcoded, should have values extracted from database; entered from user
     const ebayAuthToken = new EbayAuthToken({
         clientId: 'RandyLu-sand-SBX-e41907e53-a28e5f11',
         clientSecret: 'SBX-41907e53e228-9004-4bbf-81f5-a63c',
@@ -380,15 +313,6 @@ ipcMain.on('ebay', async () => {
         env: 'SANDBOX'
     })
     // oauth scopes for what api calls you can make
-    const scopes = [
-        'https://api.ebay.com/oauth/api_scope/sell.inventory.readonly',
-        'https://api.ebay.com/oauth/api_scope/sell.inventory',
-        'https://api.ebay.com/oauth/api_scope/sell.account',
-        'https://api.ebay.com/oauth/api_scope/sell.account.readonly'
-    ]
-    const oauth_url = ebayAuthToken.generateUserAuthorizationUrl('SANDBOX', scopes, {
-        prompt: 'login'
-    })
 
     // gets an authorization token for the user
     win.loadURL(oauth_url).then(() => {
