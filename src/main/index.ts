@@ -214,7 +214,7 @@ app.whenReady().then(() => {
         optimizer.watchWindowShortcuts(window)
     } )
     
-    ipcMain.handle('send-ebay-creds', setEbayCredentials)
+    ipcMain.handle('set-ebay-creds', setEbayCredentials)
 
     // IPC test
     ipcMain.on('ping', () => console.log('pong'))

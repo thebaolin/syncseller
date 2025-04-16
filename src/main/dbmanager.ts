@@ -222,8 +222,14 @@ export function getEbayCredentials() {
     return db.prepare(`SELECT * FROM EbayCredentials`).all()
 }
 
-export function setEbayCredentials ( client_id, client_secret, redirect_uri ) {
-    db.prepare('INSERT INTO EbayCredentials (client_id, client_secret, redirect_uri) VALUES (?, ?, ?)').run(client_id, client_secret, redirect_uri)
+export function setEbayCredentials (e, client_id, client_secret, redirect_uri ) {
+  console.log(typeof client_id )
+  console.log( client_id )
+  console.log(typeof client_secret )
+  console.log( client_secret )
+  console.log(typeof redirect_uri )
+  console.log( redirect_uri )
+  db.prepare('INSERT INTO EbayCredentials (clientId, clientSecret, redirectUri) VALUES (?, ?, ?)').run(client_id, client_secret, redirect_uri)
 }
 
 export function get_ebay_oauth() {

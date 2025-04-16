@@ -7,9 +7,7 @@ const UserCred = ( props ) => {
         </section>
     )
 
-    const validateForm = async ( e ) => {
-        e.preventDefault()
-        console.log( 'validating form' )
+    const validateForm = async () => {
 
 
         const client_id = document.forms[ 'credentials' ][ 'client_id' ].value
@@ -26,7 +24,14 @@ const UserCred = ( props ) => {
         }
 
         // write credentials to db
+        console.log( typeof client_id )
+        console.log( client_id )
+        console.log( typeof client_secret )
+        console.log( client_secret )
+        console.log( typeof redirect_uri )
+        console.log( redirect_uri )
         window.electron.setEbayCredentials( client_id, client_secret, redirect_uri )
+        return true
     }
 
     return (
