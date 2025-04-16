@@ -2,6 +2,8 @@
 
 @theme {
     --color-lightpink: #ffdde2;
+    --color-dustyrose: #d8a7b1;
+    --color-sagegreen: #c4d7b2;
 }
 
 .heading {
@@ -9,7 +11,7 @@
     font-size: 24px;
     font-family: monospace;
     width: 100%;
-    border-bottom: 1px solid black;
+    /* border-bottom: 1px solid black; */
 }
 
 .sidebar {
@@ -25,7 +27,7 @@
 .content {
     margin-top: 60px;
     position: fixed;
-    height: 100vh;
+    height: 90%;
     width: 70%;
     margin-left: 30%;
     padding: 1px 16px;
@@ -88,33 +90,14 @@ tbody tr:hover {
     color: white;
 }
 
-form input,
+input,
 textarea,
 select {
-    border: 1px solid gray;
-    border-radius: 10px;
-    padding: 2px;
-    box-shadow: 10px;
-    background-color: white;
-    box-shadow: 1px 1px 2px;
-}
-
-form section {
-    padding: 10px 0;
+    @apply bg-white border-1 border-gray-500 rounded-sm px-[5px] hover:shadow
 }
 
 button {
-    border: 1px solid black;
-    border-radius: 10px;
-    padding: 10px;
-    margin: 5px;
-    box-shadow: 1px 1px 2px;
-    width: 200px;
-}
-
-button:hover {
-    background-color: gray;
-    color: white;
+    @apply  bg-sagegreen border-1 border-gray-500 rounded-sm shadow p-[5px] hover:bg-dustyrose hover:text-white
 }
 
 .platforms label {
