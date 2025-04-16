@@ -32,11 +32,10 @@ let db: Database | undefined
 //   }
 // }
 
-
 function createTables() {
-  if (!db) throw new Error('Database is not initialized.');
+    if (!db) throw new Error('Database is not initialized.')
 
-  db.exec(`
+    db.exec(`
     CREATE TABLE IF NOT EXISTS L_Listing_Status (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       status TEXT NOT NULL
@@ -147,20 +146,26 @@ function createTables() {
 
     console.log('Tables created successfully.')
 
-  db.prepare(`
+    db.prepare(
+        `
     INSERT OR IGNORE INTO L_Listing_Status (status)
     VALUES ('Active'), ('Sold'), ('Deleted'), ('Draft')
-  `).run();
+  `
+    ).run()
 
-  db.prepare(`
+    db.prepare(
+        `
     INSERT OR IGNORE INTO L_Platform_Status (status)
     VALUES ('Yes'), ('No')
-  `).run();
+  `
+    ).run()
 
-  db.prepare(`
+    db.prepare(
+        `
     INSERT OR IGNORE INTO L_Platforms (name)
     VALUES ('Ebay'), ('Etsy')
-  `).run();
+  `
+    ).run()
 }
 
 export function initializeDatabase(password: string) {
@@ -188,7 +193,6 @@ export function initializeDatabase(password: string) {
         console.log('Database opened successfully.')
     }
 }
-
 
 export function getData(): { id: number; status: string }[] {
     if (!db) throw new Error('Database is not initialized.')
@@ -243,22 +247,31 @@ export function getEbayCredentials() {
     return db.prepare(`SELECT * FROM EbayCredentials`).all()
 }
 
-export function setEbayCredentials (e, client_id, client_secret, redirect_uri ) {
-  console.log(typeof client_id )
-  console.log( client_id )
-  console.log(typeof client_secret )
-  console.log( client_secret )
-  console.log(typeof redirect_uri )
-  console.log( redirect_uri )
-  db.prepare('INSERT INTO EbayCredentials (clientId, clientSecret, redirectUri) VALUES (?, ?, ?)').run(client_id, client_secret, redirect_uri)
+export function setEbayCredentials(client_id, client_secret, redirect_uri) {
+    db.prepare(
+        'INSERT INTO EbayCredentials (clientId, clientSecret, redirectUri) VALUES (?, ?, ?)'
+    ).run(client_id, client_secret, redirect_uri)
 }
 
 export function get_ebay_oauth() {
     return db.prepare(`SELECT * FROM OAuth WHERE platform_id = ?`).get(1)
 }
 
-
-export function setEbayOauth ( oauth_token: string, oauth_expiry: number, refresh_token: string, refresh_expiry: number ) {
-    
-  
+export function setEbayOauth(
+    oauth_token: string,
+    oauth_expiry: number,
+    refresh_token: string,
+    refresh_expiry: number
+) {
+    db.prepare(
+        'INSERT INTO OAuth (platform_id , oauth_expiry, refresh_expiry , oauth_created, refresh_created , oauth_token, refresh_token) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    ).run(
+        1,
+        990 * oauth_expiry,
+        990 * refresh_expiry,
+        Date.now(),
+        Date.now(),
+        oauth_token,
+        refresh_token
+    )
 }

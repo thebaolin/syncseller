@@ -22,8 +22,9 @@ if (process.contextIsolated) {
             // Existing methods
             send: (channel, data) => ipcRenderer.send(channel, data),
             on: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args)),
-            ebay: () => ipcRenderer.send( 'ebay' ),
-            setEbayCredentials: (client_id: string, client_secret: string, redirect_uri: string) => ipcRenderer.invoke("set-ebay-creds",  client_id, client_secret, redirect_uri)
+            ebay: () => ipcRenderer.send('ebay'),
+            setEbayCredentials: (client_id: string, client_secret: string, redirect_uri: string) =>
+                ipcRenderer.invoke('set-ebay-creds', client_id, client_secret, redirect_uri)
         }),
             //contextBridge.exposeInMainWorld('electron', electronAPI)
             //contextBridge.exposeInMainWorld('api', api)

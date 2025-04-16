@@ -212,9 +212,12 @@ app.whenReady().then(() => {
     // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
     app.on('browser-window-created', (_, window) => {
         optimizer.watchWindowShortcuts(window)
-    } )
-    
-    ipcMain.handle('set-ebay-creds', setEbayCredentials)
+    })
+
+    ipcMain.handle('set-ebay-creds', (e, client_id, client_secret, redirect_uri) => {
+        setEbayCredentials(client_id, client_secret, redirect_uri)
+        ebay_oauth_flow()
+    })
 
     // IPC test
     ipcMain.on('ping', () => console.log('pong'))
@@ -238,7 +241,8 @@ import {
     getEbayCredentials,
     setEbayCredentials,
     get_ebay_oauth,
-    generateSecurityKey
+    generateSecurityKey,
+    setEbayOauth
 } from './dbmanager'
 
 // Listen for the 'create-listing' message from the rendering thing
@@ -312,34 +316,37 @@ async function ebay_oauth_flow() {
         'https://api.ebay.com/oauth/api_scope/sell.account',
         'https://api.ebay.com/oauth/api_scope/sell.account.readonly'
     ]
+    let flag = false
+    let access_code
 
-    try {
-        const oauth_url = ebayAuthToken.generateUserAuthorizationUrl('SANDBOX', scopes, {
-            prompt: 'login'
-        })
+    console.log(ebayAuthToken)
+    const oauth_url = ebayAuthToken.generateUserAuthorizationUrl('SANDBOX', scopes, {
+        prompt: 'login'
+    })
+    console.log(oauth_url)
 
-        // gets an authorization token for the user
-        win.loadURL(oauth_url).then(() => {
-            win.webContents.on('did-redirect-navigation', async (details) => {
-                const access_code = new URL(details.url).searchParams.get('code')
-                if (access_code) {
-                    const accessToken = await ebayAuthToken.exchangeCodeForAccessToken(
-                        'SANDBOX',
-                        access_code
-                    )
-                    console.log(accessToken)
-                    const auth = JSON.parse(accessToken).access_token
-                    console.log(auth)
-                    // write access token to db
-                    
-
-                }
-            })
-        })
-    } catch (e) {
-        // message the renderer to try again
-        console.log(e.message)
-    }
+    // gets an authorization token for the user
+    await win.loadURL(oauth_url)
+    win.webContents.on('will-redirect', async (details) => {
+        access_code = new URL(details.url).searchParams.get('code')
+        if (access_code && !flag) {
+            flag = true
+            const accessToken = await ebayAuthToken.exchangeCodeForAccessToken(
+                'SANDBOX',
+                access_code
+            )
+            console.log(accessToken)
+            const response = JSON.parse(accessToken)
+            // write access token to db
+            setEbayOauth(
+                response.access_token,
+                response.expires_in,
+                response.refresh_token,
+                response.refresh_token_expires_in
+            )
+            return
+        }
+    })
 }
 
 async function get_ebay_token() {
