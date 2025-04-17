@@ -6,6 +6,20 @@
     --color-sagegreen: #c4d7b2;
 }
 
+body {
+    @apply font-mono
+}
+
+input,
+textarea,
+select {
+    @apply bg-white border-1 border-gray-500 rounded-sm px-[5px] hover:shadow
+}
+
+.form-button {
+    @apply  bg-sagegreen border-1 border-gray-500 rounded-sm shadow p-[5px] text-black hover:bg-dustyrose hover:text-white
+}
+
 .heading {
     text-align: center;
     font-size: 24px;
@@ -50,25 +64,6 @@
     overflow-y: scroll;
 }
 
-.sidebar-icon {
-    height: 80px;
-    border-bottom: 1px solid white;
-    display: block;
-    padding: 16px;
-    font-family: monospace;
-    font-size: 16px;
-}
-
-.sidebar-icon:hover {
-    background-color: gray;
-    color: white;
-}
-
-.sidebar-icon:active {
-    background-color: gray;
-    color: white;
-}
-
 table,
 form {
     width: 100%;
@@ -90,15 +85,7 @@ tbody tr:hover {
     color: white;
 }
 
-input,
-textarea,
-select {
-    @apply bg-white border-1 border-gray-500 rounded-sm px-[5px] hover:shadow
-}
 
-button {
-    @apply  bg-sagegreen border-1 border-gray-500 rounded-sm shadow p-[5px] hover:bg-dustyrose hover:text-white
-}
 
 .platforms label {
     padding-left: 10px;
@@ -109,13 +96,6 @@ button {
     right: 115px;
     padding: 10px;
     background-color: rgb(255, 221, 226);
-}
-
-.menu-bar {
-    width: 100%;
-    height: 60px;
-    background-color: white;
-    position: absolute;
 }
 
 .menu-functions {

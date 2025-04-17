@@ -13,7 +13,7 @@ const TextInput = (props: InputProps) => {
             <label htmlFor={id}>{label}</label>
             <br/>
             <input 
-                className="w-full" // need input padding
+                className="w-full"
                 id={id}
                 name={id}
                 type='text'
@@ -31,7 +31,7 @@ const NumInput = (props: InputProps) => {
             <label htmlFor={id}>{label}</label>
             <br/>
             <input 
-                className="w-full" // need input padding
+                className="w-full"
                 id={id}
                 name={id}
                 type='number'
@@ -50,7 +50,7 @@ const TextAreaInput = (props: InputProps) => {
             <label htmlFor={id}>{label}</label>
             <br/>
             <textarea 
-                className="w-full h-[200px]" // need input padding
+                className="w-full h-[200px]"
                 id={id}
                 name={id}
                 value={value}
@@ -345,15 +345,15 @@ const ListingForm = () => {
 
                     <div className='flex flex-col-2 justify-evenly'>
                         {/* Submit Draft */}
-                        <button className='w-[150px] mx-[20px] my-[15px]'>Save Draft</button>
+                        <button className='form-button w-[150px] mx-[20px] my-[15px]'>Save Draft</button>
 
                         {/* Submit Listing */}
-                        <button className='w-[150px] mx-[20px] my-[15px]' type='submit'>Post Listing</button>
+                        <button className='form-button w-[150px] mx-[20px] my-[15px]' type='submit'>Post Listing</button>
                     </div>
                 </section>
 
                 {/* For debugging purposes - comment out later */}
-                <div className='bg-white'>
+                {/* <div className='bg-white'>
                     <h1 className='font-bold'>See Listing Data</h1>
                     <p>title: {listingData.title}
                         <br/>description: {listingData.description}
@@ -364,7 +364,7 @@ const ListingForm = () => {
                         <br/>size: {listingData.height} {listingData.unit} x {listingData.length} {listingData.unit} x {listingData.width} {listingData.unit}
                         <br/>weight: {listingData.weight} {listingData.weightUnit}
                     </p>
-                </div>
+                </div> */}
             </form>
         </div>
     )
