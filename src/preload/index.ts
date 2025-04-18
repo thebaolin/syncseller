@@ -33,8 +33,11 @@ if (process.contextIsolated) {
                 insertData: (name: string) => ipcRenderer.invoke('insert-data', name),
                 getTableNames: () => ipcRenderer.invoke('get-table-names'),
                 getEbayListing: () => ipcRenderer.invoke('get-ebay-listing'),
-                initializeDatabase: (dbPath, password) =>
-                    ipcRenderer.invoke('initialize-db', dbPath, password),
+                selectDatabaseFile: () => ipcRenderer.invoke('select-db-file'),
+                selectSaveLocation: () => ipcRenderer.invoke('select-db-save-location'),
+                initializeDatabase: (password: string, isCreateMode: boolean, dbPath: string) =>
+                    ipcRenderer.invoke('initialize-db', password, isCreateMode, dbPath),
+                  
                 generateKey: () => ipcRenderer.invoke('generate-key')
             }),
             // Optionally expose other APIs

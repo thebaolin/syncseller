@@ -5,33 +5,6 @@ import crypto from 'crypto'
 //const PASSWORD = 'poop'; // Prompt user to set this for encryption
 let db: Database | undefined
 
-// export function initializeDatabase() {
-//   if (!fs.existsSync('app.db')) {
-//     console.log('Database does not exist. Creating new database...');
-
-//     // Create and encrypt the database
-//     db = new Database('app.db', {
-//       verbose: console.log,
-//     });
-
-//     db.pragma('foreign_keys = ON');
-//     db.pragma(`key='${PASSWORD}'`);
-
-//     console.log('Database created and encrypted.');
-
-//     // Create tables
-//     createTables();
-//   } else {
-//     console.log('Database already exists.');
-
-//     // Open existing database with encryption key
-//     db = new Database('app.db', {
-//       verbose: console.log,
-//     });
-//     db.pragma(`key='${PASSWORD}'`);
-//   }
-// }
-
 function createTables() {
     if (!db) throw new Error('Database is not initialized.')
 
@@ -168,30 +141,39 @@ function createTables() {
     ).run()
 }
 
-export function initializeDatabase(password: string) {
-    //const dbPath = 'app.db';
+export function initializeDatabase(password: string, isCreateMode: boolean, dbPath = "app.db") {
+  const dbExists = fs.existsSync(dbPath);
 
-    if (!fs.existsSync('app.db')) {
-        console.log('Database does not exist. Creating new database...')
-        db = new Database('app.db', { verbose: console.log })
-        db.pragma('foreign_keys = ON')
-        db.pragma(`key='${password}'`)
-        createTables()
-        console.log('Database created and encrypted.')
-    } else {
-        console.log('Database exists. Opening...')
-        db = new Database('app.db', { verbose: console.log })
+  if (!dbExists && !isCreateMode) {
+      throw new Error('Database does not exist. Please create one first.');
+  }
 
-        db.pragma(`key='${password}'`)
-        const stmt = db.prepare("SELECT name FROM sqlite_master WHERE type='table' LIMIT 1")
-        const testResult = stmt.get()
+  if (!dbExists && isCreateMode) {
+      console.log('Creating new encrypted database...');
+      db = new Database(dbPath, { verbose: console.log });
+      db.pragma('foreign_keys = ON');
+      db.pragma(`key='${password}'`);
+      createTables();
+      console.log('Database created and encrypted.');
+  }
 
-        if (!testResult) {
-            throw new Error('Decryption failed. Incorrect password.')
-        }
+  if (dbExists) {
+      console.log('Opening existing database...');
+      db = new Database(dbPath, { verbose: console.log });
+      db.pragma(`key='${password}'`);
 
-        console.log('Database opened successfully.')
-    }
+      // Verify decryption
+      try {
+          const testResult = db.prepare("SELECT name FROM sqlite_master WHERE type='table' LIMIT 1").get();
+          if (!testResult) {
+              throw new Error();
+          }
+      } catch (err) {
+          throw new Error('Decryption failed. Incorrect password.');
+      }
+
+      console.log('Database opened successfully.');
+  }
 }
 
 export function getData(): { id: number; status: string }[] {
