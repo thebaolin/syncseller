@@ -4,9 +4,9 @@ import profilePic from '../assets/images/dogpfp.jpg'
 const MenuBar = () => {
     return (
         <div className="w-full h-60px bg-white absolute flex flex-col-3">
-            <div className='flex-1'></div>
+            <div className="flex-1"></div>
             {/* Title */}
-            <div className='flex-1'>
+            <div className="flex-1">
                 <h1 className="text-4xl text-center">SyncSeller</h1>
             </div>
             <div className="flex-1">

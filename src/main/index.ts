@@ -11,15 +11,15 @@ import { ebay_oauth_flow } from './ebay'
 const ETSY_CLIENT_ID = 'syncseller'
 const ETSY_REDIRECT_URI = 'https://yourapp.com/oauth/callback'
 const ETSY_SCOPES = 'transactions_r listings_r'
-const STATE = crypto.randomBytes( 16 ).toString( 'hex' ) // CSRF protection
+const STATE = crypto.randomBytes(16).toString('hex') // CSRF protection
 
 // oauth scopes for what api calls you can make
 const scopes = [
-        'https://api.ebay.com/oauth/api_scope/sell.inventory.readonly',
-        'https://api.ebay.com/oauth/api_scope/sell.inventory',
-        'https://api.ebay.com/oauth/api_scope/sell.account',
-        'https://api.ebay.com/oauth/api_scope/sell.account.readonly'
-    ]
+    'https://api.ebay.com/oauth/api_scope/sell.inventory.readonly',
+    'https://api.ebay.com/oauth/api_scope/sell.inventory',
+    'https://api.ebay.com/oauth/api_scope/sell.account',
+    'https://api.ebay.com/oauth/api_scope/sell.account.readonly'
+]
 
 const BASE_URL = 'https://api.ebay.com/sell/account/v1'
 const HEADERS = (auth: string) => ({
@@ -295,15 +295,11 @@ app.on('window-all-closed', () => {
     }
 })
 
-
 // FOR TESTING, not being used
 console.log('main process is running')
 ipcMain.on('submit:todoForm', (event, args) => {
     console.log('Received form data:', args)
 })
-
-
-
 
 ipcMain.on('ebay', async () => {
     const ebayAuthToken = new EbayAuthToken({
@@ -409,7 +405,6 @@ ipcMain.on('ebay', async () => {
                 // Write data to the request body
                 req.write(data)
 
-                // End the request
                 req.end()
 
                 win.loadURL('https://sandbox.ebay.com/itm/110579720432')

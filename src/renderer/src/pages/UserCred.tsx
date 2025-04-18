@@ -1,14 +1,10 @@
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from 'react-router-dom'
 
 const InputSection = (args) => (
-    <section className='mx-[20px] my-[15px]'>
+    <section className="mx-[20px] my-[15px]">
         <label htmlFor={args.id}>{args.title}</label>
-        <br/>
-        <input 
-            className="w-[100%]" 
-            id={args.id} 
-            name={args.id} 
-            type="text"></input>
+        <br />
+        <input className="w-[100%]" id={args.id} name={args.id} type="text"></input>
     </section>
 )
 
@@ -34,14 +30,13 @@ const UserCred = (props) => {
         return true
     }
 
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     return (
         <div className="content-full">
-            <button 
-                className="absolute form-button mt-3"
-                onClick={() => navigate(-1)}
-            >Go Back</button>
+            <button className="absolute form-button mt-3" onClick={() => navigate(-1)}>
+                Go Back
+            </button>
             <h1 className="heading">{`Enter ${props.platform} Credentials`}</h1>
             <div className="w-1/3 m-auto">
                 <form id="credentials">
@@ -52,8 +47,12 @@ const UserCred = (props) => {
                     {/* Redirect URI */}
                     <InputSection id="redirect_uri" title="Redirect URI" />
                     {/* Submit button */}
-                    <div className='flex flex-col-1 justify-center'>
-                        <button className='form-button w-[150px]' onClick={validateForm} form="user-cred-form">
+                    <div className="flex flex-col-1 justify-center">
+                        <button
+                            className="form-button w-[150px]"
+                            onClick={validateForm}
+                            form="user-cred-form"
+                        >
                             Submit
                         </button>
                     </div>

@@ -7,17 +7,17 @@
 }
 
 body {
-    @apply font-mono
+    @apply font-mono;
 }
 
 input,
 textarea,
 select {
-    @apply bg-white border-1 border-gray-500 rounded-sm px-[5px] hover:shadow
+    @apply bg-white border-1 border-gray-500 rounded-sm px-[5px] hover:shadow;
 }
 
 .form-button {
-    @apply  bg-sagegreen border-1 border-gray-500 rounded-sm shadow p-[5px] text-black hover:bg-dustyrose hover:text-white
+    @apply bg-sagegreen border-1 border-gray-500 rounded-sm shadow p-[5px] text-black hover:bg-dustyrose hover:text-white;
 }
 
 .heading {
@@ -84,8 +84,6 @@ tbody tr:hover {
     background-color: gray;
     color: white;
 }
-
-
 
 .platforms label {
     padding-left: 10px;
