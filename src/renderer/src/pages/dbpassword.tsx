@@ -5,30 +5,57 @@ const PasswordScreen = () => {
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const navigate = useNavigate()
+    const [dbPath, setDbPath] = useState<string | null>(null)
 
+    const pickDatabase = async () => {
+        const path = await window.database.selectDatabaseFile()
+        setDbPath(path)
+    }
     const handleLogin = async () => {
+        if (!dbPath) {
+            setError('Please select your database file.')
+            return
+        }
+
         if (!password) {
             setError('Please enter your key.')
             return
         }
 
         try {
-            const response = await window.database.initializeDatabase(password)
+            const response = await window.database.initializeDatabase(password, false, dbPath)
             if (response.success) {
-                localStorage.setItem('authenticated', 'true') // Store authentication
-                navigate('/app/home') // Redirect to the app
+                localStorage.setItem('authenticated', 'true')
+                navigate('/app/home')
             } else {
-                setError('Failed to open database. Key is incorrect.')
-                console.log(response.error)
+                if (response.error?.includes('Database does not exist')) {
+                    setError('No database found. Please create one first.')
+                } else if (response.error?.includes('Incorrect password')) {
+                    setError('Incorrect key. Please try again.')
+                } else {
+                    setError('Failed to open database.')
+                }
+                console.error(response.error)
             }
         } catch (err) {
-            setError('Error connecting to database.')
+            console.error(err)
         }
     }
 
     return (
         <div className="flex flex-col items-center justify-center h-screen space-y-4 bg-[#FFDDE2]">
             <h1 className="text-4xl font-mono mb-4">SyncSeller</h1>
+            <button
+                onClick={pickDatabase}
+                className="px-4 py-2 bg-blue-500 text-white rounded w-full max-w-md"
+            >
+                Choose Database File
+            </button>
+            {dbPath && (
+                <p className="text-sm text-gray-600 max-w-md break-all text-center">
+                    Selected: {dbPath}
+                </p>
+            )}
             <h2 className="text-2xl mb-2">Enter Your Access Key</h2>
             <p className="text-center max-w-md mb-2">
                 Please enter your key to access your database.
