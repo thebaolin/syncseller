@@ -22,17 +22,24 @@ const NewUserScreen = () => {
     }
 
     const handleContinue = async () => {
+        const dbPath = await window.database.selectSaveLocation()
+        if (!dbPath) return
+
         try {
-            const response = await window.database.initializeDatabase(generatedKey)
+            const response = await window.database.initializeDatabase(generatedKey, true, dbPath)
             if (response.success) {
                 localStorage.setItem('authenticated', 'true')
                 navigate('/app/home')
             } else {
-                alert('Failed to initialize database. Database already exist.')
+                alert(response.error || 'Failed to initialize database. Database may already exist.')
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error(err)
-            alert('Error initializing database.')
+            if (err.message?.includes('already exists')) {
+                alert('Database already exists. You may want to use the "Existing User" option.')
+            } else {
+                alert('Error initializing database.')
+            }
         }
     }
 
@@ -52,6 +59,9 @@ const NewUserScreen = () => {
             <button onClick={handleCopy} className="px-4 py-2 bg-blue-500 text-white rounded">
                 {copied ? 'Copied!' : 'Copy Key'}
             </button>
+            <p className="text-center text-sm text-gray-600 max-w-md">
+                When you press Continue, you’ll be asked to choose where to save your encrypted database.
+            </p>
             <button onClick={handleContinue} className="px-4 py-2 bg-green-500 text-white rounded">
                 Continue
             </button>
