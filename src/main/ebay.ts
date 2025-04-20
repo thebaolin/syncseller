@@ -77,7 +77,6 @@ export async function ebay_oauth_flow() {
 
                 res.on('end', () => {
                     if (
-                        JSON.parse(responseBody).programs.length === 0 ||
                         !JSON.parse(responseBody).programs.includes({
                             programType: 'SELLING_POLICY_MANAGEMENT'
                         })
@@ -97,11 +96,7 @@ export async function ebay_oauth_flow() {
                             }
                         }
 
-                        const req = request(options, (res) => {
-                            console.log(res.headers)
-                        })
-
-                        // if error, delete everything and tell them to try again...
+                        const req = request(options, (res) => {})
 
                         req.write(data)
 
@@ -110,12 +105,9 @@ export async function ebay_oauth_flow() {
                 })
             })
 
-            req.on('error', (e) => {
-                // alert user that ebay servers are down and try later
-                // by message to the front end
-            })
-
             req.end()
+
+            // make default policies
             return
         }
     })

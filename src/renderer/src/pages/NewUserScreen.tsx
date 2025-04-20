@@ -31,7 +31,9 @@ const NewUserScreen = () => {
                 localStorage.setItem('authenticated', 'true')
                 navigate('/app/home')
             } else {
-                alert(response.error || 'Failed to initialize database. Database may already exist.')
+                alert(
+                    response.error || 'Failed to initialize database. Database may already exist.'
+                )
             }
         } catch (err: any) {
             console.error(err)
@@ -60,7 +62,8 @@ const NewUserScreen = () => {
                 {copied ? 'Copied!' : 'Copy Key'}
             </button>
             <p className="text-center text-sm text-gray-600 max-w-md">
-                When you press Continue, you’ll be asked to choose where to save your encrypted database.
+                When you press Continue, you’ll be asked to choose where to save your encrypted
+                database.
             </p>
             <button onClick={handleContinue} className="px-4 py-2 bg-green-500 text-white rounded">
                 Continue

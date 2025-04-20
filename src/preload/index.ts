@@ -37,7 +37,7 @@ if (process.contextIsolated) {
                 selectSaveLocation: () => ipcRenderer.invoke('select-db-save-location'),
                 initializeDatabase: (password: string, isCreateMode: boolean, dbPath: string) =>
                     ipcRenderer.invoke('initialize-db', password, isCreateMode, dbPath),
-                  
+
                 generateKey: () => ipcRenderer.invoke('generate-key')
             }),
             // Optionally expose other APIs

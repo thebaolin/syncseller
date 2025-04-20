@@ -200,43 +200,43 @@ function createWindow(): void {
     }
 }
 
-ipcMain.handle('initialize-db', async (_event, password: string, isCreateMode: boolean, dbPath: string) => {
-    try {
-        initializeDatabase(password, isCreateMode, dbPath)
-        return { success: true }
-    } catch (error: any) {
-        console.error('Database error:', error)
-        return { success: false, error: error.message }
+ipcMain.handle(
+    'initialize-db',
+    async (_event, password: string, isCreateMode: boolean, dbPath: string) => {
+        try {
+            initializeDatabase(password, isCreateMode, dbPath)
+            return { success: true }
+        } catch (error: any) {
+            console.error('Database error:', error)
+            return { success: false, error: error.message }
+        }
     }
-})
+)
 
-import {dialog} from 'electron'
+import { dialog } from 'electron'
 
 ipcMain.handle('select-db-file', async () => {
     const result = await dialog.showOpenDialog({
         title: 'Select Your Database',
         properties: ['openFile'],
-        filters: [{name : 'SQLITE DB', extensions: ['db']}]
-    });
+        filters: [{ name: 'SQLITE DB', extensions: ['db'] }]
+    })
     if (!result.canceled && result.filePaths.length > 0) {
-        return result.filePaths[0];
-
+        return result.filePaths[0]
     } else {
-        return null;
+        return null
     }
 })
-
 
 ipcMain.handle('select-db-save-location', async () => {
     const result = await dialog.showSaveDialog({
         title: 'Create New Database',
         defaultPath: 'app.db',
-        filters: [{name: 'SQLITE DB', extensions: ['db']
-        }]
-    });
+        filters: [{ name: 'SQLITE DB', extensions: ['db'] }]
+    })
 
-    return result.canceled ? null: result.filePath;
-});
+    return result.canceled ? null : result.filePath
+})
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -254,6 +254,9 @@ app.whenReady().then(() => {
     ipcMain.handle('set-ebay-creds', (e, client_id, client_secret, redirect_uri) => {
         setEbayCredentials(client_id, client_secret, redirect_uri)
         ebay_oauth_flow()
+        // opt into business policies
+        // make default policies
+        // maybe message pass to create warehouse?
     })
 
     // IPC test

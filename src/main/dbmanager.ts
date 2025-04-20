@@ -141,39 +141,41 @@ function createTables() {
     ).run()
 }
 
-export function initializeDatabase(password: string, isCreateMode: boolean, dbPath = "app.db") {
-  const dbExists = fs.existsSync(dbPath);
+export function initializeDatabase(password: string, isCreateMode: boolean, dbPath = 'app.db') {
+    const dbExists = fs.existsSync(dbPath)
 
-  if (!dbExists && !isCreateMode) {
-      throw new Error('Database does not exist. Please create one first.');
-  }
+    if (!dbExists && !isCreateMode) {
+        throw new Error('Database does not exist. Please create one first.')
+    }
 
-  if (!dbExists && isCreateMode) {
-      console.log('Creating new encrypted database...');
-      db = new Database(dbPath, { verbose: console.log });
-      db.pragma('foreign_keys = ON');
-      db.pragma(`key='${password}'`);
-      createTables();
-      console.log('Database created and encrypted.');
-  }
+    if (!dbExists && isCreateMode) {
+        console.log('Creating new encrypted database...')
+        db = new Database(dbPath, { verbose: console.log })
+        db.pragma('foreign_keys = ON')
+        db.pragma(`key='${password}'`)
+        createTables()
+        console.log('Database created and encrypted.')
+    }
 
-  if (dbExists) {
-      console.log('Opening existing database...');
-      db = new Database(dbPath, { verbose: console.log });
-      db.pragma(`key='${password}'`);
+    if (dbExists) {
+        console.log('Opening existing database...')
+        db = new Database(dbPath, { verbose: console.log })
+        db.pragma(`key='${password}'`)
 
-      // Verify decryption
-      try {
-          const testResult = db.prepare("SELECT name FROM sqlite_master WHERE type='table' LIMIT 1").get();
-          if (!testResult) {
-              throw new Error();
-          }
-      } catch (err) {
-          throw new Error('Decryption failed. Incorrect password.');
-      }
+        // Verify decryption
+        try {
+            const testResult = db
+                .prepare("SELECT name FROM sqlite_master WHERE type='table' LIMIT 1")
+                .get()
+            if (!testResult) {
+                throw new Error()
+            }
+        } catch (err) {
+            throw new Error('Decryption failed. Incorrect password.')
+        }
 
-      console.log('Database opened successfully.');
-  }
+        console.log('Database opened successfully.')
+    }
 }
 
 export function getData(): { id: number; status: string }[] {
