@@ -108,6 +108,84 @@ export async function ebay_oauth_flow() {
             req.end()
 
             // make default policies
+
+            {
+                const options = {
+                    hostname: 'api.sandbox.ebay.com',
+                    path: 'https://api.sandbox.ebay.com/sell/account/v1/fulfillment_policy?marketplace_id=EBAY_US',
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + response.access_token,
+                        Accept: 'application/json'
+                    }
+                }
+
+                const req = request(options, (res) => {
+                    let responseBody = ''
+
+                    res.on('data', (chunk) => {
+                        responseBody += chunk
+                    })
+
+                    res.on('end', () => {
+                        if (JSON.parse(responseBody).fulfillmentPolicies.length === 0) {
+                            // make the call to make defaults
+
+                            const data = `{
+  "categoryTypes": [
+    {
+      "name": "ALL_EXCLUDING_MOTORS_VEHICLES"
+    }
+  ],
+  "marketplaceId": "EBAY_US",
+  "name": "Domestic free shipping",
+  "handlingTime": { 
+    "unit" : "DAY",
+    "value" : "1"
+  },
+  "shippingOptions": [
+    {
+      "costType": "FLAT_RATE",
+      "optionType": "DOMESTIC",
+      "shippingServices": [
+        {
+          "buyerResponsibleForShipping": "false",
+          "freeShipping": "true",
+          "shippingCarrierCode": "USPS",
+          "shippingServiceCode": "USPSPriorityFlatRateBox"
+        }
+      ]
+    }
+  ]
+}`
+                            const options = {
+                                hostname: 'api.sandbox.ebay.com',
+                                path: 'https://api.sandbox.ebay.com/sell/account/v1/program/opt_in',
+                                method: 'POST',
+                                headers: {
+                                    Authorization: 'Bearer ' + response.access_token,
+                                    Accept: 'application/json',
+                                    'Content-Type': 'application/json',
+                                    'Content-Length': data.length
+                                }
+                            }
+
+                            const req = request(options, (res) => {})
+
+                            req.write(data)
+
+                            req.end()
+                        }
+                    })
+                })
+
+                req.end()
+            }
+            // make default business
+            { }
+            
+            //make default return policy
+
             return
         }
     })

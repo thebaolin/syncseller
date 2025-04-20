@@ -254,7 +254,6 @@ app.whenReady().then(() => {
     ipcMain.handle('set-ebay-creds', (e, client_id, client_secret, redirect_uri) => {
         setEbayCredentials(client_id, client_secret, redirect_uri)
         ebay_oauth_flow()
-        // opt into business policies
         // make default policies
         // maybe message pass to create warehouse?
     })
