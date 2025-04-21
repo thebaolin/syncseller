@@ -1,32 +1,44 @@
+import React, { useEffect, useState } from 'react'
+
 const ListingHistory = () => {
+
+    const [listings, setListings] = useState([])
+
+    useEffect(() => {
+        const fetchListings = async () => {
+            const result = await window.database.getListingHistory()
+            if (result.success) {
+                setListings(result.data)
+            } else {
+                console.error('Failed to fetch listings:', result.error)
+            }
+        }
+
+        fetchListings()
+    },[])
     return (
         <div className="content">
             <h1 className="heading">Listing History</h1>
             <table>
                 <thead>
                     <tr>
-                        <th className="w-1/8">Date Created</th>
-                        <th className="w-3/8">Title</th>
-                        <th className="w-1/8">Category</th>
-                        <th className="w-1/8">Status</th>
-                        <th className="w-3/16">Platforms</th>
+                        <th>Date Created</th>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Platform</th>
+                        <th>Price</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>10/10/2024</td>
-                        <td>Levis ribcage jeans</td>
-                        <td>Pants</td>
-                        <td>Live</td>
-                        <td>Poshmark, Depop, eBay</td>
-                    </tr>
-                    <tr>
-                        <td>10/11/2024</td>
-                        <td>Stuffed doggo</td>
-                        <td>Toys</td>
-                        <td>Sold</td>
-                        <td>Facebook Marketplace, Depop, eBay</td>
-                    </tr>
+                    {listings.map((listing, index) => (
+                        <tr key={index}>
+                            <td>{new Date(listing.created_at).toLocaleDateString()}</td>
+                            <td>{listing.title}</td>
+                            <td>{listing.status}</td>
+                            <td>{listing.platform}</td>
+                            <td>${listing.price}</td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </div>

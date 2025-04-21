@@ -38,7 +38,9 @@ if (process.contextIsolated) {
                 initializeDatabase: (password: string, isCreateMode: boolean, dbPath: string) =>
                     ipcRenderer.invoke('initialize-db', password, isCreateMode, dbPath),
 
-                generateKey: () => ipcRenderer.invoke('generate-key')
+                generateKey: () => ipcRenderer.invoke('generate-key'),
+                insertFullListing: (data) => ipcRenderer.invoke('insert-full-listing', data),
+                getListingHistory: () => ipcRenderer.invoke('get-listing-history')
             }),
             // Optionally expose other APIs
             contextBridge.exposeInMainWorld('api', api)

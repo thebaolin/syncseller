@@ -98,8 +98,14 @@ const SectionHeader = ({ label }) => {
 const ListingForm = () => {
     // Listing object
     const [listingData, setListingData] = useState({
+        onEbay: true,
+        onEtsy: false,
+        external_listing: 'eBay-xxxxx', // placeholder
+        status: 'Active',
+        price: 0,
+
         title: '',
-        aspects: [],
+        aspects: "[]",
         description: '',
         upc: 0,
         imageURL: '',
@@ -129,18 +135,39 @@ const ListingForm = () => {
     // Validate listing
 
     // Handle submit listing
-    const handleSubmit = (e) => {
-        e.preventDefault
-        setListingData((prevData) => ({
-            ...prevData
-        }))
-        console.log('Form submitted', listingData)
-    }
+    // const handleSubmit = (e) => {
+    //     e.preventDefault
+    //     setListingData((prevData) => ({
+    //         ...prevData
+    //     }))
+    //     console.log('Form submitted', listingData)
+    // }
 
     // Validate draft
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+
+        const response = await window.database.insertFullListing({
+            ...listingData
+            //for now leave aspect out. need to figure out how to handle this
+            //aspects: JSON.stringify(listingData.aspects) // convert to storable string 
+        })
+
+        if (response.success) {
+            alert('Listing submitted successfully!')
+        } else {
+            alert(`Failed to submit listing: ${response.error}`)
+        }
+    }
 
     // Handle submit draft
-
+    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { id, checked } = e.target
+        setListingData(prev => ({
+            ...prev,
+            [id === 'ebay' ? 'onEbay' : 'onEtsy']: checked
+        }))
+    }
     return (
         <div className="content" id="form-content">
             <h1 className="heading">Create a listing</h1>
@@ -309,22 +336,36 @@ const ListingForm = () => {
                     {/* NON FUNCTIONAL */}
                     <div className="mx-[20px] my-[15px]">
                         <label>
-                            <input id="ebay" type="checkbox" name="option" value="option" />
+                            <input id="ebay" type="checkbox" checked={listingData.onEbay} onChange={handleCheckboxChange} name="option" value="option" />
                             eBay
                         </label>
                         <br />
                         <label>
-                            <input id="etsy" type="checkbox" name="option" value="option" />
+                            <input id="etsy" type="checkbox" checked={listingData.onEtsy} onChange={handleCheckboxChange} name="option" value="option" />
                             Etsy
                         </label>
                         <br />
-                        <label>
+                        {/* <label>
                             <input id="shopify" type="checkbox" name="option" value="option" />
                             Shopify
-                        </label>
+                        </label> */}
                         <br />
                     </div>
                 </section>
+                <NumInput
+                    id="price"
+                    value={listingData.price}
+                    label="Price (USD)"
+                    onChange={handleChange}
+                />
+
+                <Dropdown
+                    id="status"
+                    value={listingData.status}
+                    label="Listing Status"
+                    options={['Active', 'Sold', 'Deleted', 'Draft']}
+                    onChange={handleChange}
+                />
 
                 <section>
                     <SectionHeader label="Submit Listing" />
