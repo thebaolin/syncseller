@@ -11,15 +11,15 @@ import { ebay_oauth_flow } from './ebay'
 const ETSY_CLIENT_ID = 'syncseller'
 const ETSY_REDIRECT_URI = 'https://yourapp.com/oauth/callback'
 const ETSY_SCOPES = 'transactions_r listings_r'
-const STATE = crypto.randomBytes( 16 ).toString( 'hex' ) // CSRF protection
+const STATE = crypto.randomBytes(16).toString('hex') // CSRF protection
 
 // oauth scopes for what api calls you can make
 const scopes = [
-        'https://api.ebay.com/oauth/api_scope/sell.inventory.readonly',
-        'https://api.ebay.com/oauth/api_scope/sell.inventory',
-        'https://api.ebay.com/oauth/api_scope/sell.account',
-        'https://api.ebay.com/oauth/api_scope/sell.account.readonly'
-    ]
+    'https://api.ebay.com/oauth/api_scope/sell.inventory.readonly',
+    'https://api.ebay.com/oauth/api_scope/sell.inventory',
+    'https://api.ebay.com/oauth/api_scope/sell.account',
+    'https://api.ebay.com/oauth/api_scope/sell.account.readonly'
+]
 
 const BASE_URL = 'https://api.ebay.com/sell/account/v1'
 const HEADERS = (auth: string) => ({
@@ -200,14 +200,42 @@ function createWindow(): void {
     }
 }
 
-ipcMain.handle('initialize-db', async (_event, password: string) => {
-    try {
-        initializeDatabase(password)
-        return { success: true }
-    } catch (error) {
-        console.error('Database error:', error)
-        return { success: false, error: error.message }
+ipcMain.handle(
+    'initialize-db',
+    async (_event, password: string, isCreateMode: boolean, dbPath: string) => {
+        try {
+            initializeDatabase(password, isCreateMode, dbPath)
+            return { success: true }
+        } catch (error: any) {
+            console.error('Database error:', error)
+            return { success: false, error: error.message }
+        }
     }
+)
+
+import { dialog } from 'electron'
+
+ipcMain.handle('select-db-file', async () => {
+    const result = await dialog.showOpenDialog({
+        title: 'Select Your Database',
+        properties: ['openFile'],
+        filters: [{ name: 'SQLITE DB', extensions: ['db'] }]
+    })
+    if (!result.canceled && result.filePaths.length > 0) {
+        return result.filePaths[0]
+    } else {
+        return null
+    }
+})
+
+ipcMain.handle('select-db-save-location', async () => {
+    const result = await dialog.showSaveDialog({
+        title: 'Create New Database',
+        defaultPath: 'app.db',
+        filters: [{ name: 'SQLITE DB', extensions: ['db'] }]
+    })
+
+    return result.canceled ? null : result.filePath
 })
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -226,6 +254,8 @@ app.whenReady().then(() => {
     ipcMain.handle('set-ebay-creds', (e, client_id, client_secret, redirect_uri) => {
         setEbayCredentials(client_id, client_secret, redirect_uri)
         ebay_oauth_flow()
+        // make default policies
+        // maybe message pass to create warehouse?
     })
 
     // IPC test
@@ -251,7 +281,9 @@ import {
     setEbayCredentials,
     get_ebay_oauth,
     generateSecurityKey,
-    setEbayOauth
+    setEbayOauth,
+    insertFullListing,
+    getListingHistory
 } from './dbmanager'
 
 // Listen for the 'create-listing' message from the rendering thing
@@ -286,6 +318,15 @@ ipcMain.handle('get-ebay-listing', async () => {
 ipcMain.handle('generate-key', async () => {
     return generateSecurityKey()
 })
+
+
+ipcMain.handle('insert-full-listing', async (_event, data) => {
+    return insertFullListing(data)
+})
+
+ipcMain.handle('get-listing-history', async () => {
+    return getListingHistory()
+})
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
@@ -295,15 +336,11 @@ app.on('window-all-closed', () => {
     }
 })
 
-
 // FOR TESTING, not being used
 console.log('main process is running')
 ipcMain.on('submit:todoForm', (event, args) => {
     console.log('Received form data:', args)
 })
-
-
-
 
 ipcMain.on('ebay', async () => {
     const ebayAuthToken = new EbayAuthToken({
@@ -409,7 +446,6 @@ ipcMain.on('ebay', async () => {
                 // Write data to the request body
                 req.write(data)
 
-                // End the request
                 req.end()
 
                 win.loadURL('https://sandbox.ebay.com/itm/110579720432')
