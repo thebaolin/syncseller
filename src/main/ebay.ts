@@ -12,6 +12,12 @@ const scopes = [
     'https://api.ebay.com/oauth/api_scope/sell.account.readonly'
 ]
 
+const enum policyType {
+    payment,
+    fulfillment,
+    return
+}
+
 // writes the oauth tokens to db
 // and allows app to make calls on behalf of user
 //invariant: should be called only after ebay credentials are listed
@@ -107,31 +113,28 @@ export async function ebay_oauth_flow() {
 
             req.end()
 
-            // make default policies
+            await make_policy(response.access_token, policyType.fulfillment)
+            await make_policy(response.access_token, policyType.payment)
+            await make_policy(response.access_token, policyType.return)
 
-            {
-                const options = {
-                    hostname: 'api.sandbox.ebay.com',
-                    path: 'https://api.sandbox.ebay.com/sell/account/v1/fulfillment_policy?marketplace_id=EBAY_US',
-                    method: 'GET',
-                    headers: {
-                        Authorization: 'Bearer ' + response.access_token,
-                        Accept: 'application/json'
-                    }
-                }
+            return
+        }
+    })
+}
 
-                const req = request(options, (res) => {
-                    let responseBody = ''
-
-                    res.on('data', (chunk) => {
-                        responseBody += chunk
-                    })
-
-                    res.on('end', () => {
-                        if (JSON.parse(responseBody).fulfillmentPolicies.length === 0) {
-                            // make the call to make defaults
-
-                            const data = `{
+// checks if fulfillment, payment, or return policy exists
+// if not then make a "basic", else do nothing
+// type is return, payment, fulfillment
+async function make_policy(oauth_token: string, type: policyType) {
+    let get_uri
+    let post_uri
+    let data
+    switch (type) {
+        case policyType.fulfillment:
+            get_uri =
+                'https://api.sandbox.ebay.com/sell/account/v1/fulfillment_policy?marketplace_id=EBAY_US'
+            post_uri = 'https://api.sandbox.ebay.com/sell/account/v1/fulfillment_policy'
+            data = `{
   "categoryTypes": [
     {
       "name": "ALL_EXCLUDING_MOTORS_VEHICLES"
@@ -158,35 +161,86 @@ export async function ebay_oauth_flow() {
     }
   ]
 }`
-                            const options = {
-                                hostname: 'api.sandbox.ebay.com',
-                                path: 'https://api.sandbox.ebay.com/sell/account/v1/program/opt_in',
-                                method: 'POST',
-                                headers: {
-                                    Authorization: 'Bearer ' + response.access_token,
-                                    Accept: 'application/json',
-                                    'Content-Type': 'application/json',
-                                    'Content-Length': data.length
-                                }
-                            }
+            break
+        case policyType.payment:
+            get_uri =
+                'https://api.sandbox.ebay.com/sell/account/v1/payment_policy?marketplace_id=EBAY_US'
+            post_uri = 'https://api.sandbox.ebay.com/sell/account/v1/payment_policy'
+            data = `{
+  "name": "minimal Payment Policy",
+  "marketplaceId": "EBAY_US",
+  "categoryTypes": [
+    {
+      "name": "ALL_EXCLUDING_MOTORS_VEHICLES"
+    }
+  ],
+  "paymentMethods": [
+    {
+      "paymentMethodType": "PERSONAL_CHECK"
+    }
+  ]
+}`
+            break
+        case policyType.return:
+            get_uri =
+                'https://api.sandbox.ebay.com/sell/account/v1/return_policy?marketplace_id=EBAY_US'
+            post_uri = 'https://api.sandbox.ebay.com/sell/account/v1/return_policy'
+            data = `{
+  "name": "minimal return policy, US marketplace",
+  "marketplaceId": "EBAY_US",
+  "refundMethod": "MONEY_BACK",
+  "returnsAccepted": true,
+  "returnShippingCostPayer": "SELLER",
+  "returnPeriod": {
+    "value": 30,
+    "unit": "DAY"
+  }
+}`
+            break
+    }
+    const options = {
+        hostname: 'api.sandbox.ebay.com',
+        path: get_uri,
+        method: 'GET',
+        headers: {
+            Authorization: 'Bearer ' + oauth_token,
+            Accept: 'application/json'
+        }
+    }
+    const req = request(options, (res) => {
+        let responseBody = ''
 
-                            const req = request(options, (res) => {})
+        res.on('data', (chunk) => {
+            responseBody += chunk
+        })
 
-                            req.write(data)
+        res.on('end', () => {
+            const options = {
+                hostname: 'api.sandbox.ebay.com',
+                path: post_uri,
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + oauth_token,
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Content-Length': data.length
+                }
+            }
 
-                            req.end()
-                        }
-                    })
-                })
+            if (
+                (type === policyType.fulfillment &&
+                    JSON.parse(responseBody).fulfillmentPolicies.length === 0) ||
+                (type === policyType.payment &&
+                    JSON.parse(responseBody).paymentPolicies.length === 0) ||
+                (type === policyType.return && JSON.parse(responseBody).returnPolicies.length === 0)
+            ) {
+                const req = request(options, (res) => {})
+
+                req.write(data)
 
                 req.end()
             }
-            // make default business
-            { }
-            
-            //make default return policy
-
-            return
-        }
+        })
     })
+    req.end()
 }
