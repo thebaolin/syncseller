@@ -47,7 +47,6 @@ function createTables() {
 
     CREATE TABLE IF NOT EXISTS Items (
       item_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id TEXT UNIQUE NOT NULL,
       onEbay INTEGER NOT NULL,
       onEtsy INTEGER NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -220,6 +219,103 @@ export function getEbayListing() {
     console.log(row)
     return row
 }
+
+export function insertFullListing(data: any): { success: boolean; error?: string } {
+  if (!db) return { success: false, error: 'Database not initialized' }
+
+  const insert = db.transaction(() => {
+      //insert item
+      const itemStmt = db.prepare(`
+          INSERT INTO Items (onEbay, onEtsy)
+          VALUES (?, ?)
+      `)
+      const itemResult = itemStmt.run(data.onEbay ? 1 : 0, data.onEtsy ? 1 : 0)
+      const itemId = itemResult.lastInsertRowid
+
+      //get platform + status IDs
+      const platform = db.prepare(`SELECT platform_id FROM L_Platforms WHERE name = ?`).get('Ebay')
+      const status = db.prepare(`SELECT id FROM L_Listing_Status WHERE status = ?`).get(data.status)
+
+      if (!platform || !status) throw new Error('Invalid platform or status')
+
+      //insert listing
+      const listingStmt = db.prepare(`
+          INSERT INTO Listings (item_id, platform_id, external_listing, status_id, price)
+          VALUES (?, ?, ?, ?, ?)
+      `)
+      const listingResult = listingStmt.run(itemId, platform.platform_id, data.external_listing, status.id, data.price)
+      const listingId = listingResult.lastInsertRowid
+
+      //insert platform-specific data (Ebay)
+      const ebayStmt = db.prepare(`
+          INSERT INTO Ebay (
+              item_id, listing_id, title, aspects, description, upc, imageURL,
+              condition, height, length, width, unit,
+              packageType, weight, weightUnit, quantity
+          ) VALUES (
+              @item_id, @listing_id, @title,@aspects, @description, @upc, @imageURL,
+              @condition, @height, @length, @width, @unit,
+              @packageType, @weight, @weightUnit, @quantity
+          )
+      `)
+
+      ebayStmt.run({
+        item_id: itemId,
+        listing_id: listingId,
+        title: data.title,
+        aspects: data.aspects,
+        description: data.description,
+        upc: data.upc,
+        imageURL: data.imageURL,
+        condition: data.condition,
+        packageWeightAndSize: data.packageWeightAndSize,
+        height: data.height,
+        length: data.length,
+        width: data.width,
+        unit: data.unit,
+        packageType: data.packageType,
+        weight: data.weight,
+        weightUnit: data.weightUnit,
+        quantity: data.quantity
+        })
+  })
+
+  try {
+      insert()
+      return { success: true }
+  } catch (e: any) {
+      return { success: false, error: e.message }
+  }
+}
+
+export function getListingHistory(): { success: boolean; data?: any[]; error?: string } {
+  if (!db) return { success: false, error: 'DB not initialized' }
+
+  try {
+      const rows = db.prepare(`
+          SELECT 
+              Ebay.title, 
+              Ebay.description, 
+              Listings.created_at, 
+              L_Listing_Status.status AS status,
+              Listings.price,
+              L_Platforms.name AS platform
+          FROM Ebay
+          JOIN Listings ON Ebay.listing_id = Listings.listing_id
+          JOIN L_Listing_Status ON Listings.status_id = L_Listing_Status.id
+          JOIN L_Platforms ON Listings.platform_id = L_Platforms.platform_id
+          ORDER BY Listings.created_at DESC
+      `).all()
+
+      return { success: true, data: rows }
+  } catch (err: any) {
+      return { success: false, error: err.message }
+  }
+}
+
+
+
+
 
 export function generateSecurityKey() {
     const key = crypto.randomBytes(32).toString('hex')
