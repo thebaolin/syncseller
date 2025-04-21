@@ -1,8 +1,9 @@
 import { app, BrowserWindow, ipcMain } from 'electron/main'
 import EbayAuthToken from 'ebay-oauth-nodejs-client'
 import { request } from 'node:https'
+import { Buffer } from 'node:buffer'
 
-import { getEbayCredentials, setEbayOauth } from './dbmanager'
+import { get_ebay_oauth, getEbayCredentials, refreshEbayOauth, setEbayOauth } from './dbmanager'
 
 // oauth scopes for what api calls you can make
 const scopes = [
@@ -28,7 +29,7 @@ export async function ebay_oauth_flow() {
         webPreferences: { nodeIntegration: false, contextIsolation: true }
     })
 
-    const ebayAuthToken = new EbayAuthToken({ ...getEbayCredentials()[0], env: 'SANDBOX' })
+    const ebayAuthToken = new EbayAuthToken({ ...getEbayCredentials(), env: 'SANDBOX' })
 
     let flag = false
 
@@ -116,12 +117,12 @@ export async function ebay_oauth_flow() {
             await make_policy(response.access_token, policyType.fulfillment)
             await make_policy(response.access_token, policyType.payment)
             await make_policy(response.access_token, policyType.return)
-
+            await refresh()
             return
         }
     })
 }
-
+//invariant: that access token and credentials exist
 // checks if fulfillment, payment, or return policy exists
 // if not then make a "basic", else do nothing
 // type is return, payment, fulfillment
@@ -243,4 +244,15 @@ async function make_policy(oauth_token: string, type: policyType) {
         })
     })
     req.end()
+}
+
+//invariant: that access token and credentials exist
+async function refresh() {
+    const ebayAuthToken = new EbayAuthToken({ ...getEbayCredentials(), env: 'SANDBOX' })
+    const accessToken = await ebayAuthToken.getAccessToken(
+        'SANDBOX',
+        get_ebay_oauth().refresh_token,
+        scopes
+    )
+    refreshEbayOauth(JSON.parse(accessToken).access_token, JSON.parse(accessToken).expires_in)
 }

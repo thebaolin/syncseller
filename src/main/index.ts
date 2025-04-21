@@ -319,7 +319,6 @@ ipcMain.handle('generate-key', async () => {
     return generateSecurityKey()
 })
 
-
 ipcMain.handle('insert-full-listing', async (_event, data) => {
     return insertFullListing(data)
 })

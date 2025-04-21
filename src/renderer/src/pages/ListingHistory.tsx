@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
 const ListingHistory = () => {
-
     const [listings, setListings] = useState([])
 
     useEffect(() => {
@@ -15,7 +14,7 @@ const ListingHistory = () => {
         }
 
         fetchListings()
-    },[])
+    }, [])
     return (
         <div className="content">
             <h1 className="heading">Listing History</h1>
