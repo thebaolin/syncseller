@@ -7,9 +7,9 @@ const SideBarTab = (props: SideBarTabProps) => {
     const { link, label } = props;
     const navigate = useNavigate();
     return (
-        <div className='h-fit h-min-[60px] w-full border-b-2 border-white text-xl block p-[15px] hover:bg-dustyrose hover:text-white'>
+        <div>
             <button 
-                className='h-full w-full text-left'
+                className='h-fit h-min-[60px] w-full border-b-2 border-white text-xl flex p-[15px] hover:bg-dustyrose hover:text-white'
                 onClick={() => navigate(link)}
             >
                 {label}

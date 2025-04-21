@@ -25,13 +25,13 @@ const HomePage = () => {
             <h1 className="home-heading">Hello Name, Welcome to SyncSeller!</h1>
 
             {/* Temporary Etsy Login Button LOL*/}
-            <button id="etsy-login-button" className="bg-blue-500 text-white px-4 py-2 rounded">
+            <button id="etsy-login-button" className="form-button">
                 Connect to Etsy
             </button>
 
             {/* Ebay login button */}
             <a href="/app/usercred">
-                <button className="bg-white">Log in to eBay</button>
+                <button className="form-button">Log in to eBay</button>
             </a>
 
             {/* Platforms */}
