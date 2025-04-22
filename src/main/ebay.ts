@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron/main'
+import { app, BrowserWindow, ipcMain, Notification } from 'electron/main'
 import EbayAuthToken from 'ebay-oauth-nodejs-client'
 import { request } from 'node:https'
 
@@ -42,18 +42,19 @@ export async function ebay_oauth_flow() {
         prompt: 'login'
     })
 
-    // gets an authorization token for the user
-    await win.loadURL(oauth_url)
-    // ask them to try again - ipc
-    // maybe close window for them?
+    // try the url
+    await win.loadURL( oauth_url )
+    
+    // handles error from url
     const html = await win.webContents.executeJavaScript('document.documentElement.innerHTML')
     console.log(html.includes('error_id'))
     if (html.includes('error_id')) {
         deleteEbayCredentials()
-        // ipc
+        new Notification({ title: "Ebay Credentials Error", body: "Incorrect credentials supplied; Please try again" }).show()
         win.close()
         return
     }
+
     // assumes no error in url
     win.webContents.on('will-redirect', async (details) => {
         const access_code = new URL(details.url).searchParams.get('code')
@@ -123,7 +124,7 @@ export async function ebay_oauth_flow() {
             })
 
             req.end()
-
+            // set default policies if there aren't any
             make_policy(response.access_token, policyType.fulfillment)
             make_policy(response.access_token, policyType.payment)
             make_policy(response.access_token, policyType.return)
