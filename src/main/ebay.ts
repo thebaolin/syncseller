@@ -1,9 +1,14 @@
 import { app, BrowserWindow, ipcMain } from 'electron/main'
 import EbayAuthToken from 'ebay-oauth-nodejs-client'
 import { request } from 'node:https'
-import { Buffer } from 'node:buffer'
 
-import { get_ebay_oauth, getEbayCredentials, refreshEbayOauth, setEbayOauth } from './dbmanager'
+import {
+    deleteEbayCredentials,
+    get_ebay_oauth,
+    getEbayCredentials,
+    refreshEbayOauth,
+    setEbayOauth
+} from './dbmanager'
 
 // oauth scopes for what api calls you can make
 const scopes = [
@@ -29,7 +34,7 @@ export async function ebay_oauth_flow() {
         webPreferences: { nodeIntegration: false, contextIsolation: true }
     })
 
-    const ebayAuthToken = new EbayAuthToken({ ...getEbayCredentials(), env: 'SANDBOX' })
+    const ebayAuthToken = new EbayAuthToken({ ...getEbayCredentials()[0], env: 'SANDBOX' })
 
     let flag = false
 
@@ -39,11 +44,16 @@ export async function ebay_oauth_flow() {
 
     // gets an authorization token for the user
     await win.loadURL(oauth_url)
-    // page is a json with error if wrong url
-    // handle error here
-    // delete entry from db
-    // ask them to try again
-
+    // ask them to try again - ipc
+    // maybe close window for them?
+    const html = await win.webContents.executeJavaScript('document.documentElement.innerHTML')
+    console.log(html.includes('error_id'))
+    if (html.includes('error_id')) {
+        deleteEbayCredentials()
+        // ipc
+        win.close()
+        return
+    }
     // assumes no error in url
     win.webContents.on('will-redirect', async (details) => {
         const access_code = new URL(details.url).searchParams.get('code')
@@ -114,10 +124,9 @@ export async function ebay_oauth_flow() {
 
             req.end()
 
-            await make_policy(response.access_token, policyType.fulfillment)
-            await make_policy(response.access_token, policyType.payment)
-            await make_policy(response.access_token, policyType.return)
-            await refresh()
+            make_policy(response.access_token, policyType.fulfillment)
+            make_policy(response.access_token, policyType.payment)
+            make_policy(response.access_token, policyType.return)
             return
         }
     })
@@ -248,7 +257,7 @@ async function make_policy(oauth_token: string, type: policyType) {
 
 //invariant: that access token and credentials exist
 async function refresh() {
-    const ebayAuthToken = new EbayAuthToken({ ...getEbayCredentials(), env: 'SANDBOX' })
+    const ebayAuthToken = new EbayAuthToken({ ...getEbayCredentials()[0], env: 'SANDBOX' })
     const accessToken = await ebayAuthToken.getAccessToken(
         'SANDBOX',
         get_ebay_oauth().refresh_token,

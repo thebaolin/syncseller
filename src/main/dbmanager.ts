@@ -220,6 +220,12 @@ export function getEbayListing() {
     return row
 }
 
+export function closeDB() {
+    if (db !== undefined) {
+        db.close()
+    }
+}
+
 export function insertFullListing(data: any): { success: boolean; error?: string } {
     if (!db) return { success: false, error: 'Database not initialized' }
 
@@ -334,7 +340,7 @@ export function generateSecurityKey() {
 }
 // for ebay app
 export function getEbayCredentials() {
-    return db.prepare(`SELECT * FROM EbayCredentials`).all()[0]
+    return db.prepare(`SELECT * FROM EbayCredentials`).all()
 }
 
 export function setEbayCredentials(client_id, client_secret, redirect_uri) {
@@ -371,4 +377,12 @@ export function refreshEbayOauth(oauth_token, oauth_expiry) {
     db.prepare(
         `UPDATE OAuth SET oauth_created = ?, oauth_expiry = ?, oauth_token = ? WHERE platform_id = 1`
     ).run(Date.now(), oauth_expiry * 900, oauth_token)
+}
+
+// delete ebay credential if there is one
+export function deleteEbayCredentials() {
+    const creds = getEbayCredentials()
+    if (creds.length !== 0) {
+        db.prepare(`DELETE FROM EbayCredentials WHERE clientId = ?`).run(creds[0].clientId)
+    }
 }

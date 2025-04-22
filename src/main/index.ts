@@ -254,8 +254,7 @@ app.whenReady().then(() => {
     ipcMain.handle('set-ebay-creds', (e, client_id, client_secret, redirect_uri) => {
         setEbayCredentials(client_id, client_secret, redirect_uri)
         ebay_oauth_flow()
-        // make default policies
-        // maybe message pass to create warehouse?
+        // message pass to create warehouse
     })
 
     // IPC test
@@ -283,7 +282,8 @@ import {
     generateSecurityKey,
     setEbayOauth,
     insertFullListing,
-    getListingHistory
+    getListingHistory,
+    closeDB
 } from './dbmanager'
 
 // Listen for the 'create-listing' message from the rendering thing
@@ -331,6 +331,7 @@ ipcMain.handle('get-listing-history', async () => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
+        closeDB()
         app.quit()
     }
 })
