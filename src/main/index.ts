@@ -7,11 +7,19 @@ import crypto from 'crypto'
 import EbayAuthToken from 'ebay-oauth-nodejs-client'
 import { request } from 'node:https'
 import { ebay_oauth_flow } from './ebay'
+import { createDummyShopifyListing } from './shopify'
 
 const ETSY_CLIENT_ID = 'syncseller'
 const ETSY_REDIRECT_URI = 'https://yourapp.com/oauth/callback'
 const ETSY_SCOPES = 'transactions_r listings_r'
 const STATE = crypto.randomBytes(16).toString('hex') // CSRF protection
+
+
+async function main() {
+    await createDummyShopifyListing()
+  }
+
+main()
 
 // oauth scopes for what api calls you can make
 const scopes = [
@@ -27,6 +35,7 @@ const HEADERS = (auth: string) => ({
     'Content-Type': 'application/json',
     Accept: 'application/json'
 })
+
 
 async function fetchPolicies(endpoint: string, auth: string) {
     return new Promise((resolve, reject) => {
