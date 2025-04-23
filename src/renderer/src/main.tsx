@@ -4,16 +4,16 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
 // Import content from other files
 import './style.css'
-import Layout from './pages/Layout'
-import HomePage from './pages/HomePage'
-import ListingForm from './pages/ListingForm'
-import ListingHistory from './pages/ListingHistory'
-import Analytics from './pages/Analytics'
-import DBView from './pages/testDBView'
-import UserCred from './pages/UserCred'
-import PasswordScreen from './pages/dbpassword'
-import WelcomeScreen from './pages/WelcomeScreen'
-import NewUserScreen from './pages/NewUserScreen'
+import Layout from './pages/Main Pages/Layout'
+import HomePage from './pages/Main Pages/HomePage'
+import ListingForm from './pages/Main Pages/ListingForm'
+import ListingHistory from './pages/Main Pages/ListingHistory'
+import Analytics from './pages/Main Pages/Analytics'
+import DBView from './pages/Testing Pages/testDBView'
+import UserCred from './pages/User Credentials/UserCred'
+import PasswordScreen from './pages/User Credentials/dbpassword'
+import WelcomeScreen from './pages/User Credentials/WelcomeScreen'
+import NewUserScreen from './pages/User Credentials/NewUserScreen'
 
 // Authentication check function
 const isAuthenticated = () => {

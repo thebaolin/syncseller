@@ -351,21 +351,26 @@ const ListingForm = () => {
                         </label> */}
                         <br />
                     </div>
-                </section>
-                <NumInput
-                    id="price"
-                    value={listingData.price}
-                    label="Price (USD)"
-                    onChange={handleChange}
-                />
 
-                <Dropdown
-                    id="status"
-                    value={listingData.status}
-                    label="Listing Status"
-                    options={['Active', 'Sold', 'Deleted', 'Draft']}
-                    onChange={handleChange}
-                />
+                    <div className="flex flex-col-2">
+                        <NumInput
+                            id="price"
+                            value={listingData.price}
+                            label="Price (USD)"
+                            onChange={handleChange}
+                        />
+
+                        <Dropdown
+                            id="status"
+                            value={listingData.status}
+                            label="Listing Status"
+                            options={['Active', 'Sold', 'Deleted', 'Draft']}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    
+                </section>
 
                 <section>
                     <SectionHeader label="Submit Listing" />
