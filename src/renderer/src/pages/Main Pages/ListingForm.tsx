@@ -105,7 +105,7 @@ const ListingForm = () => {
         price: 0,
 
         title: '',
-        aspects: "[]",
+        aspects: '[]',
         description: '',
         upc: 0,
         imageURL: '',
@@ -150,7 +150,7 @@ const ListingForm = () => {
         const response = await window.database.insertFullListing({
             ...listingData
             //for now leave aspect out. need to figure out how to handle this
-            //aspects: JSON.stringify(listingData.aspects) // convert to storable string 
+            //aspects: JSON.stringify(listingData.aspects) // convert to storable string
         })
 
         if (response.success) {
@@ -163,7 +163,7 @@ const ListingForm = () => {
     // Handle submit draft
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, checked } = e.target
-        setListingData(prev => ({
+        setListingData((prev) => ({
             ...prev,
             [id === 'ebay' ? 'onEbay' : 'onEtsy']: checked
         }))
@@ -336,12 +336,26 @@ const ListingForm = () => {
                     {/* NON FUNCTIONAL */}
                     <div className="mx-[20px] my-[15px]">
                         <label>
-                            <input id="ebay" type="checkbox" checked={listingData.onEbay} onChange={handleCheckboxChange} name="option" value="option" />
+                            <input
+                                id="ebay"
+                                type="checkbox"
+                                checked={listingData.onEbay}
+                                onChange={handleCheckboxChange}
+                                name="option"
+                                value="option"
+                            />
                             eBay
                         </label>
                         <br />
                         <label>
-                            <input id="etsy" type="checkbox" checked={listingData.onEtsy} onChange={handleCheckboxChange} name="option" value="option" />
+                            <input
+                                id="etsy"
+                                type="checkbox"
+                                checked={listingData.onEtsy}
+                                onChange={handleCheckboxChange}
+                                name="option"
+                                value="option"
+                            />
                             Etsy
                         </label>
                         <br />

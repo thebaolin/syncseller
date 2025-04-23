@@ -26,9 +26,10 @@
         "@tailwindcss/postcss": "^4.0.12",
         "axios": "^1.8.1",
         "better-sqlite3-multiple-ciphers": "^11.8.1",
-        "dotenv": "^16.4.7",
+        "dotenv": "^16.5.0",
         "ebay-oauth-nodejs-client": "^1.2.2",
         "electron-updater": "^6.3.9",
+        "node-fetch": "^3.3.2",
         "react-router-dom": "^7.2.0",
         "xml2js": "^0.6.2"
     },

@@ -7,11 +7,19 @@ import crypto from 'crypto'
 import EbayAuthToken from 'ebay-oauth-nodejs-client'
 import { request } from 'node:https'
 import { ebay_oauth_flow } from './ebay'
+import { createDummyShopifyListing } from './shopify'
 
 const ETSY_CLIENT_ID = 'syncseller'
 const ETSY_REDIRECT_URI = 'https://yourapp.com/oauth/callback'
 const ETSY_SCOPES = 'transactions_r listings_r'
 const STATE = crypto.randomBytes(16).toString('hex') // CSRF protection
+
+
+async function main() {
+    await createDummyShopifyListing()
+  }
+
+main()
 
 // oauth scopes for what api calls you can make
 const scopes = [
@@ -27,6 +35,7 @@ const HEADERS = (auth: string) => ({
     'Content-Type': 'application/json',
     Accept: 'application/json'
 })
+
 
 async function fetchPolicies(endpoint: string, auth: string) {
     return new Promise((resolve, reject) => {
@@ -254,8 +263,7 @@ app.whenReady().then(() => {
     ipcMain.handle('set-ebay-creds', (e, client_id, client_secret, redirect_uri) => {
         setEbayCredentials(client_id, client_secret, redirect_uri)
         ebay_oauth_flow()
-        // make default policies
-        // maybe message pass to create warehouse?
+        // message pass to create warehouse
     })
 
     // IPC test
@@ -283,7 +291,8 @@ import {
     generateSecurityKey,
     setEbayOauth,
     insertFullListing,
-    getListingHistory
+    getListingHistory,
+    closeDB
 } from './dbmanager'
 
 // Listen for the 'create-listing' message from the rendering thing
@@ -319,7 +328,6 @@ ipcMain.handle('generate-key', async () => {
     return generateSecurityKey()
 })
 
-
 ipcMain.handle('insert-full-listing', async (_event, data) => {
     return insertFullListing(data)
 })
@@ -332,6 +340,7 @@ ipcMain.handle('get-listing-history', async () => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
+        closeDB()
         app.quit()
     }
 })
