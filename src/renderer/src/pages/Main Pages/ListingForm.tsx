@@ -133,17 +133,6 @@ const ListingForm = () => {
     }
 
     // Validate listing
-
-    // Handle submit listing
-    // const handleSubmit = (e) => {
-    //     e.preventDefault
-    //     setListingData((prevData) => ({
-    //         ...prevData
-    //     }))
-    //     console.log('Form submitted', listingData)
-    // }
-
-    // Validate draft
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
@@ -244,7 +233,6 @@ const ListingForm = () => {
                     </div>
                 </section>
 
-                {/* PackageWeightAndSize - ? */}
                 <section>
                     <SectionHeader label="Package Size and Weight" />
 
@@ -337,6 +325,7 @@ const ListingForm = () => {
                     <div className="mx-[20px] my-[15px]">
                         <label>
                             <input
+                                className="mr-1"
                                 id="ebay"
                                 type="checkbox"
                                 checked={listingData.onEbay}
@@ -349,6 +338,7 @@ const ListingForm = () => {
                         <br />
                         <label>
                             <input
+                                className="mr-1"
                                 id="etsy"
                                 type="checkbox"
                                 checked={listingData.onEtsy}
@@ -358,32 +348,34 @@ const ListingForm = () => {
                             />
                             Etsy
                         </label>
-                        <br />
+                        {/* <br /> */}
                         {/* <label>
                             <input id="shopify" type="checkbox" name="option" value="option" />
                             Shopify
                         </label> */}
-                        <br />
+                        {/* <br /> */}
                     </div>
 
                     <div className="flex flex-col-2">
-                        <NumInput
-                            id="price"
-                            value={listingData.price}
-                            label="Price (USD)"
-                            onChange={handleChange}
-                        />
-
-                        <Dropdown
-                            id="status"
-                            value={listingData.status}
-                            label="Listing Status"
-                            options={['Active', 'Sold', 'Deleted', 'Draft']}
-                            onChange={handleChange}
-                        />
+                        <div className="flex-1">
+                            <NumInput
+                                id="price"
+                                value={listingData.price}
+                                label="Price (USD)"
+                                onChange={handleChange}
+                            />
+                        </div>
+                       
+                        <div className="flex-1">
+                            <Dropdown
+                                id="status"
+                                value={listingData.status}
+                                label="Listing Status"
+                                options={['Active', 'Sold', 'Deleted', 'Draft']}
+                                onChange={handleChange}
+                            />
+                        </div>
                     </div>
-
-                    
                 </section>
 
                 <section>
@@ -401,20 +393,6 @@ const ListingForm = () => {
                         </button>
                     </div>
                 </section>
-
-                {/* For debugging purposes - comment out later */}
-                {/* <div className='bg-white'>
-                    <h1 className='font-bold'>See Listing Data</h1>
-                    <p>title: {listingData.title}
-                        <br/>description: {listingData.description}
-                        <br/><img className='border' src={listingData.imageURL} alt='listing form img'/>
-                        <br/>quantity: {listingData.quantity}
-                        <br/>upc: {listingData.upc}
-                        <br/>condition: {listingData.condition}
-                        <br/>size: {listingData.height} {listingData.unit} x {listingData.length} {listingData.unit} x {listingData.width} {listingData.unit}
-                        <br/>weight: {listingData.weight} {listingData.weightUnit}
-                    </p>
-                </div> */}
             </form>
         </div>
     )

@@ -1,4 +1,14 @@
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import Ebay_logo from "../../assets/images/ebay-logo.png"
+import Etsy_logo from "../../assets/images/Etsy-Logo.png"
+import Shopify_logo from "../../assets/images/Shopify-Logo.png"
+
+const Icon = (props: {src:any}) => (
+    <div className=" bg-white w-full h-[100px] flex items-center justify-center mx-4 rounded-xl hover:bg-dustyrose">
+        <img className="object-cover h-[50px]" src={props.src} />
+    </div>
+)
 
 const HomePage = () => {
     useEffect(() => {
@@ -19,6 +29,8 @@ const HomePage = () => {
         }
     }, [])
 
+    const navigate = useNavigate();
+
     return (
         <div className="content">
             <h1 className="heading">Home</h1>
@@ -30,33 +42,17 @@ const HomePage = () => {
             </button>
 
             {/* Ebay login button */}
-            <a href="/app/usercred">
-                <button className="form-button">Log in to eBay</button>
-            </a>
+            <button 
+                className="form-button"
+                onClick={() => navigate("/app/usercred")}
+            >Log in to eBay</button>
 
             {/* Platforms */}
             <h1 className="home-heading">Platforms</h1>
-            <section className="flex flex-col-4">
-                <div className="w-1/4">
-                    <div className="home-row1-icon h-[150px] bg-red-800"></div>
-                    <h1 className="home-heading">Poshmark</h1>
-                    <p className="home-paragraph">42 listings</p>
-                </div>
-                <div className="w-1/4">
-                    <div className="home-row1-icon h-[150px] bg-red-500"></div>
-                    <h1 className="home-heading">Depop</h1>
-                    <p className="home-paragraph">35 listings</p>
-                </div>
-                <div className="w-1/4">
-                    <div className="home-row1-icon h-[150px] bg-blue-600"></div>
-                    <h1 className="home-heading">Facebook Marketplace</h1>
-                    <p className="home-paragraph">49 listings</p>
-                </div>
-                <div className="w-1/4">
-                    <div className="home-row1-icon h-[150px] bg-amber-50"></div>
-                    <h1 className="home-heading">eBay</h1>
-                    <p className="home-paragraph">16 listings</p>
-                </div>
+            <section className="flex flex-col-3">
+                <Icon src={Ebay_logo}/>
+                <Icon src={Etsy_logo}/>
+                <Icon src={Shopify_logo}/>
             </section>
         </div>
     )
