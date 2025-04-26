@@ -6,3 +6,4 @@ out
 *.log*
 .env
 app.db
+AllisonKey.txt

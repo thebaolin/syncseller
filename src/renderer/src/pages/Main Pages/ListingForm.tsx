@@ -95,6 +95,21 @@ const SectionHeader = ({ label }) => {
     )
 }
 
+const CheckboxInput = (props) => (
+    <label>
+        <input
+            className="mr-1 my-[15px]"
+            id={props.id}
+            type="checkbox"
+            checked={props.checked}
+            onChange={props.onChange}
+            name="option"
+            value="option"
+        />
+        {props.label}
+    </label>
+)
+
 const ListingForm = () => {
     // Listing object
     const [listingData, setListingData] = useState({
@@ -157,6 +172,23 @@ const ListingForm = () => {
             [id === 'ebay' ? 'onEbay' : 'onEtsy']: checked
         }))
     }
+
+    const [selectedFile, setSelectedFile] = useState<File[]>([]);
+    const [imagePreview, setImagePreview] = useState<string[]>([]);
+
+    const handleFileChange = (event) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            setSelectedFile(prev => [...prev, file]);
+            
+            const objectUrl = URL.createObjectURL(file);
+            setImagePreview(prev => [...prev, objectUrl]);
+            
+            console.log('File selected:', file.name);
+            console.log('Image preview URL:', objectUrl);
+        }
+    }
+
     return (
         <div className="content" id="form-content">
             <h1 className="heading">Create a listing</h1>
@@ -180,21 +212,34 @@ const ListingForm = () => {
                         onChange={handleChange}
                     />
 
-                    {/* imageURL */}
-                    <TextInput
-                        id="imageURL"
-                        value={listingData.imageURL}
-                        label="Image URL"
-                        onChange={handleChange}
-                    />
+                    {/* Upload Images */}
+                    <div className="mx-[20px] my-[15px]">
+                        <label>
+                            Upload images
+                            <br />
+                        </label>
+                        <input 
+                            type="file" 
+                            id="fileUpload" 
+                            accept="image/*" 
+                            multiple
+                            onChange={handleFileChange}
+                        ></input>
+                    </div>
 
-                    {/* quantity - integer */}
-                    <NumInput
-                        id="quantity"
-                        value={listingData.quantity}
-                        label="Quantity"
-                        onChange={handleChange}
-                    ></NumInput>
+                    {/* Images Preview */}
+                    <div className="grid grid-cols-4 flex-wrap mx-[15px] my-[15px]">
+                        {imagePreview.map((image) => (
+                            <div className="flex-1 aspect-square shadow bg-white m-[5px]">
+                                <img 
+                                    className="h-full object-cover" 
+                                    id="output" 
+                                    src={image} 
+                                    alt="image.name" 
+                                ></img>
+                            </div>
+                        ))}
+                    </div>
                 </section>
 
                 <section>
@@ -321,33 +366,20 @@ const ListingForm = () => {
 
                 <section>
                     <SectionHeader label="Listing Platforms" />
-                    {/* NON FUNCTIONAL */}
-                    <div className="mx-[20px] my-[15px]">
-                        <label>
-                            <input
-                                className="mr-1"
-                                id="ebay"
-                                type="checkbox"
-                                checked={listingData.onEbay}
-                                onChange={handleCheckboxChange}
-                                name="option"
-                                value="option"
-                            />
-                            eBay
-                        </label>
-                        <br />
-                        <label>
-                            <input
-                                className="mr-1"
-                                id="etsy"
-                                type="checkbox"
-                                checked={listingData.onEtsy}
-                                onChange={handleCheckboxChange}
-                                name="option"
-                                value="option"
-                            />
-                            Etsy
-                        </label>
+                    <div className="grid grid-cols-4 mx-[20px] my-[15px]">
+                        <CheckboxInput
+                            id="ebay"
+                            checked={listingData.onEbay}
+                            onChange={handleCheckboxChange}
+                            label="eBay"
+                        />
+                       
+                        <CheckboxInput
+                            id="etsy"
+                            checked={listingData.onEtsy}
+                            onchange={handleCheckboxChange}
+                            label="Etsy"
+                        />
                         {/* <br /> */}
                         {/* <label>
                             <input id="shopify" type="checkbox" name="option" value="option" />
@@ -366,6 +398,16 @@ const ListingForm = () => {
                             />
                         </div>
                        
+                        <div className="flex-1">
+                            {/* quantity - integer */}
+                            <NumInput
+                                id="quantity"
+                                value={listingData.quantity}
+                                label="Quantity"
+                                onChange={handleChange}
+                            ></NumInput>
+                        </div>
+
                         <div className="flex-1">
                             <Dropdown
                                 id="status"
