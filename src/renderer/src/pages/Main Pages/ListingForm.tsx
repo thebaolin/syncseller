@@ -228,7 +228,7 @@ const ListingForm = () => {
                     </div>
 
                     {/* Images Preview */}
-                    <div className="grid grid-cols-4 flex-wrap mx-[15px] my-[15px]">
+                    <div className="grid grid-cols-4 direction- grid-wrap-reverse mx-[15px] my-[15px]">
                         {imagePreview.map((image) => (
                             <div className="flex-1 aspect-square shadow bg-white m-[5px]">
                                 <img 
