@@ -3,23 +3,18 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { app, BrowserWindow, ipcMain } from 'electron/main'
-import crypto from 'crypto'
 import EbayAuthToken from 'ebay-oauth-nodejs-client'
 import { request } from 'node:https'
 import { ebay_oauth_flow } from './ebay'
 import { createDummyShopifyListing } from './shopify'
-
-const ETSY_CLIENT_ID = 'syncseller'
-const ETSY_REDIRECT_URI = 'https://yourapp.com/oauth/callback'
-const ETSY_SCOPES = 'transactions_r listings_r'
-const STATE = crypto.randomBytes(16).toString('hex') // CSRF protection
+import { setupEtsyOAuthHandlers } from './etsy'
 
 
-async function main() {
-    await createDummyShopifyListing()
-  }
+// async function main() {
+//     await createDummyShopifyListing()
+//   }
 
-main()
+// main()
 
 // oauth scopes for what api calls you can make
 const scopes = [
@@ -85,94 +80,6 @@ async function getPolicyIDs(auth: string) {
         console.error('Error fetching policy IDs:', error)
         return null
     }
-}
-
-let etsyAuthWindow: BrowserWindow | null = null
-
-function generateCodeVerifier(): string {
-    return crypto.randomBytes(32).toString('base64url')
-}
-
-function generateCodeChallenge(verifier: string): string {
-    return crypto.createHash('sha256').update(verifier).digest('base64url')
-}
-
-//Request an Authorization Code
-ipcMain.handle('start-etsy-oauth', () => {
-    const codeVerifier = generateCodeVerifier()
-    const codeChallenge = generateCodeChallenge(codeVerifier)
-
-    // Store codeVerifier locally for now until Db is set up
-    require('fs').writeFileSync('etsy_code_verifier.txt', codeVerifier)
-
-    //https://developers.etsy.com/documentation/essentials/authentication#redirect-uris
-    const authUrl = `https://www.etsy.com/oauth/connect?
-        response_type=code&
-        client_id=${ETSY_CLIENT_ID}&
-        redirect_uri=${encodeURIComponent(ETSY_REDIRECT_URI)}&
-        scope=${encodeURIComponent(ETSY_SCOPES)}&
-        state=${STATE}&
-        code_challenge=${codeChallenge}&
-        code_challenge_method=S256`
-
-    etsyAuthWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
-        webPreferences: { nodeIntegration: false, contextIsolation: true }
-    })
-
-    etsyAuthWindow.loadURL(authUrl) // Load authUrl into the new browser window
-
-    // Listen for redirect navigation event (when Etsy redirects user back to redirect_uri after auth)
-    etsyAuthWindow.webContents.on('did-redirect-navigation', async (event, url) => {
-        const urlParams = new URL(url).searchParams
-        const authCode = urlParams.get('code')
-
-        if (authCode) {
-            const accessToken = await exchangeEtsyCodeForToken(authCode)
-            console.log('Etsy Access Token:', accessToken)
-
-            // Store access token
-            require('fs').writeFileSync('etsy_token.json', JSON.stringify(accessToken))
-
-            etsyAuthWindow?.close()
-            etsyAuthWindow = null
-        }
-    })
-})
-
-// Request Access Token
-// Exchanges the auth code for an access token using Etsy's API
-async function exchangeEtsyCodeForToken(code: string) {
-    const codeVerifier = require('fs').readFileSync('etsy_code_verifier.txt', 'utf-8')
-
-    return new Promise((resolve, reject) => {
-        const postData = `grant_type=authorization_code&
-            client_id=${ETSY_CLIENT_ID}&
-            redirect_uri=${encodeURIComponent(ETSY_REDIRECT_URI)}&
-            code=${code}&
-            code_verifier=${codeVerifier}`
-
-        const options = {
-            hostname: 'api.etsy.com',
-            path: '/v3/public/oauth/token',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Content-Length': Buffer.byteLength(postData)
-            }
-        }
-
-        const req = request(options, (res) => {
-            let data = ''
-            res.on('data', (chunk) => (data += chunk))
-            res.on('end', () => resolve(JSON.parse(data)))
-        })
-
-        req.on('error', reject)
-        req.write(postData)
-        req.end()
-    })
 }
 
 function createWindow(): void {
@@ -271,6 +178,8 @@ app.whenReady().then(() => {
 
     createWindow()
 
+    setupEtsyOAuthHandlers()
+
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
@@ -278,6 +187,7 @@ app.whenReady().then(() => {
     })
 
     //initializeDatabase();
+
 })
 import {
     getData,
