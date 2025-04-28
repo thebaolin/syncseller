@@ -216,6 +216,7 @@ const ListingForm = () => {
                 ...listingData
                 //for now leave aspect out. need to figure out how to handle this
                 //aspects: JSON.stringify(listingData.aspects) // convert to storable string
+                // note to ivy: i handled the listing aspects and put them in string form
             })
     
             if (response.success) {
