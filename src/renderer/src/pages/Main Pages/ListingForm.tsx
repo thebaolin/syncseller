@@ -121,7 +121,7 @@ const ListingForm = () => {
         price: 0,
 
         title: '',
-        aspects: '[]',
+        aspects: {},
         description: '',
         upc: '', //changed to str because of leading zeros and easier to count digits
         imageURL: [],
@@ -190,6 +190,12 @@ const ListingForm = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
+        Object.entries(aspects).map(([key,value]) => {
+            if (value) {
+                listingData.aspects[key] = value;
+            }
+        })}
+
         const valid = validateListing();
 
         if (valid){
@@ -232,6 +238,24 @@ const ListingForm = () => {
         }
     }
 
+    const [aspects, setAspects] = useState({
+        size: '',
+        color: '',
+        brand: '',
+        material: '', 
+        condition: '',
+        model: '',
+        style: ''
+    });
+
+    const handleAspects = (event) => {
+        const { name, value } = event.target
+        setAspects((prevData) => ({
+            ...prevData,
+            [name]: value
+        }))
+    }
+
     return (
         <div className="content" id="form-content">
             <h1 className="heading">Create a listing</h1>
@@ -271,7 +295,7 @@ const ListingForm = () => {
                     </div>
 
                     {/* Images Preview */}
-                    <div className="grid grid-cols-4 direction- grid-wrap-reverse mx-[15px] my-[15px]">
+                    <div className="grid grid-cols-4 mx-[15px] my-[15px]">
                         {imagePreview.map((image, index) => (
                             <div className="flex-1 aspect-square shadow bg-white m-[5px]">
                                 <img 
@@ -290,6 +314,19 @@ const ListingForm = () => {
                     <SectionHeader label="Item Specifications" />
 
                     {/* Aspects - ?*/}
+                    <div className="grid grid-cols-4 flex-wrap">
+                        {Object.entries(aspects).map(([key,value]) => (
+                            <div>
+                                <TextInput
+                                    id={key}
+                                    value={value}
+                                    label={key.charAt(0).toUpperCase() + key.slice(1)}
+                                    onChange={handleAspects}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                    <p>{aspects.brand}</p>
 
                     <div className="flex flex-col-2">
                         {/* UPC - Integer */}
