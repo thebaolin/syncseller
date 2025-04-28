@@ -76,6 +76,7 @@ const Dropdown = (props: SelectProps) => {
             <label htmlFor={id}>{label}</label>
             <br />
             <select className="w-full" id={id} name={id} value={value} onChange={onChange}>
+                <option value="" disabled>Select an option</option>
                 {options.map((option, index) => (
                     <option key={index} value={option}>
                         {option}
@@ -122,8 +123,8 @@ const ListingForm = () => {
         title: '',
         aspects: '[]',
         description: '',
-        upc: 0,
-        imageURL: '',
+        upc: '', //changed to str because of leading zeros and easier to count digits
+        imageURL: [],
         condition: '',
         packageWeightAndSize: '',
         height: 0,
@@ -147,20 +148,62 @@ const ListingForm = () => {
         }))
     }
 
+    const requiredFields = {
+        price: "Price",
+        title: "Title",
+        description: "Description",
+        upc: "UPC",
+        condition: "Condition" ,
+        packageType: "Package Type",
+        weightUnit: "Weight Unit",
+        weight: "Weight",
+        unit: "Unit",
+        height: "Height",
+        length: "Length",
+        width: "Width",
+        quantity: "Quantity"
+    }
+
     // Validate listing
+    const validateListing = () => {
+        let missing: string[] = [];
+
+        for (const key in requiredFields){
+            if (!listingData[key]) {
+                missing.push(requiredFields[key]);
+            }
+        }
+
+        if (!missing) {
+            return true;
+        }
+        else {
+            alert(
+                "Missing required fields:\n" +
+                missing.map((m) => `-${m}`).join("\n")
+            )
+            return false;
+        }
+    }
+
+    // Handle Submit
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
-        const response = await window.database.insertFullListing({
-            ...listingData
-            //for now leave aspect out. need to figure out how to handle this
-            //aspects: JSON.stringify(listingData.aspects) // convert to storable string
-        })
+        const valid = validateListing();
 
-        if (response.success) {
-            alert('Listing submitted successfully!')
-        } else {
-            alert(`Failed to submit listing: ${response.error}`)
+        if (valid){
+            const response = await window.database.insertFullListing({
+                ...listingData
+                //for now leave aspect out. need to figure out how to handle this
+                //aspects: JSON.stringify(listingData.aspects) // convert to storable string
+            })
+    
+            if (response.success) {
+                alert('Listing submitted successfully!')
+            } else {
+                alert(`Failed to submit listing: ${response.error}`)
+            }
         }
     }
 
@@ -229,13 +272,14 @@ const ListingForm = () => {
 
                     {/* Images Preview */}
                     <div className="grid grid-cols-4 direction- grid-wrap-reverse mx-[15px] my-[15px]">
-                        {imagePreview.map((image) => (
+                        {imagePreview.map((image, index) => (
                             <div className="flex-1 aspect-square shadow bg-white m-[5px]">
                                 <img 
                                     className="h-full object-cover" 
                                     id="output" 
                                     src={image} 
                                     alt="image.name" 
+                                    key={index}
                                 ></img>
                             </div>
                         ))}
@@ -250,12 +294,20 @@ const ListingForm = () => {
                     <div className="flex flex-col-2">
                         {/* UPC - Integer */}
                         <div className="flex-1">
-                            <NumInput
-                                id="upc"
-                                value={listingData.upc}
-                                label="Universal Purchase Code (UPC)"
-                                onChange={handleChange}
-                            />
+                            <div className="flex-1 mx-[20px] my-[15px]">
+                                <label htmlFor="upc">Universal Product Code (UPC)</label>
+                                <br />
+                                <input
+                                    className="w-full"
+                                    id="upc"
+                                    name="upc"
+                                    type="text"
+                                    pattern="^\d{12}$"
+                                    max="12"
+                                    value={listingData.upc}
+                                    onChange={handleChange}
+                                ></input>
+                            </div>
                         </div>
 
                         {/* Condition - options taken from eBay's Clothing, Shoes & Accessories: Clothing */}
@@ -283,7 +335,7 @@ const ListingForm = () => {
 
                     <div className="flex flex-col-4">
                         {/* packageType */}
-                        <div className="flex-2">
+                        <div className="flex-1">
                             <Dropdown
                                 id="packageType"
                                 value={listingData.packageType}
@@ -297,69 +349,54 @@ const ListingForm = () => {
                                 onChange={handleChange}
                             />
                         </div>
-
-                        {/* weightUnit - dropdown */}
-                        <div className="flex-1">
-                            <Dropdown
-                                id="weightUnit"
-                                value={listingData.weightUnit}
-                                label="Weight Unit"
-                                options={['pounds', 'ounces', 'grams', 'kilograms']}
-                                onChange={handleChange}
-                            />
-                        </div>
-
-                        {/* weight - integer */}
-                        <div className="flex-1">
-                            <NumInput
-                                id="weight"
-                                value={listingData.weight}
-                                label="Weight"
-                                onChange={handleChange}
-                            ></NumInput>
-                        </div>
                     </div>
 
-                    <div className="flex flex-col-4">
-                        {/* unit - dropdown */}
+                    <div className="flex flex-col-2">
+                        {/* weight - integer */}
                         <div className="flex-1">
                             <Dropdown
                                 id="unit"
                                 value={listingData.unit}
-                                label="Unit"
-                                options={['in', 'cm']}
+                                label="Length unit"
+                                options={['inches', 'centimeters']}
+                                onChange={handleChange}
+                            />
+                            <NumInput
+                                id="height"
+                                value={listingData.height}
+                                    label={`Height ${listingData.unit? `(${listingData.unit})`: ''}`}
+                                onChange={handleChange}
+                            /> 
+                            <NumInput
+                                id="length"
+                                value={listingData.length}
+                                label={`Length ${listingData.unit? `(${listingData.unit})`: ''}`}
+                                onChange={handleChange}
+                            />
+
+                            <NumInput
+                                id="width"
+                                value={listingData.width}
+                                label={`Width ${listingData.unit? `(${listingData.unit})`: ''}`}
                                 onChange={handleChange}
                             />
                         </div>
 
                         {/* Height - Integer */}
                         <div className="flex-1">
-                            <NumInput
-                                id="height"
-                                value={listingData.height}
-                                label="Height"
+                            <Dropdown
+                                id="weightUnit"
+                                value={listingData.weightUnit}
+                                label="Weight unit"
+                                options={['pounds', 'ounces', 'grams', 'kilograms']}
                                 onChange={handleChange}
                             />
-                        </div>
-
-                        {/* Length - Integer */}
-                        <div className="flex-1">
                             <NumInput
-                                id="length"
-                                value={listingData.length}
-                                label="Length"
+                                id="weight"
+                                value={listingData.weight}
+                                label={`Weight ${listingData.weightUnit? `(${listingData.weightUnit})`: ''}`}
                                 onChange={handleChange}
-                            />
-                        </div>
-
-                        {/* Width - Integer */}
-                        <div className="flex-1">
-                            <NumInput
-                                id="width"
-                                value={listingData.width}
-                                label="Width"
-                                onChange={handleChange}
-                            />
+                            ></NumInput>
                         </div>
                     </div>
                 </section>
@@ -377,7 +414,7 @@ const ListingForm = () => {
                         <CheckboxInput
                             id="etsy"
                             checked={listingData.onEtsy}
-                            onchange={handleCheckboxChange}
+                            onChange={handleCheckboxChange}
                             label="Etsy"
                         />
                         {/* <br /> */}

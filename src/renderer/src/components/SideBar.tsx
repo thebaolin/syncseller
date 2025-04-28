@@ -28,6 +28,7 @@ const SideBar = () => {
                 <SideBarTab link="/app/analytics" label="Analytics" />
                 <SideBarTab link="/app/dbview" label="[TEMP] DB View" />
                 <SideBarTab link="/app/usercred" label="[TEMP] User Credentials" />
+                <SideBarTab link="/app/location" label="[TEMP] Location" />
             </nav>
         </div>
     )
