@@ -329,7 +329,6 @@ const ListingForm = () => {
                             </div>
                         ))}
                     </div>
-                    <p>{myAspects.brand}</p>
 
                     <div className="flex flex-col-2">
                         {/* UPC - Integer */}
