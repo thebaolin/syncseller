@@ -121,7 +121,7 @@ const ListingForm = () => {
         price: 0,
 
         title: '',
-        aspects: {},
+        aspects: '[]',
         description: '',
         upc: '', //changed to str because of leading zeros and easier to count digits
         imageURL: [],
@@ -136,6 +136,16 @@ const ListingForm = () => {
         weightUnit: '',
         quantity: 0
     })
+
+    const [myAspects, setMyAspects] = useState({
+        size: '',
+        color: '',
+        brand: '',
+        material: '', 
+        condition: '',
+        model: '',
+        style: ''
+    });
 
     // Handle change
     const handleChange = (
@@ -180,7 +190,8 @@ const ListingForm = () => {
         else {
             alert(
                 "Missing required fields:\n" +
-                missing.map((m) => `-${m}`).join("\n")
+                missing.map((m) => `-${m}`).join("\n") + '\n' +
+                listingData.aspects
             )
             return false;
         }
@@ -190,11 +201,13 @@ const ListingForm = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
-        Object.entries(aspects).map(([key,value]) => {
-            if (value) {
-                listingData.aspects[key] = value;
+        let listingAspects: string[] = [];
+        Object.entries(myAspects).map(([key,value]) => {
+            if (value){
+                listingAspects.push(key + ': ' + value);
             }
-        })}
+        })
+        listingData.aspects = listingAspects.join(',')
 
         const valid = validateListing();
 
@@ -225,7 +238,7 @@ const ListingForm = () => {
     const [selectedFile, setSelectedFile] = useState<File[]>([]);
     const [imagePreview, setImagePreview] = useState<string[]>([]);
 
-    const handleFileChange = (event) => {
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
             setSelectedFile(prev => [...prev, file]);
@@ -238,19 +251,9 @@ const ListingForm = () => {
         }
     }
 
-    const [aspects, setAspects] = useState({
-        size: '',
-        color: '',
-        brand: '',
-        material: '', 
-        condition: '',
-        model: '',
-        style: ''
-    });
-
     const handleAspects = (event) => {
         const { name, value } = event.target
-        setAspects((prevData) => ({
+        setMyAspects((prevData) => ({
             ...prevData,
             [name]: value
         }))
@@ -314,9 +317,9 @@ const ListingForm = () => {
                     <SectionHeader label="Item Specifications" />
 
                     {/* Aspects - ?*/}
-                    <div className="grid grid-cols-4 flex-wrap">
-                        {Object.entries(aspects).map(([key,value]) => (
-                            <div>
+                    <div className="grid grid-cols-4">
+                        {Object.entries(myAspects).map(([key,value]) => (
+                            <div key={key}>
                                 <TextInput
                                     id={key}
                                     value={value}
@@ -326,7 +329,7 @@ const ListingForm = () => {
                             </div>
                         ))}
                     </div>
-                    <p>{aspects.brand}</p>
+                    <p>{myAspects.brand}</p>
 
                     <div className="flex flex-col-2">
                         {/* UPC - Integer */}
@@ -370,7 +373,7 @@ const ListingForm = () => {
                 <section>
                     <SectionHeader label="Package Size and Weight" />
 
-                    <div className="flex flex-col-4">
+                    <div>
                         {/* packageType */}
                         <div className="flex-1">
                             <Dropdown
@@ -401,7 +404,7 @@ const ListingForm = () => {
                             <NumInput
                                 id="height"
                                 value={listingData.height}
-                                    label={`Height ${listingData.unit? `(${listingData.unit})`: ''}`}
+                                label={`Height ${listingData.unit? `(${listingData.unit})`: ''}`}
                                 onChange={handleChange}
                             /> 
                             <NumInput
