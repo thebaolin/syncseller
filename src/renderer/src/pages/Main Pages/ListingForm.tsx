@@ -35,6 +35,7 @@ const NumInput = (props: InputProps) => {
                 id={id}
                 name={id}
                 type="number"
+                step="any"
                 min="0"
                 value={value}
                 onChange={onChange}
@@ -115,6 +116,7 @@ const ListingForm = () => {
     const [listingData, setListingData] = useState({
         onEbay: true,
         onEtsy: false,
+        onShopify: false,
         external_listing: 'eBay-xxxxx', // placeholder
         status: 'Active',
         price: 0,
@@ -169,7 +171,7 @@ const ListingForm = () => {
         const { id, checked } = e.target
         setListingData((prev) => ({
             ...prev,
-            [id === 'ebay' ? 'onEbay' : 'onEtsy']: checked
+            [id === 'ebay' ? 'onEbay' : id === 'etsy' ? 'onEtsy' : id === 'shopify' ? 'onShopify' : '']: checked
         }))
     }
 
@@ -377,15 +379,16 @@ const ListingForm = () => {
                         <CheckboxInput
                             id="etsy"
                             checked={listingData.onEtsy}
-                            onchange={handleCheckboxChange}
+                            onChange={handleCheckboxChange}
                             label="Etsy"
                         />
-                        {/* <br /> */}
-                        {/* <label>
-                            <input id="shopify" type="checkbox" name="option" value="option" />
-                            Shopify
-                        </label> */}
-                        {/* <br /> */}
+
+                        <CheckboxInput
+                            id="shopify"
+                            checked={listingData.onShopify}
+                            onChange={handleCheckboxChange}
+                            label="Shopify"
+                        />
                     </div>
 
                     <div className="flex flex-col-2">
