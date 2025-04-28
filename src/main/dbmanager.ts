@@ -25,12 +25,12 @@ function createTables() {
       imageURL TEXT,
       condition TEXT NOT NULL,
       packageWeightAndSize TEXT,
-      height INTEGER,
-      length INTEGER,
-      width INTEGER,
+      height REAL,
+      length REAL,
+      width REAL,
       unit TEXT,
       packageType TEXT,
-      weight INTEGER,
+      weight REAL,
       weightUnit TEXT,
       quantity INTEGER,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -45,10 +45,20 @@ function createTables() {
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
+    CREATE TABLE IF NOT EXISTS Shopify (
+      shopify_listing_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      item_id INTEGER NOT NULL,
+      listing_id INTEGER NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+
     CREATE TABLE IF NOT EXISTS Items (
       item_id INTEGER PRIMARY KEY AUTOINCREMENT,
       onEbay INTEGER NOT NULL,
       onEtsy INTEGER NOT NULL,
+      onShopify INTEGER NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -135,7 +145,7 @@ function createTables() {
     db.prepare(
         `
     INSERT OR IGNORE INTO L_Platforms (name)
-    VALUES ('Ebay'), ('Etsy')
+    VALUES ('Ebay'), ('Etsy'), ('Shopify')
   `
     ).run()
 }
