@@ -40,7 +40,9 @@ if (process.contextIsolated) {
 
                 generateKey: () => ipcRenderer.invoke('generate-key'),
                 insertFullListing: (data) => ipcRenderer.invoke('insert-full-listing', data),
-                getListingHistory: () => ipcRenderer.invoke('get-listing-history')
+                getListingHistory: () => ipcRenderer.invoke('get-listing-history'),
+                getAnalyticsData: () => ipcRenderer.invoke('get-analytics-data')
+                
             }),
             // Optionally expose other APIs
             contextBridge.exposeInMainWorld('api', api)
