@@ -375,6 +375,30 @@ export function generateSecurityKey() {
     //console.log(key)
     return key
 }
+
+//for analytics
+export function getAnalyticsData(): { success: boolean; data?: any[]; error?: string } {
+    if (!db) return { success: false, error: 'Database not initialized' }
+
+    try {
+        const rows = db.prepare(`
+            SELECT 
+                Listings.created_at,
+                Listings.price,
+                L_Platforms.name AS platform,
+                L_Listing_Status.status
+            FROM Listings
+            JOIN L_Platforms ON Listings.platform_id = L_Platforms.platform_id
+            JOIN L_Listing_Status ON Listings.status_id = L_Listing_Status.id
+            ORDER BY Listings.created_at ASC
+        `).all();
+
+        return { success: true, data: rows }
+    } catch (err: any) {
+        return { success: false, error: err.message }
+    }
+}
+
 // for ebay app
 export function getEbayCredentials() {
     return db.prepare(`SELECT * FROM EbayCredentials`).all()

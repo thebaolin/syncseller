@@ -202,7 +202,8 @@ import {
     setEbayOauth,
     insertFullListing,
     getListingHistory,
-    closeDB
+    closeDB,
+    getAnalyticsData
 } from './dbmanager'
 
 // Listen for the 'create-listing' message from the rendering thing
@@ -244,6 +245,10 @@ ipcMain.handle('insert-full-listing', async (_event, data) => {
 
 ipcMain.handle('get-listing-history', async () => {
     return getListingHistory()
+})
+
+ipcMain.handle('get-analytics-data', async () => {
+    return getAnalyticsData()
 })
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
