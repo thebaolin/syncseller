@@ -7,19 +7,26 @@
     // Hardcoded for now (dev only):
     const SHOPIFY_STORE = 'syncseller.myshopify.com'
     const ACCESS_TOKEN = process.env.SHOPIFY_ACCESS_TOKEN!
-    const ADMIN_API_VERSION = '2025-01'
+    const ADMIN_API_VERSION = '2024-01'
     const ONLINE_STORE_PUBLICATION_ID = 'gid://shopify/Publication/269566476652'
 
     export async function createDummyShopifyListing() {
         const endpoint = `https://${SHOPIFY_STORE}/admin/api/${ADMIN_API_VERSION}/graphql.json`
-
-        const query = `
+    
+        const createProductQuery = `
             mutation productCreate($input: ProductInput!) {
                 productCreate(input: $input) {
                     product {
                         id
                         title
                         status
+                        variants(first: 1) {
+                            edges {
+                                node {
+                                    id
+                                }
+                            }
+                        }
                     }
                     userErrors {
                         field
@@ -28,47 +35,99 @@
                 }
             }
         `
-
-        const variables = {
+    
+        const createProductVariables = {
             input: {
                 title: "Test Product from SyncSeller",
-                descriptionHtml: "This is a test product created via the Admin GraphQL API from SyncSeller!",
-                status: "ACTIVE", // optional
-                productType: "Testing", // recommended to include something
+                descriptionHtml: "Beewb Eeb Eeberson This is a test product created via the Admin GraphQL API from SyncSeller!",
+                status: "ACTIVE",
+                productType: "Testing",
                 tags: ["syncseller", "test"]
             }
         }
-
+    
         try {
-            const response = await fetch(endpoint, {
+            // Step 1: Create product
+            const createResponse = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-Shopify-Access-Token': ACCESS_TOKEN
                 },
-                body: JSON.stringify({ query, variables })
+                body: JSON.stringify({ query: createProductQuery, variables: createProductVariables })
             })
-
-            const data = await response.json()
-
-            console.log('Shopify response:', JSON.stringify(data, null, 2))
-
-            if (data.errors) {
-                throw new Error(`GraphQL error: ${JSON.stringify(data.errors)}`)
+    
+            const createData = await createResponse.json()
+            console.log('Create product response:', JSON.stringify(createData, null, 2))
+    
+            const result = createData.data?.productCreate
+            const product = result?.product
+            const variantId = product?.variants?.edges?.[0]?.node?.id
+    
+            if (!product || result.userErrors.length > 0 || !variantId) {
+                console.error('Shopify user errors:', result?.userErrors || 'No product returned')
+                return
             }
-
-            const result = data.data?.productCreate
-            if (!result || result.userErrors.length > 0) {
-                console.error('Shopify user errors:', result?.userErrors || 'No result object returned')
+    
+            console.log(`Product created: ${product.title} (ID: ${product.id})`)
+            console.log(`Default variant ID: ${variantId}`)
+    
+            // Step 2: Update variant with price, barcode, etc.
+            const updateVariantQuery = `
+                mutation productVariantUpdate($input: ProductVariantInput!) {
+                    productVariantUpdate(input: $input) {
+                        productVariant {
+                            id
+                            price
+                            barcode
+                            weight
+                            weightUnit
+                        }
+                        userErrors {
+                            field
+                            message
+                        }
+                    }
+                }
+            `
+    
+            const updateVariantVariables = {
+                input: {
+                    id: variantId,
+                    price: "19.99",
+                    barcode: "123456789012",
+                    weight: 1.2,
+                    weightUnit: "POUNDS"
+                }
+            }
+    
+            const updateResponse = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Shopify-Access-Token': ACCESS_TOKEN
+                },
+                body: JSON.stringify({ query: updateVariantQuery, variables: updateVariantVariables })
+            })
+    
+            const updateData = await updateResponse.json()
+            console.log('Update variant response:', JSON.stringify(updateData, null, 2))
+    
+            const updateErrors = updateData.data?.productVariantUpdate?.userErrors
+            if (updateErrors && updateErrors.length > 0) {
+                console.error('Failed to update variant:', updateErrors)
             } else {
-                console.log(`✅ Product created: ${result.product.title} (ID: ${result.product.id})`)
-                // Optional: Immediately publish it
-                await publishProductToOnlineStore(result.product.id)
+                console.log('Variant updated successfully')
             }
+    
+            // Step 3: Publish the product
+            await publishProductToOnlineStore(product.id)
+    
         } catch (err) {
-            console.error('Error creating product:', err)
+            console.error('Error during Shopify listing process:', err)
         }
     }
+    
 
 
     //Get online publication ID to publish listing publically on storefront
@@ -105,7 +164,7 @@
             const onlineStore = publications.find(pub => pub.node.name === "Online Store")
 
             if (onlineStore) {
-                console.log(`✅ Found Online Store publication ID: ${onlineStore.node.id}`)
+                console.log(`Found Online Store publication ID: ${onlineStore.node.id}`)
             } else {
                 console.warn("Online Store publication not found..")
             }
