@@ -43,7 +43,6 @@ if (process.contextIsolated) {
                 insertFullListing: (data) => ipcRenderer.invoke('insert-full-listing', data),
                 getListingHistory: () => ipcRenderer.invoke('get-listing-history'),
                 getAnalyticsData: () => ipcRenderer.invoke('get-analytics-data')
-                
             }),
             // expose shopify listing functionality
             contextBridge.exposeInMainWorld('shopifyAPI', {

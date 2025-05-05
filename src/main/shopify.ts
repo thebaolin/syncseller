@@ -1,19 +1,19 @@
-    import dotenv from 'dotenv'
-    dotenv.config()
-    const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
+import dotenv from 'dotenv'
+dotenv.config()
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
 
-    // example listing i did: https://syncseller.myshopify.com/products/test-product-from-syncseller-16
+// example listing i did: https://syncseller.myshopify.com/products/test-product-from-syncseller-16
 
-    // Hardcoded for now (dev only):
-    const SHOPIFY_STORE = 'syncseller.myshopify.com'
-    const ACCESS_TOKEN = process.env.SHOPIFY_ACCESS_TOKEN!
-    const ADMIN_API_VERSION = '2024-01'
-    const ONLINE_STORE_PUBLICATION_ID = 'gid://shopify/Publication/269566476652'
+// Hardcoded for now (dev only):
+const SHOPIFY_STORE = 'syncseller.myshopify.com'
+const ACCESS_TOKEN = process.env.SHOPIFY_ACCESS_TOKEN!
+const ADMIN_API_VERSION = '2024-01'
+const ONLINE_STORE_PUBLICATION_ID = 'gid://shopify/Publication/269566476652'
 
-    export async function createDummyShopifyListing() {
-        const endpoint = `https://${SHOPIFY_STORE}/admin/api/${ADMIN_API_VERSION}/graphql.json`
-    
-        const createProductQuery = `
+export async function createDummyShopifyListing() {
+    const endpoint = `https://${SHOPIFY_STORE}/admin/api/${ADMIN_API_VERSION}/graphql.json`
+
+    const createProductQuery = `
             mutation productCreate($input: ProductInput!) {
                 productCreate(input: $input) {
                     product {
@@ -35,16 +35,17 @@
                 }
             }
         `
-    
-        const createProductVariables = {
-            input: {
-                title: "Test Product from SyncSeller",
-                descriptionHtml: "Beewb Eeb Eeberson This is a test product created via the Admin GraphQL API from SyncSeller!",
-                status: "ACTIVE",
-                productType: "Testing",
-                tags: ["syncseller", "test"]
-            }
+
+    const createProductVariables = {
+        input: {
+            title: 'Test Product from SyncSeller',
+            descriptionHtml:
+                'Beewb Eeb Eeberson This is a test product created via the Admin GraphQL API from SyncSeller!',
+            status: 'ACTIVE',
+            productType: 'Testing',
+            tags: ['syncseller', 'test']
         }
+
     
         try {
             // Step 1: Create product
@@ -74,6 +75,7 @@
     
             // Step 2: Update variant with price, barcode, etc.
             const updateVariantQuery = `
+
                 mutation productVariantUpdate($input: ProductVariantInput!) {
                     productVariantUpdate(input: $input) {
                         productVariant {
@@ -90,51 +92,48 @@
                     }
                 }
             `
-    
-            const updateVariantVariables = {
-                input: {
-                    id: variantId,
-                    price: "19.99",
-                    barcode: "123456789012",
-                    weight: 1.2,
-                    weightUnit: "POUNDS"
-                }
+
+        const updateVariantVariables = {
+            input: {
+                id: variantId,
+                price: '19.99',
+                barcode: '123456789012',
+                weight: 1.2,
+                weightUnit: 'POUNDS'
             }
-    
-            const updateResponse = await fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Shopify-Access-Token': ACCESS_TOKEN
-                },
-                body: JSON.stringify({ query: updateVariantQuery, variables: updateVariantVariables })
-            })
-    
-            const updateData = await updateResponse.json()
-            console.log('Update variant response:', JSON.stringify(updateData, null, 2))
-    
-            const updateErrors = updateData.data?.productVariantUpdate?.userErrors
-            if (updateErrors && updateErrors.length > 0) {
-                console.error('Failed to update variant:', updateErrors)
-            } else {
-                console.log('Variant updated successfully')
-            }
-    
-            // Step 3: Publish the product
-            await publishProductToOnlineStore(product.id)
-    
-        } catch (err) {
-            console.error('Error during Shopify listing process:', err)
         }
+
+        const updateResponse = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Shopify-Access-Token': ACCESS_TOKEN
+            },
+            body: JSON.stringify({ query: updateVariantQuery, variables: updateVariantVariables })
+        })
+
+        const updateData = await updateResponse.json()
+        console.log('Update variant response:', JSON.stringify(updateData, null, 2))
+
+        const updateErrors = updateData.data?.productVariantUpdate?.userErrors
+        if (updateErrors && updateErrors.length > 0) {
+            console.error('Failed to update variant:', updateErrors)
+        } else {
+            console.log('Variant updated successfully')
+        }
+
+        // Step 3: Publish the product
+        await publishProductToOnlineStore(product.id)
+    } catch (err) {
+        console.error('Error during Shopify listing process:', err)
     }
-    
+}
 
+//Get online publication ID to publish listing publically on storefront
+export async function getOnlineStorePublicationId() {
+    const endpoint = `https://${SHOPIFY_STORE}/admin/api/${ADMIN_API_VERSION}/graphql.json`
 
-    //Get online publication ID to publish listing publically on storefront
-    export async function getOnlineStorePublicationId() {
-        const endpoint = `https://${SHOPIFY_STORE}/admin/api/${ADMIN_API_VERSION}/graphql.json`
-
-        const query = `
+    const query = `
             query {
                 publications(first: 10) {
                     edges {
@@ -147,38 +146,38 @@
             }
         `
 
-        try {
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Shopify-Access-Token': ACCESS_TOKEN
-                },
-                body: JSON.stringify({ query })
-            })
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Shopify-Access-Token': ACCESS_TOKEN
+            },
+            body: JSON.stringify({ query })
+        })
 
-            const data = await response.json()
-            console.log('Publications response:', JSON.stringify(data, null, 2))
+        const data = await response.json()
+        console.log('Publications response:', JSON.stringify(data, null, 2))
 
-            const publications = data.data?.publications?.edges || []
-            const onlineStore = publications.find(pub => pub.node.name === "Online Store")
+        const publications = data.data?.publications?.edges || []
+        const onlineStore = publications.find((pub) => pub.node.name === 'Online Store')
 
-            if (onlineStore) {
-                console.log(`Found Online Store publication ID: ${onlineStore.node.id}`)
-            } else {
-                console.warn("Online Store publication not found..")
-            }
-        } catch (err) {
-            console.error('Error fetching publication IDs:', err)
+        if (onlineStore) {
+            console.log(`Found Online Store publication ID: ${onlineStore.node.id}`)
+        } else {
+            console.warn('Online Store publication not found..')
         }
+    } catch (err) {
+        console.error('Error fetching publication IDs:', err)
     }
+}
 
-    // Publishes a product to the storefront - you can see on UI
-    // https://syncseller.myshopify.com/collections/all
-    export async function publishProductToOnlineStore(productId: string) {
-        const endpoint = `https://${SHOPIFY_STORE}/admin/api/${ADMIN_API_VERSION}/graphql.json`
+// Publishes a product to the storefront - you can see on UI
+// https://syncseller.myshopify.com/collections/all
+export async function publishProductToOnlineStore(productId: string) {
+    const endpoint = `https://${SHOPIFY_STORE}/admin/api/${ADMIN_API_VERSION}/graphql.json`
 
-        const query = `
+    const query = `
             mutation publishProduct($id: ID!, $input: [PublicationInput!]!) {
                 publishablePublish(id: $id, input: $input) {
                     publishable {
@@ -196,35 +195,35 @@
             }
         `
 
-        const variables = {
-            id: productId,
-            input: [
-                {
-                    publicationId: ONLINE_STORE_PUBLICATION_ID
-                }
-            ]
-        }
-
-        try {
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Shopify-Access-Token': ACCESS_TOKEN
-                },
-                body: JSON.stringify({ query, variables })
-            })
-
-            const data = await response.json()
-            console.log('Publish response:', JSON.stringify(data, null, 2))
-
-            const userErrors = data.data?.publishablePublish?.userErrors
-            if (userErrors && userErrors.length > 0) {
-                console.error("Failed to publish product:", userErrors)
-            } else {
-                console.log(`Product published to Online Store!!!!`)
+    const variables = {
+        id: productId,
+        input: [
+            {
+                publicationId: ONLINE_STORE_PUBLICATION_ID
             }
-        } catch (err) {
-            console.error('Error publishing product:', err)
-        }
+        ]
     }
+
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Shopify-Access-Token': ACCESS_TOKEN
+            },
+            body: JSON.stringify({ query, variables })
+        })
+
+        const data = await response.json()
+        console.log('Publish response:', JSON.stringify(data, null, 2))
+
+        const userErrors = data.data?.publishablePublish?.userErrors
+        if (userErrors && userErrors.length > 0) {
+            console.error('Failed to publish product:', userErrors)
+        } else {
+            console.log(`Product published to Online Store!!!!`)
+        }
+    } catch (err) {
+        console.error('Error publishing product:', err)
+    }
+}

@@ -10,8 +10,6 @@ import { createDummyShopifyListing} from './shopify'
 import { setupEtsyOAuthHandlers } from './etsy'
 
 
-//shopify stuff
-
 ipcMain.handle('shopify:create-listing', async () => {
     return await createDummyShopifyListing()
   })
@@ -30,7 +28,6 @@ const HEADERS = (auth: string) => ({
     'Content-Type': 'application/json',
     Accept: 'application/json'
 })
-
 
 async function fetchPolicies(endpoint: string, auth: string) {
     return new Promise((resolve, reject) => {
@@ -187,7 +184,6 @@ app.whenReady().then(() => {
     })
 
     //initializeDatabase();
-
 })
 import {
     getData,
