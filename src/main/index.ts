@@ -10,12 +10,6 @@ import { createDummyShopifyListing} from './shopify'
 import { setupEtsyOAuthHandlers } from './etsy'
 
 
-// async function main() {
-//     await createDummyShopifyListing()
-//   }
-
-// main()
-
 //shopify stuff
 
 ipcMain.handle('shopify:create-listing', async () => {
