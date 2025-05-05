@@ -161,6 +161,16 @@ const ListingForm = () => {
 
         if (response.success) {
             alert('Listing submitted successfully!')
+            
+            // if shopify button is checked
+            if (listingData.onShopify) {
+                try {
+                    await window.shopifyAPI.createShopifyListing()
+                    console.log('Shopify listing successfully sent!!!!')
+                } catch (err) {
+                    console.error('Failed to send listing to Shopify:', err)
+                }
+            }
         } else {
             alert(`Failed to submit listing: ${response.error}`)
         }
