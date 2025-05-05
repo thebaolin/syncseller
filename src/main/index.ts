@@ -6,13 +6,12 @@ import { app, BrowserWindow, ipcMain } from 'electron/main'
 import EbayAuthToken from 'ebay-oauth-nodejs-client'
 import { request } from 'node:https'
 import { ebay_oauth_flow } from './ebay'
-import { createDummyShopifyListing,  getOnlineStorePublicationId} from './shopify'
+import { createDummyShopifyListing, getOnlineStorePublicationId } from './shopify'
 import { setupEtsyOAuthHandlers } from './etsy'
-
 
 async function main() {
     await createDummyShopifyListing()
-  }
+}
 
 main()
 
@@ -30,7 +29,6 @@ const HEADERS = (auth: string) => ({
     'Content-Type': 'application/json',
     Accept: 'application/json'
 })
-
 
 async function fetchPolicies(endpoint: string, auth: string) {
     return new Promise((resolve, reject) => {
@@ -187,7 +185,6 @@ app.whenReady().then(() => {
     })
 
     //initializeDatabase();
-
 })
 import {
     getData,

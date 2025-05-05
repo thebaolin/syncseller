@@ -239,36 +239,44 @@ export function closeDB() {
 }
 
 export function insertFullListing(data: any): { success: boolean; error?: string } {
-    if (!db) return { success: false, error: 'Database not initialized' };
+    if (!db) return { success: false, error: 'Database not initialized' }
 
     const insert = db.transaction(() => {
         //insert into Items table (only once)
         const itemStmt = db.prepare(`
           INSERT INTO Items (onEbay, onEtsy, onShopify)
           VALUES (?, ?, ?)
-        `);
-        const itemResult = itemStmt.run(data.onEbay ? 1 : 0, data.onEtsy ? 1 : 0, data.onShopify ? 1 : 0);
-        const itemId = itemResult.lastInsertRowid;
+        `)
+        const itemResult = itemStmt.run(
+            data.onEbay ? 1 : 0,
+            data.onEtsy ? 1 : 0,
+            data.onShopify ? 1 : 0
+        )
+        const itemId = itemResult.lastInsertRowid
 
         //insert Listings and platform-specific tables
         const insertListingForPlatform = (platformName: string) => {
-            const platform = db.prepare(`SELECT platform_id FROM L_Platforms WHERE name = ?`).get(platformName);
-            const status = db.prepare(`SELECT id FROM L_Listing_Status WHERE status = ?`).get(data.status);
+            const platform = db
+                .prepare(`SELECT platform_id FROM L_Platforms WHERE name = ?`)
+                .get(platformName)
+            const status = db
+                .prepare(`SELECT id FROM L_Listing_Status WHERE status = ?`)
+                .get(data.status)
 
-            if (!platform || !status) throw new Error('Invalid platform or status');
+            if (!platform || !status) throw new Error('Invalid platform or status')
 
             const listingStmt = db.prepare(`
               INSERT INTO Listings (item_id, platform_id, external_listing, status_id, price)
               VALUES (?, ?, ?, ?, ?)
-            `);
+            `)
             const listingResult = listingStmt.run(
                 itemId,
                 platform.platform_id,
                 data.external_listing,
                 status.id,
                 data.price
-            );
-            const listingId = listingResult.lastInsertRowid;
+            )
+            const listingId = listingResult.lastInsertRowid
 
             if (platformName === 'Ebay') {
                 const ebayStmt = db.prepare(`
@@ -281,7 +289,7 @@ export function insertFullListing(data: any): { success: boolean; error?: string
                       @condition, @height, @length, @width, @unit,
                       @packageType, @weight, @weightUnit, @quantity
                   )
-                `);
+                `)
 
                 ebayStmt.run({
                     item_id: itemId,
@@ -300,42 +308,44 @@ export function insertFullListing(data: any): { success: boolean; error?: string
                     weight: data.weight,
                     weightUnit: data.weightUnit,
                     quantity: data.quantity
-                });
+                })
             } else if (platformName === 'Etsy') {
                 const etsyStmt = db.prepare(`
                   INSERT INTO Etsy (item_id, listing_id, title)
                   VALUES (
                       @item_id, @listing_id, @title
                       )
-                `);
+                `)
                 etsyStmt.run({
                     item_id: itemId,
                     listing_id: listingId,
-                    title: data.title});
+                    title: data.title
+                })
             } else if (platformName === 'Shopify') {
                 const shopifyStmt = db.prepare(`
                   INSERT INTO Shopify (item_id, listing_id, title)
                   VALUES (
                       @item_id, @listing_id, @title
                       )
-                `);
+                `)
                 shopifyStmt.run({
                     item_id: itemId,
                     listing_id: listingId,
-                    title: data.title});
+                    title: data.title
+                })
             }
-        };
+        }
 
-        if (data.onEbay) insertListingForPlatform('Ebay');
-        if (data.onEtsy) insertListingForPlatform('Etsy');
-        if (data.onShopify) insertListingForPlatform('Shopify');
-    });
+        if (data.onEbay) insertListingForPlatform('Ebay')
+        if (data.onEtsy) insertListingForPlatform('Etsy')
+        if (data.onShopify) insertListingForPlatform('Shopify')
+    })
 
     try {
-        insert();
-        return { success: true };
+        insert()
+        return { success: true }
     } catch (e: any) {
-        return { success: false, error: e.message };
+        return { success: false, error: e.message }
     }
 }
 
@@ -381,7 +391,9 @@ export function getAnalyticsData(): { success: boolean; data?: any[]; error?: st
     if (!db) return { success: false, error: 'Database not initialized' }
 
     try {
-        const rows = db.prepare(`
+        const rows = db
+            .prepare(
+                `
             SELECT 
                 Listings.created_at,
                 Listings.price,
@@ -391,7 +403,9 @@ export function getAnalyticsData(): { success: boolean; data?: any[]; error?: st
             JOIN L_Platforms ON Listings.platform_id = L_Platforms.platform_id
             JOIN L_Listing_Status ON Listings.status_id = L_Listing_Status.id
             ORDER BY Listings.created_at ASC
-        `).all();
+        `
+            )
+            .all()
 
         return { success: true, data: rows }
     } catch (err: any) {

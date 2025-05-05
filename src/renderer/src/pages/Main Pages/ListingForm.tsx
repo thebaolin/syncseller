@@ -171,23 +171,29 @@ const ListingForm = () => {
         const { id, checked } = e.target
         setListingData((prev) => ({
             ...prev,
-            [id === 'ebay' ? 'onEbay' : id === 'etsy' ? 'onEtsy' : id === 'shopify' ? 'onShopify' : '']: checked
+            [id === 'ebay'
+                ? 'onEbay'
+                : id === 'etsy'
+                  ? 'onEtsy'
+                  : id === 'shopify'
+                    ? 'onShopify'
+                    : '']: checked
         }))
     }
 
-    const [selectedFile, setSelectedFile] = useState<File[]>([]);
-    const [imagePreview, setImagePreview] = useState<string[]>([]);
+    const [selectedFile, setSelectedFile] = useState<File[]>([])
+    const [imagePreview, setImagePreview] = useState<string[]>([])
 
     const handleFileChange = (event) => {
-        const file = event.target.files?.[0];
+        const file = event.target.files?.[0]
         if (file) {
-            setSelectedFile(prev => [...prev, file]);
-            
-            const objectUrl = URL.createObjectURL(file);
-            setImagePreview(prev => [...prev, objectUrl]);
-            
-            console.log('File selected:', file.name);
-            console.log('Image preview URL:', objectUrl);
+            setSelectedFile((prev) => [...prev, file])
+
+            const objectUrl = URL.createObjectURL(file)
+            setImagePreview((prev) => [...prev, objectUrl])
+
+            console.log('File selected:', file.name)
+            console.log('Image preview URL:', objectUrl)
         }
     }
 
@@ -220,10 +226,10 @@ const ListingForm = () => {
                             Upload images
                             <br />
                         </label>
-                        <input 
-                            type="file" 
-                            id="fileUpload" 
-                            accept="image/*" 
+                        <input
+                            type="file"
+                            id="fileUpload"
+                            accept="image/*"
                             multiple
                             onChange={handleFileChange}
                         ></input>
@@ -233,11 +239,11 @@ const ListingForm = () => {
                     <div className="grid grid-cols-4 direction- grid-wrap-reverse mx-[15px] my-[15px]">
                         {imagePreview.map((image) => (
                             <div className="flex-1 aspect-square shadow bg-white m-[5px]">
-                                <img 
-                                    className="h-full object-cover" 
-                                    id="output" 
-                                    src={image} 
-                                    alt="image.name" 
+                                <img
+                                    className="h-full object-cover"
+                                    id="output"
+                                    src={image}
+                                    alt="image.name"
                                 ></img>
                             </div>
                         ))}
@@ -375,7 +381,7 @@ const ListingForm = () => {
                             onChange={handleCheckboxChange}
                             label="eBay"
                         />
-                       
+
                         <CheckboxInput
                             id="etsy"
                             checked={listingData.onEtsy}
@@ -400,7 +406,7 @@ const ListingForm = () => {
                                 onChange={handleChange}
                             />
                         </div>
-                       
+
                         <div className="flex-1">
                             {/* quantity - integer */}
                             <NumInput

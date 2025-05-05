@@ -15,16 +15,12 @@ const ListingHistory = () => {
     }, [])
 
     const totalRevenue = listings
-        .filter(l => l.status === 'Sold')
+        .filter((l) => l.status === 'Sold')
         .reduce((sum, l) => sum + l.price, 0)
 
-    const itemsSold = listings.filter(l => l.status === 'Sold').length
+    const itemsSold = listings.filter((l) => l.status === 'Sold').length
 
-    const itemsPosted = listings.filter(l =>
-        ['Active', 'Draft'].includes(l.status)
-    ).length
-
-
+    const itemsPosted = listings.filter((l) => ['Active', 'Draft'].includes(l.status)).length
 
     return (
         <div className="content">
