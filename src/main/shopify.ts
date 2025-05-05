@@ -49,7 +49,7 @@
         try {
             // Step 1: Create product
             const createResponse = await fetch(endpoint, {
-                method: 'POST',
+                method: 'POST', 
                 headers: {
                     'Content-Type': 'application/json',
                     'X-Shopify-Access-Token': ACCESS_TOKEN

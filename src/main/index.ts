@@ -6,16 +6,22 @@ import { app, BrowserWindow, ipcMain } from 'electron/main'
 import EbayAuthToken from 'ebay-oauth-nodejs-client'
 import { request } from 'node:https'
 import { ebay_oauth_flow } from './ebay'
-import { createDummyShopifyListing,  getOnlineStorePublicationId} from './shopify'
+import { createDummyShopifyListing} from './shopify'
 import { setupEtsyOAuthHandlers } from './etsy'
 
 
-async function main() {
-    await createDummyShopifyListing()
-  }
+// async function main() {
+//     await createDummyShopifyListing()
+//   }
 
-main()
+// main()
 
+//shopify stuff
+
+ipcMain.handle('shopify:create-listing', async () => {
+    return await createDummyShopifyListing()
+  })
+  
 // oauth scopes for what api calls you can make
 const scopes = [
     'https://api.ebay.com/oauth/api_scope/sell.inventory.readonly',

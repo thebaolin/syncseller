@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron/renderer'
 import { electronAPI } from '@electron-toolkit/preload'
+import { createDummyShopifyListing } from '../main/shopify'
 
 console.log('preload is running')
 
@@ -44,8 +45,14 @@ if (process.contextIsolated) {
                 getAnalyticsData: () => ipcRenderer.invoke('get-analytics-data')
                 
             }),
+            // expose shopify listing functionality
+            contextBridge.exposeInMainWorld('shopifyAPI', {
+                createShopifyListing: () => ipcRenderer.invoke('shopify:create-listing')
+              })              
+        
             // Optionally expose other APIs
             contextBridge.exposeInMainWorld('api', api)
+            
     } catch (error) {
         console.error(error)
     }
