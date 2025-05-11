@@ -232,6 +232,27 @@ export function getEbayListing() {
     return row
 }
 
+export function getLatestShopifyListing() {
+    if (!db) throw new Error('Database not initialized.')
+
+    const listing = db
+        .prepare(`
+            SELECT i.item_id, s.title, l.price, e.upc, e.condition, e.description,
+                   e.height, e.length, e.width, e.unit, e.weight, e.weightUnit, e.quantity
+            FROM Items i
+            JOIN Listings l ON i.item_id = l.item_id
+            JOIN Shopify s ON s.item_id = i.item_id
+            LEFT JOIN Ebay e ON e.item_id = i.item_id
+            WHERE i.onShopify = 1
+            ORDER BY i.item_id DESC
+            LIMIT 1
+        `)
+        .get()
+
+    return listing
+}
+
+
 export function closeDB() {
     if (db !== undefined) {
         db.close()
