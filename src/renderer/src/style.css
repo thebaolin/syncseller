@@ -28,18 +28,8 @@ select {
 }
 
 .content {
-    margin-top: 60px;
-    position: fixed;
-    height: 90%;
-    width: 70%;
-    margin-left: 30%;
-    padding: 1px 16px;
-    background-color: rgb(255, 221, 226);
-    border: 5px solid white;
-    border-radius: 10px;
-    overflow-y: scroll;
+    @apply flex-1 min-h-[calc(100vh-60px)] border-r-[2px] border-b-[2px] border-t-[2px] border-white bg-lightpink py-[30px] px-[20px];
 }
-
 .content-full {
     margin-top: 60px;
     position: fixed;

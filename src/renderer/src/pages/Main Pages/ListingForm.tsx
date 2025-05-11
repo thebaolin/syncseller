@@ -90,8 +90,8 @@ const Dropdown = (props: SelectProps) => {
 const SectionHeader = ({ label }) => {
     return (
         <div>
-            <h1 className="text-lg font-bold">{label}</h1>
-            <div className="h-[1px] w-full bg-black"></div>
+            <h1 className="text-lg font-bold mx-[20px]">{label}</h1>
+            <div className=" flex h-[1px] bg-black mx-[20px]"></div>
         </div>
     )
 }
@@ -261,7 +261,6 @@ const ListingForm = () => {
 
     return (
         <div className="content" id="form-content">
-            <h1 className="heading">Create a listing</h1>
             <form onSubmit={handleSubmit}>
                 <section>
                     <SectionHeader label="General Properties" />
@@ -499,7 +498,7 @@ const ListingForm = () => {
                 <section>
                     <SectionHeader label="Submit Listing" />
 
-                    <div className="flex flex-col-2 justify-evenly">
+                    <div className="flex flex-col-2 justify-evenly mt-[20px]">
                         {/* Submit Draft */}
                         <button className="form-button w-[150px] mx-[20px] my-[15px]">
                             Save Draft
