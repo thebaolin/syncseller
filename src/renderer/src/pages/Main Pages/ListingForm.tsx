@@ -142,7 +142,6 @@ const ListingForm = () => {
         color: '',
         brand: '',
         material: '', 
-        condition: '',
         model: '',
         style: ''
     });
