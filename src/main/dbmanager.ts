@@ -47,13 +47,23 @@ function createTables() {
     );
 
     CREATE TABLE IF NOT EXISTS Shopify (
-      shopify_listing_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      item_id INTEGER NOT NULL,
-      listing_id INTEGER NOT NULL,
-      title TEXT NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
+        shopify_listing_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        item_id INTEGER NOT NULL,
+        listing_id INTEGER NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT,
+        upc INTEGER,
+        condition TEXT,
+        height REAL,
+        length REAL,
+        width REAL,
+        unit TEXT,
+        weight REAL,
+        weightUnit TEXT,
+        quantity INTEGER,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
 
 
     CREATE TABLE IF NOT EXISTS Items (
@@ -235,21 +245,30 @@ export function getEbayListing() {
 export function getLatestShopifyListing() {
     if (!db) throw new Error('Database not initialized.')
 
-    const listing = db
+    return db
         .prepare(`
-            SELECT i.item_id, s.title, l.price, e.upc, e.condition, e.description,
-                   e.height, e.length, e.width, e.unit, e.weight, e.weightUnit, e.quantity
+            SELECT 
+                i.item_id,
+                s.title,
+                s.description,
+                l.price,
+                s.upc,
+                s.condition,
+                s.height,
+                s.length,
+                s.width,
+                s.unit,
+                s.weight,
+                s.weightUnit,
+                s.quantity
             FROM Items i
             JOIN Listings l ON i.item_id = l.item_id
             JOIN Shopify s ON s.item_id = i.item_id
-            LEFT JOIN Ebay e ON e.item_id = i.item_id
             WHERE i.onShopify = 1
             ORDER BY i.item_id DESC
             LIMIT 1
         `)
         .get()
-
-    return listing
 }
 
 
@@ -344,15 +363,30 @@ export function insertFullListing(data: any): { success: boolean; error?: string
                 })
             } else if (platformName === 'Shopify') {
                 const shopifyStmt = db.prepare(`
-                  INSERT INTO Shopify (item_id, listing_id, title)
-                  VALUES (
-                      @item_id, @listing_id, @title
-                      )
+                    INSERT INTO Shopify (
+                        item_id, listing_id, title, description, upc,
+                        condition, height, length, width, unit,
+                        weight, weightUnit, quantity
+                    ) VALUES (
+                        @item_id, @listing_id, @title, @description, @upc,
+                        @condition, @height, @length, @width, @unit,
+                        @weight, @weightUnit, @quantity
+                    )
                 `)
                 shopifyStmt.run({
                     item_id: itemId,
                     listing_id: listingId,
-                    title: data.title
+                    title: data.title,
+                    description: data.description,
+                    upc: data.upc,
+                    condition: data.condition,
+                    height: data.height,
+                    length: data.length,
+                    width: data.width,
+                    unit: data.unit,
+                    weight: data.weight,
+                    weightUnit: data.weightUnit,
+                    quantity: data.quantity
                 })
             }
         }
