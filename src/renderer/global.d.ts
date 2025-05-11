@@ -1,9 +1,9 @@
 export {}
 
 declare global {
-  interface Window {
-    shopifyAPI: {
-      createShopifyListing: () => Promise<void>
+    interface Window {
+        shopifyAPI: {
+            createShopifyListing: () => Promise<void>
+        }
     }
-  }
 }

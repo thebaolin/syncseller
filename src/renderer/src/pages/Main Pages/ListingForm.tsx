@@ -161,7 +161,7 @@ const ListingForm = () => {
 
         if (response.success) {
             alert('Listing submitted successfully!')
-            
+
             // if shopify button is checked
             if (listingData.onShopify) {
                 try {

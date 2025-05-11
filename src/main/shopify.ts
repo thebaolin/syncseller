@@ -45,36 +45,36 @@ export async function createDummyShopifyListing() {
             productType: 'Testing',
             tags: ['syncseller', 'test']
         }
+    }
 
-    
-        try {
-            // Step 1: Create product
-            const createResponse = await fetch(endpoint, {
-                method: 'POST', 
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Shopify-Access-Token': ACCESS_TOKEN
-                },
-                body: JSON.stringify({ query: createProductQuery, variables: createProductVariables })
-            })
-    
-            const createData = await createResponse.json()
-            console.log('Create product response:', JSON.stringify(createData, null, 2))
-    
-            const result = createData.data?.productCreate
-            const product = result?.product
-            const variantId = product?.variants?.edges?.[0]?.node?.id
-    
-            if (!product || result.userErrors.length > 0 || !variantId) {
-                console.error('Shopify user errors:', result?.userErrors || 'No product returned')
-                return
-            }
-    
-            console.log(`Product created: ${product.title} (ID: ${product.id})`)
-            console.log(`Default variant ID: ${variantId}`)
-    
-            // Step 2: Update variant with price, barcode, etc.
-            const updateVariantQuery = `
+    try {
+        // Step 1: Create product
+        const createResponse = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Shopify-Access-Token': ACCESS_TOKEN
+            },
+            body: JSON.stringify({ query: createProductQuery, variables: createProductVariables })
+        })
+
+        const createData = await createResponse.json()
+        console.log('Create product response:', JSON.stringify(createData, null, 2))
+
+        const result = createData.data?.productCreate
+        const product = result?.product
+        const variantId = product?.variants?.edges?.[0]?.node?.id
+
+        if (!product || result.userErrors.length > 0 || !variantId) {
+            console.error('Shopify user errors:', result?.userErrors || 'No product returned')
+            return
+        }
+
+        console.log(`Product created: ${product.title} (ID: ${product.id})`)
+        console.log(`Default variant ID: ${variantId}`)
+
+        // Step 2: Update variant with price, barcode, etc.
+        const updateVariantQuery = `
 
                 mutation productVariantUpdate($input: ProductVariantInput!) {
                     productVariantUpdate(input: $input) {

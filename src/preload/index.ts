@@ -47,11 +47,10 @@ if (process.contextIsolated) {
             // expose shopify listing functionality
             contextBridge.exposeInMainWorld('shopifyAPI', {
                 createShopifyListing: () => ipcRenderer.invoke('shopify:create-listing')
-              })              
-        
-            // Optionally expose other APIs
-            contextBridge.exposeInMainWorld('api', api)
-            
+            })
+
+        // Optionally expose other APIs
+        contextBridge.exposeInMainWorld('api', api)
     } catch (error) {
         console.error(error)
     }
