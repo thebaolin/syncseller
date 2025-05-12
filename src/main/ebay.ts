@@ -278,8 +278,10 @@ export async function post_image() {
     // IMAGE SELECTION CODE
     const img_name = 't.jpeg'
     const fileData = readFileSync(img_name)
-    const boundary = '-b'
 
+
+
+    const boundary = '-b'
     let body = `--${boundary}\r\nContent-Disposition: form-data; name="XMLRequest"\r\nContent-Type: text/xml\r\n\r\n
     `
     const xmlPayload = `<?xml version="1.0" encoding="utf-8"?>
@@ -320,6 +322,7 @@ export async function post_image() {
     })
 
     // Error handle?
+    // tell user image failed and try again,. don't make call
 
     req.write(body)
     req.write(fileData)
