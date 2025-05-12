@@ -2,6 +2,7 @@
 
 @theme {
     --color-lightpink: #ffdde2;
+    --color-bubblegum: #ffcbd3;
     --color-dustyrose: #d8a7b1;
     --color-sagegreen: #c4d7b2;
 }
@@ -28,8 +29,13 @@ select {
 }
 
 .content {
-    @apply flex-1 min-h-[calc(100vh-60px)] border-r-[2px] border-b-[2px] border-t-[2px] border-white bg-lightpink py-[30px] px-[20px];
+    @apply flex-1 min-h-[calc(100vh-60px)] border-r-[2px] border-b-[2px] border-t-[2px] border-green-50 bg-lightpink py-[30px] px-[20px] overflow-hidden rounded-lg;
 }
+
+.active {
+    @apply bg-dustyrose font-bold;
+}
+
 .content-full {
     margin-top: 60px;
     position: fixed;

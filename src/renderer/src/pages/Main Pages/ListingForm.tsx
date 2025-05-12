@@ -261,7 +261,7 @@ const ListingForm = () => {
 
     return (
         <div className="content" id="form-content">
-            <form onSubmit={handleSubmit}>
+            <form className="" onSubmit={handleSubmit}>
                 <section>
                     <SectionHeader label="General Properties" />
 

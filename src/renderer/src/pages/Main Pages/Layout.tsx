@@ -1,16 +1,16 @@
 import { Outlet } from 'react-router-dom'
 import SideBar from '@renderer/components/SideBar'
 import MenuBar from '@renderer/components/MenuBar'
-import HomePage from './HomePage'
 
 const Layout = () => {
     return (
-        <div className="flex">
-            <SideBar />
-            <div className="flex flex-col w-[70%]">
-                <MenuBar />
-                {/* <HomePage /> */}
-                <Outlet />
+        <div className="bg-green-50">
+            <MenuBar />
+            <div className="flex flex-col-2">
+                <SideBar />
+                <div className="w-[70%] mt-[60px] ml-[30%]">
+                    <Outlet />
+                </div>
             </div>
         </div>
     )

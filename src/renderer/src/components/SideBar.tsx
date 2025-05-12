@@ -9,7 +9,7 @@ const SideBarTab = (props: SideBarTabProps) => {
     return (
         <div>
             <button
-                className="h-fit h-min-[60px] w-full border-b-[2px] border-white text-xl flex p-[15px] hover:bg-dustyrose hover:text-white"
+                className="h-fit h-min-[60px] w-full border-b-[2px] border-green-50 text-xl flex p-[15px] hover:bg-dustyrose hover:text-white focus:bg-dustyrose focus:text-white cursor-pointer"
                 onClick={() => navigate(link)}
             >
                 {label}
@@ -20,7 +20,7 @@ const SideBarTab = (props: SideBarTabProps) => {
 
 const SideBar = () => {
     return (
-        <nav className="bg-lightpink flex-none w-[30%] border-[2px] border-white">
+        <nav className="bg-bubblegum flex-none border-[2px] border-green-50 w-[30%] mt-[60px] fixed h-[calc(100vh-60px)] rounded-lg overflow-hidden">
             <SideBarTab link="/app/home" label="Home" />
             <SideBarTab link="/app/listingform" label="Create a Listing" />
             <SideBarTab link="/app/listinghistory" label="Listing History" />
