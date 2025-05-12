@@ -4,7 +4,7 @@ const ListingHistory = () => {
             <h1 className="heading">Analytics Dashbord</h1>
             <section className="analytics flex flex-col-3 justify-center">
                 {/* Revenue */}
-                <div className="analytics-row1">
+                <div className="flex-1 h-[150px] bg-white m-1 p-2 rounded-xl shadow overflow-clip">
                     <h2 className="text-xl">
                         <strong>Revenue</strong>
                     </h2>
@@ -15,7 +15,7 @@ const ListingHistory = () => {
                     <h3 className="text-gray-500">+20% of last week revenue</h3>
                 </div>
                 {/* Items Sold */}
-                <div className="analytics-row1">
+                <div className="flex-1 h-[150px] bg-white m-1 p-2 rounded-xl shadow overflow-clip">
                     <h2 className="text-xl">
                         <strong>Items Sold</strong>
                     </h2>
@@ -26,7 +26,7 @@ const ListingHistory = () => {
                     <h3 className="text-gray-500">+33% of last week items sold</h3>
                 </div>
                 {/* Items Posted */}
-                <div className="analytics-row1">
+                <div className="flex-1 h-[150px] bg-white m-1 p-2 rounded-xl shadow overflow-clip">
                     <h2 className="text-xl">
                         <strong>Items Posted</strong>
                     </h2>

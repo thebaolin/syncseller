@@ -5,11 +5,13 @@ import HomePage from './HomePage'
 
 const Layout = () => {
     return (
-        <div className="bg-amber-50">
-            <MenuBar />
+        <div className="flex">
             <SideBar />
-            <HomePage />
-            <Outlet />
+            <div className="flex flex-col w-[70%]">
+                <MenuBar />
+                {/* <HomePage /> */}
+                <Outlet />
+            </div>
         </div>
     )
 }

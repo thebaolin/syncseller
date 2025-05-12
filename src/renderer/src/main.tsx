@@ -14,6 +14,7 @@ import UserCred from './pages/User Credentials/UserCred'
 import PasswordScreen from './pages/User Credentials/dbpassword'
 import WelcomeScreen from './pages/User Credentials/WelcomeScreen'
 import NewUserScreen from './pages/User Credentials/NewUserScreen'
+import Location from './pages/User Credentials/Location'
 
 // Authentication check function
 const isAuthenticated = () => {
@@ -54,6 +55,8 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                         path="/app/usercred"
                         element={<ProtectedRoute element={<UserCred platform="eBay" />} />}
                     />
+                    <Route path='/app/location' element={<ProtectedRoute element={<Location />}/>} />
+
                 </Route>
             </Routes>
         </BrowserRouter>
