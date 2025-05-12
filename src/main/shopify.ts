@@ -12,7 +12,6 @@ const ACCESS_TOKEN = process.env.SHOPIFY_ACCESS_TOKEN!
 const ADMIN_API_VERSION = '2024-01'
 const ONLINE_STORE_PUBLICATION_ID = 'gid://shopify/Publication/269566476652'
 
-
 export async function createDummyShopifyListing() {
     const endpoint = `https://${SHOPIFY_STORE}/admin/api/${ADMIN_API_VERSION}/graphql.json`
 
@@ -59,9 +58,9 @@ export async function createDummyShopifyListing() {
         input: {
             title: listing.title,
             descriptionHtml,
-            status: "ACTIVE",
-            productType: "SyncSeller",
-            tags: ["syncseller"]
+            status: 'ACTIVE',
+            productType: 'SyncSeller',
+            tags: ['syncseller']
         }
     }
 
@@ -112,7 +111,6 @@ export async function createDummyShopifyListing() {
             weightUnit: listing.weightUnit
         })
 
-        
         const updateVariantVariables = {
             input: {
                 id: variantId,
@@ -122,7 +120,6 @@ export async function createDummyShopifyListing() {
                 weightUnit: (listing.weightUnit || 'POUNDS').toUpperCase()
             }
         }
-        
 
         const updateResponse = await fetch(endpoint, {
             method: 'POST',
@@ -149,7 +146,6 @@ export async function createDummyShopifyListing() {
 
 // export async function createDummyShopifyListing() {
 //     const endpoint = `https://${SHOPIFY_STORE}/admin/api/${ADMIN_API_VERSION}/graphql.json`
-
 
 //     const createProductQuery = `
 //             mutation productCreate($input: ProductInput!) {

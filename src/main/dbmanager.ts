@@ -246,7 +246,8 @@ export function getLatestShopifyListing() {
     if (!db) throw new Error('Database not initialized.')
 
     return db
-        .prepare(`
+        .prepare(
+            `
             SELECT 
                 i.item_id,
                 s.title,
@@ -267,10 +268,10 @@ export function getLatestShopifyListing() {
             WHERE i.onShopify = 1
             ORDER BY i.item_id DESC
             LIMIT 1
-        `)
+        `
+        )
         .get()
 }
-
 
 export function closeDB() {
     if (db !== undefined) {

@@ -5,7 +5,7 @@ import icon from '../../resources/icon.png?asset'
 import { app, BrowserWindow, ipcMain } from 'electron/main'
 import EbayAuthToken from 'ebay-oauth-nodejs-client'
 import { request } from 'node:https'
-import { ebay_oauth_flow, post_image } from './ebay'
+import { ebay_oauth_flow, post_image, post_listing } from './ebay'
 import { createDummyShopifyListing } from './shopify'
 import { setupEtsyOAuthHandlers } from './etsy'
 
@@ -164,8 +164,7 @@ app.whenReady().then(() => {
     })
 
     ipcMain.handle('set-ebay-creds', (e, client_id, client_secret, redirect_uri) => {
-        setEbayCredentials(client_id, client_secret, redirect_uri)
-        ebay_oauth_flow()
+        ebay_oauth_flow(client_id, client_secret, redirect_uri)
         // message pass to create warehouse
     })
 
@@ -176,7 +175,7 @@ app.whenReady().then(() => {
 
     setupEtsyOAuthHandlers()
 
-    post_image()
+    post_listing('t.jpeg')
 
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the
@@ -237,6 +236,7 @@ ipcMain.handle('generate-key', async () => {
 })
 
 ipcMain.handle('insert-full-listing', async (_event, data) => {
+    console.log(data)
     return insertFullListing(data)
 })
 
