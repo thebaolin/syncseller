@@ -1,11 +1,10 @@
-import { useNavigate, NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 interface SideBarTabProps {
     link: string
     label: string
 }
 const SideBarTab = (props: SideBarTabProps) => {
     const { link, label } = props
-    const navigate = useNavigate()
     return (
         <div>
             <NavLink

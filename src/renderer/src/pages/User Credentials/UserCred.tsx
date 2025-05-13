@@ -34,7 +34,7 @@ const UserCred = (props) => {
 
     return (
         <div className="content-full">
-            <h1 className="heading">{`Enter ${props.platform} Credentials`}</h1>
+            <h1 className="text-center text-xl">{`Enter ${props.platform} Credentials`}</h1>
             <div className="w-1/3 m-auto">
                 <form id="credentials">
                     {/* Client ID */}
