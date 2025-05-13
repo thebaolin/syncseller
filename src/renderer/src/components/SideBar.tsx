@@ -23,7 +23,7 @@ const SideBarTab = (props: SideBarTabProps) => {
 const SideBar = () => {
     return (
         <nav className="bg-bubblegum flex-none border-[2px] border-green-50 w-[30%] mt-[60px] fixed h-[calc(100vh-60px)] rounded-lg overflow-hidden">
-            <SideBarTab link="/app" label="Home" />
+            <SideBarTab link="/app/home" label="Home" />
             <SideBarTab link="/app/listingform" label="Create a Listing" />
             <SideBarTab link="/app/listinghistory" label="Listing History" />
             <SideBarTab link="/app/analytics" label="Analytics" />

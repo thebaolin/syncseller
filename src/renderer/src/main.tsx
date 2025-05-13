@@ -39,7 +39,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                 {/* Protected Routes (Require Authentication) */}
                 <Route path="/app" element={<Layout />}>
                     <Route index element={<HomePage/>}/>
-                    {/* <Route path="home" element={<ProtectedRoute element={<HomePage />} />} /> */}
+                    <Route path="home" element={<ProtectedRoute element={<HomePage />} />} />
                     <Route
                         path="listinghistory"
                         element={<ProtectedRoute element={<ListingHistory />} />}
