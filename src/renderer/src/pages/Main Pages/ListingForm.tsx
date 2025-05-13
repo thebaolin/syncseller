@@ -143,7 +143,7 @@ const ListingForm = () => {
         size: '',
         color: '',
         brand: '',
-        material: '', 
+        material: '',
         model: '',
         style: ''
     });
@@ -164,7 +164,7 @@ const ListingForm = () => {
         title: "Title",
         description: "Description",
         upc: "UPC",
-        condition: "Condition" ,
+        condition: "Condition",
         packageType: "Package Type",
         weightUnit: "Weight Unit",
         weight: "Weight",
@@ -179,7 +179,7 @@ const ListingForm = () => {
     const validateListing = () => {
         let missing: string[] = [];
 
-        for (const key in requiredFields){
+        for (const key in requiredFields) {
             if (!listingData[key]) {
                 missing.push(requiredFields[key]);
             }
@@ -203,8 +203,8 @@ const ListingForm = () => {
         e.preventDefault()
 
         let listingAspects: string[] = [];
-        Object.entries(myAspects).map(([key,value]) => {
-            if (value){
+        Object.entries(myAspects).map(([key, value]) => {
+            if (value) {
                 listingAspects.push(key + ': ' + value);
             }
         })
@@ -235,10 +235,10 @@ const ListingForm = () => {
             [id === 'ebay'
                 ? 'onEbay'
                 : id === 'etsy'
-                  ? 'onEtsy'
-                  : id === 'shopify'
-                    ? 'onShopify'
-                    : '']: checked
+                    ? 'onEtsy'
+                    : id === 'shopify'
+                        ? 'onShopify'
+                        : '']: checked
         }))
     }
 
@@ -313,17 +313,17 @@ const ListingForm = () => {
                                     src={image}
                                     alt="image.name"
                                 ></img>
-                            </div>
+                            </div >
                         ))}
-                    </div>
-                </section>
+                    </div >
+                </section >
 
                 <section>
                     <SectionHeader label="Item Specifications" />
 
                     {/* Aspects - ?*/}
                     <div className="grid grid-cols-4">
-                        {Object.entries(myAspects).map(([key,value]) => (
+                        {Object.entries(myAspects).map(([key, value]) => (
                             <div key={key}>
                                 <TextInput
                                     id={key}
@@ -408,20 +408,20 @@ const ListingForm = () => {
                             <NumInput
                                 id="height"
                                 value={listingData.height}
-                                label={`Height ${listingData.unit? `(${listingData.unit})`: ''}`}
+                                label={`Height ${listingData.unit ? `(${listingData.unit})` : ''}`}
                                 onChange={handleChange}
-                            /> 
+                            />
                             <NumInput
                                 id="length"
                                 value={listingData.length}
-                                label={`Length ${listingData.unit? `(${listingData.unit})`: ''}`}
+                                label={`Length ${listingData.unit ? `(${listingData.unit})` : ''}`}
                                 onChange={handleChange}
                             />
 
                             <NumInput
                                 id="width"
                                 value={listingData.width}
-                                label={`Width ${listingData.unit? `(${listingData.unit})`: ''}`}
+                                label={`Width ${listingData.unit ? `(${listingData.unit})` : ''}`}
                                 onChange={handleChange}
                             />
                         </div>
@@ -438,7 +438,7 @@ const ListingForm = () => {
                             <NumInput
                                 id="weight"
                                 value={listingData.weight}
-                                label={`Weight ${listingData.weightUnit? `(${listingData.weightUnit})`: ''}`}
+                                label={`Weight ${listingData.weightUnit ? `(${listingData.weightUnit})` : ''}`}
                                 onChange={handleChange}
                             ></NumInput>
                         </div>
@@ -517,8 +517,8 @@ const ListingForm = () => {
                         </button>
                     </div>
                 </section>
-            </form>
-        </div>
+            </form >
+        </div >
     )
 }
 export default ListingForm
