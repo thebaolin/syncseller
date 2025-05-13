@@ -143,7 +143,7 @@ const ListingForm = () => {
         size: '',
         color: '',
         brand: '',
-        material: '', 
+        material: '',
         model: '',
         style: ''
     });
@@ -164,7 +164,7 @@ const ListingForm = () => {
         title: "Title",
         description: "Description",
         upc: "UPC",
-        condition: "Condition" ,
+        condition: "Condition",
         packageType: "Package Type",
         weightUnit: "Weight Unit",
         weight: "Weight",
@@ -179,7 +179,7 @@ const ListingForm = () => {
     const validateListing = () => {
         let missing: string[] = [];
 
-        for (const key in requiredFields){
+        for (const key in requiredFields) {
             if (!listingData[key]) {
                 missing.push(requiredFields[key]);
             }
@@ -203,30 +203,13 @@ const ListingForm = () => {
         e.preventDefault()
 
         let listingAspects: string[] = [];
-        Object.entries(myAspects).map(([key,value]) => {
-            if (value){
+        Object.entries(myAspects).map(([key, value]) => {
+            if (value) {
                 listingAspects.push(key + ': ' + value);
             }
         })
         listingData.aspects = listingAspects.join(',')
 
-<<<<<<< HEAD
-        const valid = validateListing();
-
-        if (valid){
-            const response = await window.database.insertFullListing({
-                ...listingData
-                //for now leave aspect out. need to figure out how to handle this
-                //aspects: JSON.stringify(listingData.aspects) // convert to storable string
-                // note to ivy: i handled the listing aspects and put them in string form
-            })
-    
-            if (response.success) {
-                alert('Listing submitted successfully!')
-            } else {
-                alert(`Failed to submit listing: ${response.error}`)
-            }
-=======
         if (response.success) {
             alert('Listing submitted successfully!')
 
@@ -241,7 +224,6 @@ const ListingForm = () => {
             }
         } else {
             alert(`Failed to submit listing: ${response.error}`)
->>>>>>> c4d912a5f6a61c4fa274fd6207cdccde4e9c2045
         }
     }
 
@@ -253,23 +235,18 @@ const ListingForm = () => {
             [id === 'ebay'
                 ? 'onEbay'
                 : id === 'etsy'
-                  ? 'onEtsy'
-                  : id === 'shopify'
-                    ? 'onShopify'
-                    : '']: checked
+                    ? 'onEtsy'
+                    : id === 'shopify'
+                        ? 'onShopify'
+                        : '']: checked
         }))
     }
 
     const [selectedFile, setSelectedFile] = useState<File[]>([])
     const [imagePreview, setImagePreview] = useState<string[]>([])
 
-<<<<<<< HEAD
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-=======
     const handleFileChange = (event) => {
         const file = event.target.files?.[0]
->>>>>>> c4d912a5f6a61c4fa274fd6207cdccde4e9c2045
         if (file) {
             setSelectedFile((prev) => [...prev, file])
 
@@ -331,32 +308,23 @@ const ListingForm = () => {
                     <div className="grid grid-cols-4 mx-[15px] my-[15px]">
                         {imagePreview.map((image, index) => (
                             <div className="flex-1 aspect-square shadow bg-white m-[5px]">
-<<<<<<< HEAD
-                                <img 
-                                    className="h-full object-cover" 
-                                    id="output" 
-                                    src={image} 
-                                    alt="image.name" 
-                                    key={index}
-=======
                                 <img
                                     className="h-full object-cover"
                                     id="output"
                                     src={image}
                                     alt="image.name"
->>>>>>> c4d912a5f6a61c4fa274fd6207cdccde4e9c2045
                                 ></img>
-                            </div>
+                            </div >
                         ))}
-                    </div>
-                </section>
+                    </div >
+                </section >
 
                 <section>
                     <SectionHeader label="Item Specifications" />
 
                     {/* Aspects - ?*/}
                     <div className="grid grid-cols-4">
-                        {Object.entries(myAspects).map(([key,value]) => (
+                        {Object.entries(myAspects).map(([key, value]) => (
                             <div key={key}>
                                 <TextInput
                                     id={key}
@@ -441,20 +409,20 @@ const ListingForm = () => {
                             <NumInput
                                 id="height"
                                 value={listingData.height}
-                                label={`Height ${listingData.unit? `(${listingData.unit})`: ''}`}
+                                label={`Height ${listingData.unit ? `(${listingData.unit})` : ''}`}
                                 onChange={handleChange}
-                            /> 
+                            />
                             <NumInput
                                 id="length"
                                 value={listingData.length}
-                                label={`Length ${listingData.unit? `(${listingData.unit})`: ''}`}
+                                label={`Length ${listingData.unit ? `(${listingData.unit})` : ''}`}
                                 onChange={handleChange}
                             />
 
                             <NumInput
                                 id="width"
                                 value={listingData.width}
-                                label={`Width ${listingData.unit? `(${listingData.unit})`: ''}`}
+                                label={`Width ${listingData.unit ? `(${listingData.unit})` : ''}`}
                                 onChange={handleChange}
                             />
                         </div>
@@ -471,7 +439,7 @@ const ListingForm = () => {
                             <NumInput
                                 id="weight"
                                 value={listingData.weight}
-                                label={`Weight ${listingData.weightUnit? `(${listingData.weightUnit})`: ''}`}
+                                label={`Weight ${listingData.weightUnit ? `(${listingData.weightUnit})` : ''}`}
                                 onChange={handleChange}
                             ></NumInput>
                         </div>
@@ -550,8 +518,8 @@ const ListingForm = () => {
                         </button>
                     </div>
                 </section>
-            </form>
-        </div>
+            </form >
+        </div >
     )
 }
 export default ListingForm
