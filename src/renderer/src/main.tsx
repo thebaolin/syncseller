@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 // Import content from other files
 import './style.css'
 import Layout from './pages/Main Pages/Layout'
+import AuthLayout from './pages/User Credentials/AuthLayout'
 import HomePage from './pages/Main Pages/HomePage'
 import ListingForm from './pages/Main Pages/ListingForm'
 import ListingHistory from './pages/Main Pages/ListingHistory'
@@ -37,26 +38,29 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 
                 {/* Protected Routes (Require Authentication) */}
                 <Route path="/app" element={<Layout />}>
-                    <Route path="/app/home" element={<ProtectedRoute element={<HomePage />} />} />
+                    <Route index element={<HomePage/>}/>
+                    <Route path="home" element={<ProtectedRoute element={<HomePage />} />} />
                     <Route
-                        path="/app/listinghistory"
+                        path="listinghistory"
                         element={<ProtectedRoute element={<ListingHistory />} />}
                     />
                     <Route
-                        path="/app/analytics"
+                        path="analytics"
                         element={<ProtectedRoute element={<Analytics />} />}
                     />
                     <Route
-                        path="/app/listingform"
+                        path="listingform"
                         element={<ProtectedRoute element={<ListingForm />} />}
                     />
-                    <Route path="/app/dbview" element={<ProtectedRoute element={<DBView />} />} />
-                    <Route
-                        path="/app/usercred"
-                        element={<ProtectedRoute element={<UserCred platform="eBay" />} />}
-                    />
-                    <Route path='/app/location' element={<ProtectedRoute element={<Location />}/>} />
+                    <Route path="dbview" element={<ProtectedRoute element={<DBView />} />} />
+                    {/* find where app/usercred is being used and remove */}
+                    <Route path="usercred" element={<ProtectedRoute element={<UserCred platform="eBay" />} />}/>
+                </Route>
 
+                {/* Auth Layout */}
+                <Route path="/auth" element={<AuthLayout />}>
+                    <Route path="usercred" element={<ProtectedRoute element={<UserCred platform="eBay" />} />}/>
+                    <Route path='location' element={<ProtectedRoute element={<Location />}/>} />
                 </Route>
             </Routes>
         </BrowserRouter>

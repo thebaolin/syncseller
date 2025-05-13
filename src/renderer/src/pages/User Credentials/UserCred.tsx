@@ -34,9 +34,6 @@ const UserCred = (props) => {
 
     return (
         <div className="content-full">
-            <button className="absolute form-button mt-3" onClick={() => navigate(-1)}>
-                Go Back
-            </button>
             <h1 className="heading">{`Enter ${props.platform} Credentials`}</h1>
             <div className="w-1/3 m-auto">
                 <form id="credentials">
@@ -47,7 +44,13 @@ const UserCred = (props) => {
                     {/* Redirect URI */}
                     <InputSection id="redirect_uri" title="Redirect URI" />
                     {/* Submit button */}
-                    <div className="flex flex-col-1 justify-center">
+                    <div className="flex flex-col-2 justify-between pt-[20px]">
+                        <button 
+                            className="form-button w-[150px]" 
+                            onClick={() => navigate("/app")}
+                        >
+                            Go Back
+                        </button>
                         <button
                             className="form-button w-[150px]"
                             onClick={validateForm}

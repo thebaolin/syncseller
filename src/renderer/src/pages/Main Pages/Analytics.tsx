@@ -1,7 +1,6 @@
 const ListingHistory = () => {
     return (
         <div className="content">
-            <h1 className="heading">Analytics Dashbord</h1>
             <section className="analytics flex flex-col-3 justify-center">
                 {/* Revenue */}
                 <div className="flex-1 h-[150px] bg-white m-1 p-2 rounded-xl shadow overflow-clip">

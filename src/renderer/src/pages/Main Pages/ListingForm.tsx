@@ -124,7 +124,7 @@ const ListingForm = () => {
         aspects: '[]',
         description: '',
         upc: '', //changed to str because of leading zeros and easier to count digits
-        imageURL: [],
+        images: [] as File[],
         condition: '',
         packageWeightAndSize: '',
         height: 0,
@@ -211,8 +211,9 @@ const ListingForm = () => {
         const valid = validateListing();
 
         if (valid){
+            listingData.images = selectedFile
             const response = await window.database.insertFullListing({
-                ...listingData
+                ...listingData,
                 //for now leave aspect out. need to figure out how to handle this
                 //aspects: JSON.stringify(listingData.aspects) // convert to storable string
                 // note to ivy: i handled the listing aspects and put them in string form

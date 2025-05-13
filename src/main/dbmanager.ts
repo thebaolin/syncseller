@@ -1,5 +1,6 @@
 import Database from 'better-sqlite3-multiple-ciphers'
 import fs from 'fs'
+import path from 'path'
 import crypto from 'crypto'
 
 //const PASSWORD = 'poop'; // Prompt user to set this for encryption
@@ -228,6 +229,10 @@ export function closeDB() {
 
 export function insertFullListing(data: any): { success: boolean; error?: string } {
     if (!db) return { success: false, error: 'Database not initialized' }
+
+    data.imageURL = data.images.map(listing =>{
+        listing.path(__dirname)
+    })
 
     const insert = db.transaction(() => {
         //insert item

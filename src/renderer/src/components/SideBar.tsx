@@ -26,8 +26,8 @@ const SideBar = () => {
             <SideBarTab link="/app/listinghistory" label="Listing History" />
             <SideBarTab link="/app/analytics" label="Analytics" />
             <SideBarTab link="/app/dbview" label="[TEMP] DB View" />
-            <SideBarTab link="/app/usercred" label="[TEMP] User Credentials" />
-            <SideBarTab link="/app/location" label="[TEMP] Location" />
+            <SideBarTab link="/auth/usercred" label="[TEMP] User Credentials" />
+            <SideBarTab link="/auth/location" label="[TEMP] Location" />
         </nav>
     )
 }

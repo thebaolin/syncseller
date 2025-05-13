@@ -23,7 +23,6 @@ const HomePage = () => {
 
     return (
         <div className="content">
-            <h1 className="heading">Home</h1>
             <h1 className="home-heading">Hello Beewb, Welcome to SyncSeller!</h1>
 
             {/* Etsy login button */}
@@ -34,14 +33,11 @@ const HomePage = () => {
             {/* eBay login button */}
             <button 
                 className="form-button"
-                onClick={() => navigate("/app/usercred")}
+                onClick={() => navigate("/auth/usercred")}
             >
                 Log in to eBay
             </button>
-            
-            <button className="bg-blue-500 text-white hover:bg-blue-700 focus:bg-blue-900">
-                Press Me
-            </button>
+
             {/* Platforms */}
             <h1 className="home-heading">Platforms</h1>
             <section className="flex flex-col-3">
