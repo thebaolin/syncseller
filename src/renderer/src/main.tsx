@@ -11,11 +11,11 @@ import ListingForm from './pages/MainPages/ListingForm'
 import ListingHistory from './pages/MainPages/ListingHistory'
 import Analytics from './pages/MainPages/Analytics'
 import DBView from './pages/Testing Pages/testDBView'
-import UserCred from './pages/User Credentials/UserCred'
-import PasswordScreen from './pages/User Credentials/dbpassword'
-import WelcomeScreen from './pages/User Credentials/WelcomeScreen'
-import NewUserScreen from './pages/User Credentials/NewUserScreen'
-import Location from './pages/User Credentials/Location'
+import UserCred from './pages/Auth/UserCred'
+import PasswordScreen from './pages/Auth/dbpassword'
+import WelcomeScreen from './pages/Auth/WelcomeScreen'
+import NewUserScreen from './pages/Auth/NewUserScreen'
+import Location from './pages/Auth/Location'
 
 // Authentication check function
 const isAuthenticated = () => {
@@ -39,7 +39,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                 {/* Protected Routes (Require Authentication) */}
                 <Route path="/app" element={<Layout />}>
                     <Route index element={<HomePage/>}/>
-                    <Route path="home" element={<ProtectedRoute element={<HomePage />} />} />
+                    {/* <Route path="home" element={<ProtectedRoute element={<HomePage />} />} /> */}
                     <Route
                         path="listinghistory"
                         element={<ProtectedRoute element={<ListingHistory />} />}
