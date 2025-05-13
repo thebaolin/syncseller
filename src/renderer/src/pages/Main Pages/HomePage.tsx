@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom'
-import Ebay_logo from "../../assets/images/ebay-logo.png"
-import Etsy_logo from "../../assets/images/Etsy-Logo.png"
-import Shopify_logo from "../../assets/images/Shopify-Logo.png"
+import Ebay_logo from '../../assets/images/ebay-logo.png'
+import Etsy_logo from '../../assets/images/Etsy-Logo.png'
+import Shopify_logo from '../../assets/images/Shopify-Logo.png'
 
-const Icon = (props: {src:any}) => (
+const Icon = (props: { src: any }) => (
     <div className=" bg-white w-full h-[100px] flex items-center justify-center mx-4 rounded-xl hover:bg-dustyrose">
         <img className="object-cover h-[50px]" src={props.src} />
     </div>
@@ -41,9 +41,9 @@ const HomePage = () => {
             {/* Platforms */}
             <h1 className="home-heading">Platforms</h1>
             <section className="flex flex-col-3">
-                <Icon src={Ebay_logo}/>
-                <Icon src={Etsy_logo}/>
-                <Icon src={Shopify_logo}/>
+                <Icon src={Ebay_logo} />
+                <Icon src={Etsy_logo} />
+                <Icon src={Shopify_logo} />
             </section>
         </div>
     )

@@ -5,16 +5,13 @@ import icon from '../../resources/icon.png?asset'
 import { app, BrowserWindow, ipcMain } from 'electron/main'
 import EbayAuthToken from 'ebay-oauth-nodejs-client'
 import { request } from 'node:https'
-import { ebay_oauth_flow } from './ebay'
+import { ebay_oauth_flow, post_image, post_listing } from './ebay'
 import { createDummyShopifyListing } from './shopify'
 import { setupEtsyOAuthHandlers } from './etsy'
 
-
-// async function main() {
-//     await createDummyShopifyListing()
-//   }
-
-// main()
+ipcMain.handle('shopify:create-listing', async () => {
+    return await createDummyShopifyListing()
+})
 
 // oauth scopes for what api calls you can make
 const scopes = [
@@ -30,7 +27,6 @@ const HEADERS = (auth: string) => ({
     'Content-Type': 'application/json',
     Accept: 'application/json'
 })
-
 
 async function fetchPolicies(endpoint: string, auth: string) {
     return new Promise((resolve, reject) => {
@@ -168,8 +164,7 @@ app.whenReady().then(() => {
     })
 
     ipcMain.handle('set-ebay-creds', (e, client_id, client_secret, redirect_uri) => {
-        setEbayCredentials(client_id, client_secret, redirect_uri)
-        ebay_oauth_flow()
+        ebay_oauth_flow(client_id, client_secret, redirect_uri)
         // message pass to create warehouse
     })
 
@@ -180,6 +175,8 @@ app.whenReady().then(() => {
 
     setupEtsyOAuthHandlers()
 
+    post_listing('t.jpeg')
+
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
@@ -187,7 +184,6 @@ app.whenReady().then(() => {
     })
 
     //initializeDatabase();
-
 })
 import {
     getData,
@@ -202,7 +198,8 @@ import {
     setEbayOauth,
     insertFullListing,
     getListingHistory,
-    closeDB
+    closeDB,
+    getAnalyticsData
 } from './dbmanager'
 
 // Listen for the 'create-listing' message from the rendering thing
@@ -239,11 +236,16 @@ ipcMain.handle('generate-key', async () => {
 })
 
 ipcMain.handle('insert-full-listing', async (_event, data) => {
+    console.log(data)
     return insertFullListing(data)
 })
 
 ipcMain.handle('get-listing-history', async () => {
     return getListingHistory()
+})
+
+ipcMain.handle('get-analytics-data', async () => {
+    return getAnalyticsData()
 })
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

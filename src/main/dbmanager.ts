@@ -26,12 +26,12 @@ function createTables() {
       imageURL TEXT,
       condition TEXT NOT NULL,
       packageWeightAndSize TEXT,
-      height INTEGER,
-      length INTEGER,
-      width INTEGER,
+      height REAL,
+      length REAL,
+      width REAL,
       unit TEXT,
       packageType TEXT,
-      weight INTEGER,
+      weight REAL,
       weightUnit TEXT,
       quantity INTEGER,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -42,14 +42,36 @@ function createTables() {
       etsy_listing_id INTEGER PRIMARY KEY AUTOINCREMENT,
       item_id INTEGER NOT NULL,
       listing_id INTEGER NOT NULL,
+      title TEXT NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS Shopify (
+        shopify_listing_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        item_id INTEGER NOT NULL,
+        listing_id INTEGER NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT,
+        upc INTEGER,
+        condition TEXT,
+        height REAL,
+        length REAL,
+        width REAL,
+        unit TEXT,
+        weight REAL,
+        weightUnit TEXT,
+        quantity INTEGER,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+
 
     CREATE TABLE IF NOT EXISTS Items (
       item_id INTEGER PRIMARY KEY AUTOINCREMENT,
       onEbay INTEGER NOT NULL,
       onEtsy INTEGER NOT NULL,
+      onShopify INTEGER NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -136,7 +158,7 @@ function createTables() {
     db.prepare(
         `
     INSERT OR IGNORE INTO L_Platforms (name)
-    VALUES ('Ebay'), ('Etsy')
+    VALUES ('Ebay'), ('Etsy'), ('Shopify')
   `
     ).run()
 }
@@ -221,6 +243,37 @@ export function getEbayListing() {
     return row
 }
 
+export function getLatestShopifyListing() {
+    if (!db) throw new Error('Database not initialized.')
+
+    return db
+        .prepare(
+            `
+            SELECT 
+                i.item_id,
+                s.title,
+                s.description,
+                l.price,
+                s.upc,
+                s.condition,
+                s.height,
+                s.length,
+                s.width,
+                s.unit,
+                s.weight,
+                s.weightUnit,
+                s.quantity
+            FROM Items i
+            JOIN Listings l ON i.item_id = l.item_id
+            JOIN Shopify s ON s.item_id = i.item_id
+            WHERE i.onShopify = 1
+            ORDER BY i.item_id DESC
+            LIMIT 1
+        `
+        )
+        .get()
+}
+
 export function closeDB() {
     if (db !== undefined) {
         db.close()
@@ -235,70 +288,118 @@ export function insertFullListing(data: any): { success: boolean; error?: string
     })
 
     const insert = db.transaction(() => {
-        //insert item
+        //insert into Items table (only once)
         const itemStmt = db.prepare(`
-          INSERT INTO Items (onEbay, onEtsy)
-          VALUES (?, ?)
-      `)
-        const itemResult = itemStmt.run(data.onEbay ? 1 : 0, data.onEtsy ? 1 : 0)
+          INSERT INTO Items (onEbay, onEtsy, onShopify)
+          VALUES (?, ?, ?)
+        `)
+        const itemResult = itemStmt.run(
+            data.onEbay ? 1 : 0,
+            data.onEtsy ? 1 : 0,
+            data.onShopify ? 1 : 0
+        )
         const itemId = itemResult.lastInsertRowid
 
-        //get platform + status IDs
-        const platform = db
-            .prepare(`SELECT platform_id FROM L_Platforms WHERE name = ?`)
-            .get('Ebay')
-        const status = db
-            .prepare(`SELECT id FROM L_Listing_Status WHERE status = ?`)
-            .get(data.status)
+        //insert Listings and platform-specific tables
+        const insertListingForPlatform = (platformName: string) => {
+            const platform = db
+                .prepare(`SELECT platform_id FROM L_Platforms WHERE name = ?`)
+                .get(platformName)
+            const status = db
+                .prepare(`SELECT id FROM L_Listing_Status WHERE status = ?`)
+                .get(data.status)
 
-        if (!platform || !status) throw new Error('Invalid platform or status')
+            if (!platform || !status) throw new Error('Invalid platform or status')
 
-        //insert listing
-        const listingStmt = db.prepare(`
-          INSERT INTO Listings (item_id, platform_id, external_listing, status_id, price)
-          VALUES (?, ?, ?, ?, ?)
-      `)
-        const listingResult = listingStmt.run(
-            itemId,
-            platform.platform_id,
-            data.external_listing,
-            status.id,
-            data.price
-        )
-        const listingId = listingResult.lastInsertRowid
+            const listingStmt = db.prepare(`
+              INSERT INTO Listings (item_id, platform_id, external_listing, status_id, price)
+              VALUES (?, ?, ?, ?, ?)
+            `)
+            const listingResult = listingStmt.run(
+                itemId,
+                platform.platform_id,
+                data.external_listing,
+                status.id,
+                data.price
+            )
+            const listingId = listingResult.lastInsertRowid
 
-        //insert platform-specific data (Ebay)
-        const ebayStmt = db.prepare(`
-          INSERT INTO Ebay (
-              item_id, listing_id, title, aspects, description, upc, imageURL,
-              condition, height, length, width, unit,
-              packageType, weight, weightUnit, quantity
-          ) VALUES (
-              @item_id, @listing_id, @title,@aspects, @description, @upc, @imageURL,
-              @condition, @height, @length, @width, @unit,
-              @packageType, @weight, @weightUnit, @quantity
-          )
-      `)
+            if (platformName === 'Ebay') {
+                const ebayStmt = db.prepare(`
+                  INSERT INTO Ebay (
+                      item_id, listing_id, title, aspects, description, upc, imageURL,
+                      condition, height, length, width, unit,
+                      packageType, weight, weightUnit, quantity
+                  ) VALUES (
+                      @item_id, @listing_id, @title, @aspects, @description, @upc, @imageURL,
+                      @condition, @height, @length, @width, @unit,
+                      @packageType, @weight, @weightUnit, @quantity
+                  )
+                `)
 
-        ebayStmt.run({
-            item_id: itemId,
-            listing_id: listingId,
-            title: data.title,
-            aspects: data.aspects,
-            description: data.description,
-            upc: data.upc,
-            imageURL: data.imageURL,
-            condition: data.condition,
-            packageWeightAndSize: data.packageWeightAndSize,
-            height: data.height,
-            length: data.length,
-            width: data.width,
-            unit: data.unit,
-            packageType: data.packageType,
-            weight: data.weight,
-            weightUnit: data.weightUnit,
-            quantity: data.quantity
-        })
+                ebayStmt.run({
+                    item_id: itemId,
+                    listing_id: listingId,
+                    title: data.title,
+                    aspects: data.aspects,
+                    description: data.description,
+                    upc: data.upc,
+                    imageURL: data.imageURL,
+                    condition: data.condition,
+                    height: data.height,
+                    length: data.length,
+                    width: data.width,
+                    unit: data.unit,
+                    packageType: data.packageType,
+                    weight: data.weight,
+                    weightUnit: data.weightUnit,
+                    quantity: data.quantity
+                })
+            } else if (platformName === 'Etsy') {
+                const etsyStmt = db.prepare(`
+                  INSERT INTO Etsy (item_id, listing_id, title)
+                  VALUES (
+                      @item_id, @listing_id, @title
+                      )
+                `)
+                etsyStmt.run({
+                    item_id: itemId,
+                    listing_id: listingId,
+                    title: data.title
+                })
+            } else if (platformName === 'Shopify') {
+                const shopifyStmt = db.prepare(`
+                    INSERT INTO Shopify (
+                        item_id, listing_id, title, description, upc,
+                        condition, height, length, width, unit,
+                        weight, weightUnit, quantity
+                    ) VALUES (
+                        @item_id, @listing_id, @title, @description, @upc,
+                        @condition, @height, @length, @width, @unit,
+                        @weight, @weightUnit, @quantity
+                    )
+                `)
+                shopifyStmt.run({
+                    item_id: itemId,
+                    listing_id: listingId,
+                    title: data.title,
+                    description: data.description,
+                    upc: data.upc,
+                    condition: data.condition,
+                    height: data.height,
+                    length: data.length,
+                    width: data.width,
+                    unit: data.unit,
+                    weight: data.weight,
+                    weightUnit: data.weightUnit,
+                    quantity: data.quantity
+                })
+            }
+        }
+
+        if (data.onEbay) insertListingForPlatform('Ebay')
+        if (data.onEtsy) insertListingForPlatform('Etsy')
+        if (data.onShopify) insertListingForPlatform('Shopify')
     })
 
     try {
@@ -316,15 +417,17 @@ export function getListingHistory(): { success: boolean; data?: any[]; error?: s
         const rows = db
             .prepare(
                 `
-          SELECT 
-              Ebay.title, 
-              Ebay.description, 
-              Listings.created_at, 
+        SELECT 
+              Listings.item_id,
+              COALESCE(Ebay.title, Etsy.title, Shopify.title, 'Untitled') AS title,
+              Listings.created_at,
               L_Listing_Status.status AS status,
               Listings.price,
               L_Platforms.name AS platform
-          FROM Ebay
-          JOIN Listings ON Ebay.listing_id = Listings.listing_id
+          FROM Listings
+          LEFT JOIN Ebay ON Listings.listing_id = Ebay.listing_id
+          LEFT JOIN Etsy ON Listings.listing_id = Etsy.listing_id
+          LEFT JOIN Shopify ON Listings.listing_id = Shopify.listing_id
           JOIN L_Listing_Status ON Listings.status_id = L_Listing_Status.id
           JOIN L_Platforms ON Listings.platform_id = L_Platforms.platform_id
           ORDER BY Listings.created_at DESC
@@ -343,6 +446,34 @@ export function generateSecurityKey() {
     //console.log(key)
     return key
 }
+
+//for analytics
+export function getAnalyticsData(): { success: boolean; data?: any[]; error?: string } {
+    if (!db) return { success: false, error: 'Database not initialized' }
+
+    try {
+        const rows = db
+            .prepare(
+                `
+            SELECT 
+                Listings.created_at,
+                Listings.price,
+                L_Platforms.name AS platform,
+                L_Listing_Status.status
+            FROM Listings
+            JOIN L_Platforms ON Listings.platform_id = L_Platforms.platform_id
+            JOIN L_Listing_Status ON Listings.status_id = L_Listing_Status.id
+            ORDER BY Listings.created_at ASC
+        `
+            )
+            .all()
+
+        return { success: true, data: rows }
+    } catch (err: any) {
+        return { success: false, error: err.message }
+    }
+}
+
 // for ebay app
 export function getEbayCredentials() {
     return db.prepare(`SELECT * FROM EbayCredentials`).all()
