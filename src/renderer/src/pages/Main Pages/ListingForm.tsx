@@ -209,6 +209,9 @@ const ListingForm = () => {
             }
         })
         listingData.aspects = listingAspects.join(',')
+        if (listingData.aspects){
+            console.log(listingData.aspects)
+        }
 
         if (response.success) {
             alert('Listing submitted successfully!')
