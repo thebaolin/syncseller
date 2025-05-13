@@ -21,6 +21,7 @@ const ListingHistory = () => {
             <table>
                 <thead>
                     <tr>
+                        <th>Item ID</th>
                         <th>Date Created</th>
                         <th>Title</th>
                         <th>Status</th>
@@ -31,6 +32,7 @@ const ListingHistory = () => {
                 <tbody>
                     {listings.map((listing, index) => (
                         <tr key={index}>
+                            <td>{listing.item_id}</td>
                             <td>{new Date(listing.created_at).toLocaleDateString()}</td>
                             <td>{listing.title}</td>
                             <td>{listing.status}</td>

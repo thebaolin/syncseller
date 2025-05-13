@@ -35,6 +35,7 @@ const NumInput = (props: InputProps) => {
                 id={id}
                 name={id}
                 type="number"
+                step="any"
                 min="0"
                 value={value}
                 onChange={onChange}
@@ -116,6 +117,7 @@ const ListingForm = () => {
     const [listingData, setListingData] = useState({
         onEbay: true,
         onEtsy: false,
+        onShopify: false,
         external_listing: 'eBay-xxxxx', // placeholder
         status: 'Active',
         price: 0,
@@ -208,6 +210,7 @@ const ListingForm = () => {
         })
         listingData.aspects = listingAspects.join(',')
 
+<<<<<<< HEAD
         const valid = validateListing();
 
         if (valid){
@@ -223,6 +226,22 @@ const ListingForm = () => {
             } else {
                 alert(`Failed to submit listing: ${response.error}`)
             }
+=======
+        if (response.success) {
+            alert('Listing submitted successfully!')
+
+            // if shopify button is checked
+            if (listingData.onShopify) {
+                try {
+                    await window.shopifyAPI.createShopifyListing()
+                    console.log('Shopify listing successfully sent!!!!')
+                } catch (err) {
+                    console.error('Failed to send listing to Shopify:', err)
+                }
+            }
+        } else {
+            alert(`Failed to submit listing: ${response.error}`)
+>>>>>>> c4d912a5f6a61c4fa274fd6207cdccde4e9c2045
         }
     }
 
@@ -231,23 +250,34 @@ const ListingForm = () => {
         const { id, checked } = e.target
         setListingData((prev) => ({
             ...prev,
-            [id === 'ebay' ? 'onEbay' : 'onEtsy']: checked
+            [id === 'ebay'
+                ? 'onEbay'
+                : id === 'etsy'
+                  ? 'onEtsy'
+                  : id === 'shopify'
+                    ? 'onShopify'
+                    : '']: checked
         }))
     }
 
-    const [selectedFile, setSelectedFile] = useState<File[]>([]);
-    const [imagePreview, setImagePreview] = useState<string[]>([]);
+    const [selectedFile, setSelectedFile] = useState<File[]>([])
+    const [imagePreview, setImagePreview] = useState<string[]>([])
 
+<<<<<<< HEAD
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
+=======
+    const handleFileChange = (event) => {
+        const file = event.target.files?.[0]
+>>>>>>> c4d912a5f6a61c4fa274fd6207cdccde4e9c2045
         if (file) {
-            setSelectedFile(prev => [...prev, file]);
-            
-            const objectUrl = URL.createObjectURL(file);
-            setImagePreview(prev => [...prev, objectUrl]);
-            
-            console.log('File selected:', file.name);
-            console.log('Image preview URL:', objectUrl);
+            setSelectedFile((prev) => [...prev, file])
+
+            const objectUrl = URL.createObjectURL(file)
+            setImagePreview((prev) => [...prev, objectUrl])
+
+            console.log('File selected:', file.name)
+            console.log('Image preview URL:', objectUrl)
         }
     }
 
@@ -288,10 +318,10 @@ const ListingForm = () => {
                             Upload images
                             <br />
                         </label>
-                        <input 
-                            type="file" 
-                            id="fileUpload" 
-                            accept="image/*" 
+                        <input
+                            type="file"
+                            id="fileUpload"
+                            accept="image/*"
                             multiple
                             onChange={handleFileChange}
                         ></input>
@@ -301,12 +331,20 @@ const ListingForm = () => {
                     <div className="grid grid-cols-4 mx-[15px] my-[15px]">
                         {imagePreview.map((image, index) => (
                             <div className="flex-1 aspect-square shadow bg-white m-[5px]">
+<<<<<<< HEAD
                                 <img 
                                     className="h-full object-cover" 
                                     id="output" 
                                     src={image} 
                                     alt="image.name" 
                                     key={index}
+=======
+                                <img
+                                    className="h-full object-cover"
+                                    id="output"
+                                    src={image}
+                                    alt="image.name"
+>>>>>>> c4d912a5f6a61c4fa274fd6207cdccde4e9c2045
                                 ></img>
                             </div>
                         ))}
@@ -449,19 +487,20 @@ const ListingForm = () => {
                             onChange={handleCheckboxChange}
                             label="eBay"
                         />
-                       
+
                         <CheckboxInput
                             id="etsy"
                             checked={listingData.onEtsy}
                             onChange={handleCheckboxChange}
                             label="Etsy"
                         />
-                        {/* <br /> */}
-                        {/* <label>
-                            <input id="shopify" type="checkbox" name="option" value="option" />
-                            Shopify
-                        </label> */}
-                        {/* <br /> */}
+
+                        <CheckboxInput
+                            id="shopify"
+                            checked={listingData.onShopify}
+                            onChange={handleCheckboxChange}
+                            label="Shopify"
+                        />
                     </div>
 
                     <div className="flex flex-col-2">
@@ -473,7 +512,7 @@ const ListingForm = () => {
                                 onChange={handleChange}
                             />
                         </div>
-                       
+
                         <div className="flex-1">
                             {/* quantity - integer */}
                             <NumInput

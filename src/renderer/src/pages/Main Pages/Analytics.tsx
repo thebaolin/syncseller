@@ -1,4 +1,27 @@
+import React, { useEffect, useState, useRef } from 'react'
+import * as d3 from 'd3'
+
 const ListingHistory = () => {
+    const [listings, setListings] = useState<any[]>([])
+
+    useEffect(() => {
+        async function fetchData() {
+            const result = await window.database.getAnalyticsData()
+            if (result.success) {
+                setListings(result.data)
+            }
+        }
+        fetchData()
+    }, [])
+
+    const totalRevenue = listings
+        .filter((l) => l.status === 'Sold')
+        .reduce((sum, l) => sum + l.price, 0)
+
+    const itemsSold = listings.filter((l) => l.status === 'Sold').length
+
+    const itemsPosted = listings.filter((l) => ['Active', 'Draft'].includes(l.status)).length
+
     return (
         <div className="content">
             <h1 className="heading">Analytics Dashbord</h1>
@@ -10,7 +33,7 @@ const ListingHistory = () => {
                     </h2>
                     <br />
                     <h1 className="text-4xl">
-                        <strong>$568.90</strong>
+                        <strong>${totalRevenue}</strong>
                     </h1>
                     <h3 className="text-gray-500">+20% of last week revenue</h3>
                 </div>
@@ -21,7 +44,7 @@ const ListingHistory = () => {
                     </h2>
                     <br />
                     <h1 className="text-4xl">
-                        <strong>20</strong>
+                        <strong>{itemsSold}</strong>
                     </h1>
                     <h3 className="text-gray-500">+33% of last week items sold</h3>
                 </div>
@@ -32,7 +55,7 @@ const ListingHistory = () => {
                     </h2>
                     <br />
                     <h1 className="text-4xl">
-                        <strong>33</strong>
+                        <strong>{itemsPosted}</strong>
                     </h1>
                     <h3 className="text-gray-500">-8% of last week items posted</h3>
                 </div>
