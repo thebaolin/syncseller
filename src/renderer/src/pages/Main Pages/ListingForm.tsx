@@ -210,23 +210,6 @@ const ListingForm = () => {
         })
         listingData.aspects = listingAspects.join(',')
 
-<<<<<<< HEAD
-        const valid = validateListing();
-
-        if (valid){
-            const response = await window.database.insertFullListing({
-                ...listingData
-                //for now leave aspect out. need to figure out how to handle this
-                //aspects: JSON.stringify(listingData.aspects) // convert to storable string
-                // note to ivy: i handled the listing aspects and put them in string form
-            })
-    
-            if (response.success) {
-                alert('Listing submitted successfully!')
-            } else {
-                alert(`Failed to submit listing: ${response.error}`)
-            }
-=======
         if (response.success) {
             alert('Listing submitted successfully!')
 
@@ -241,7 +224,6 @@ const ListingForm = () => {
             }
         } else {
             alert(`Failed to submit listing: ${response.error}`)
->>>>>>> c4d912a5f6a61c4fa274fd6207cdccde4e9c2045
         }
     }
 
@@ -263,13 +245,8 @@ const ListingForm = () => {
     const [selectedFile, setSelectedFile] = useState<File[]>([])
     const [imagePreview, setImagePreview] = useState<string[]>([])
 
-<<<<<<< HEAD
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-=======
     const handleFileChange = (event) => {
         const file = event.target.files?.[0]
->>>>>>> c4d912a5f6a61c4fa274fd6207cdccde4e9c2045
         if (file) {
             setSelectedFile((prev) => [...prev, file])
 
@@ -331,20 +308,11 @@ const ListingForm = () => {
                     <div className="grid grid-cols-4 mx-[15px] my-[15px]">
                         {imagePreview.map((image, index) => (
                             <div className="flex-1 aspect-square shadow bg-white m-[5px]">
-<<<<<<< HEAD
-                                <img 
-                                    className="h-full object-cover" 
-                                    id="output" 
-                                    src={image} 
-                                    alt="image.name" 
-                                    key={index}
-=======
                                 <img
                                     className="h-full object-cover"
                                     id="output"
                                     src={image}
                                     alt="image.name"
->>>>>>> c4d912a5f6a61c4fa274fd6207cdccde4e9c2045
                                 ></img>
                             </div>
                         ))}

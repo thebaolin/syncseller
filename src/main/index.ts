@@ -5,7 +5,7 @@ import icon from '../../resources/icon.png?asset'
 import { app, BrowserWindow, ipcMain } from 'electron/main'
 import EbayAuthToken from 'ebay-oauth-nodejs-client'
 import { request } from 'node:https'
-import { create_inventory_item, ebay_oauth_flow, post_listing, refresh } from './ebay'
+import { ebay_oauth_flow, post_image, post_listing } from './ebay'
 import { createDummyShopifyListing } from './shopify'
 import { setupEtsyOAuthHandlers } from './etsy'
 
@@ -175,8 +175,7 @@ app.whenReady().then(() => {
 
     setupEtsyOAuthHandlers()
 
-    create_inventory_item()
-    //refresh()
+    post_listing('t.jpeg')
 
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the
