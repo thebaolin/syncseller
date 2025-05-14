@@ -490,6 +490,12 @@ export function warehouse () {
     db.prepare(`SELECT * FROM EbayCredentials`).all()[0].warehouse !== 0
 }
 
+export function set_warehouse () {
+    db.prepare(
+        'INSERT INTO EbayCredentials (warehouse) VALUES (?)'
+    ).run(1)
+}
+
 export function get_ebay_oauth() {
     return db.prepare(`SELECT * FROM OAuth WHERE platform_id = ?`).get(1)
 }

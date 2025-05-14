@@ -282,80 +282,144 @@ async function refresh() {
         refreshEbayOauth(JSON.parse(accessToken).access_token, JSON.parse(accessToken).expires_in)
     }
 }
+}
 
-// need ebay creds and oauth set up
+// need ebay credentials and oauth set up
 // try to post image, then create inventory item, create offer and publish
 // if any of those fail, notify user
 // only write to db on a complete success
-export async function post_listing(data) {
+export async function post_listing() {
     // check if refresh required
     // await refresh()
 
-    // IMAGE SELECTION CODE
-    const fileData = readFileSync('t.jpeg')
+    // we iterate over this for each image path
+    // if any image fails, send a message to user and exit
+    // await post_image('t.jpeg')
+    await create_inventory_item()
 
+    // create inventory call
+
+    // create offer call
+
+    //publish offer call
+}
+async function post_image(path: string): Promise<string | undefined> {
+    // constructs the request body
+    const fileData = readFileSync(path)
     const boundary = '-b'
-    let body = `--${boundary}\r\nContent-Disposition: form-data; name="XMLRequest"\r\nContent-Type: text/xml\r\n\r\n
-    `
+    let body = `--${boundary}\r\nContent-Disposition: form-data; name="XMLRequest"\r\nContent-Type: text/xml\r\n\r\n`
     const xmlPayload = `<?xml version="1.0" encoding="utf-8"?>
         <UploadSiteHostedPicturesRequest xmlns="urn:ebay:apis:eBLBaseComponents">
         <WarningLevel>High</WarningLevel>
         </UploadSiteHostedPicturesRequest>`
-
     body += xmlPayload + '\r\n'
     body += `--${boundary}\r\nContent-Disposition: form-data;\r\nContent-Type: image/jpeg\r\n\r\n`
     const ending = `\r\n--${boundary}--\r\n`
+    const b = Buffer.concat([Buffer.from(body, 'utf8'), fileData, Buffer.from(ending, 'utf-8')])
+    const contentLength = b.length
 
-    const contentLength = body.length + fileData.length + ending.length
-
-    const options = {
-        hostname: 'api.sandbox.ebay.com',
-        path: '/ws/api.dll',
+    // make the request
+    const response = await fetch('https://api.sandbox.ebay.com/ws/api.dll', {
         method: 'POST',
         headers: {
             'Content-Type': `multipart/form-data; boundary=${boundary}`,
-            'Content-Length': contentLength,
+            'Content-Length': `${contentLength}`,
             'X-EBAY-API-COMPATIBILITY-LEVEL': '967',
             'X-EBAY-API-CALL-NAME': 'UploadSiteHostedPictures',
-            'X-EBAY-API-IAF-TOKEN': `v^1.1#i^1#f^0#r^0#p^3#I^3#t^H4sIAAAAAAAA/+VZa2wcRx33+VW5aYJaKgLBVc0mCJJq72Z377n0rpxzZ9nE7zs7jklrZndnfRPv7a5ndm2fVSHHUlMioRZatRFUVGlBKAiaVJVKClS0QEhJIR+QEJS0QlSiVVXoFwQFQSnM7tnO2ciJ765STu19Oc3s//X7v+YFlto79h3rPfaP7YHrmk8ugaXmQEDYBjra227b0dK8q60JVBAETi7tWWpdbnnjdgqLhi2PImpbJkVdC0XDpLI/meRcYsoWpJjKJiwiKjuqnEsP9MtiEMg2sRxLtQyuqy+T5FBUVRGEkhiPKFExGmGz5qrMvJXkFE2DuiJq8VhYiYGwyr5T6qI+kzrQdJKcCMQIDyK8IOZFQRajsiQGIwkwyXWNI0KxZTKSIOBSvrmyz0sqbL2yqZBSRBwmhEv1pXtyQ+m+THYwf3uoQlZqxQ85BzouXT/ab2moaxwaLrqyGupTyzmXuYJSLpQqa1gvVE6vGlOD+b6rw0CEAErRBFBUhFT9PXFlj0WK0LmyHd4M1njdJ5WR6WCndDWPMm8oR5DqrIwGmYi+TJf3N+JCA+sYkSSX7U4fGstlR7mu3PAwseawhjQPqSCFwyAaj0e5lIMocyEiU5bG2CixirBkohWFZakr7t6gcb9lathzHu0atJxuxKxHG30kVPiIEQ2ZQyStO55llXTSqi/j0qQX3HI0XadgevFFReaQLn949UispsblZHivkiOu6TEVIICiSBUSQmwtObxaryNBUl6M0sPDIc8WpMASX4RkBjm2AVXEq8y9bhERrMlSRBeluI54LZrQ+XBC13klokV5QUfMKqQoaiL+QcwTxyFYcR20lisbP/hgk1xOtWw0bBlYLXEbSfwetJIZCzTJFRzHlkOh+fn54LwUtMh0SARACE0M9OfUAipCbo0WX52Yx37aqohxUSw7JZtZs8BSkCk3p7mURLRhSJxSt1ti4xwyDPa3msbrLExtnN0E6n4DMz/kmaLGQtprUQdpdUHT0BxW0RTWrgkyr9Y3RccLdSEzrGlsDiCnYF0bbJviyg6k+/rrgsbaKHQaC1RFXxHCq/2HjUFMBqAusGnb7isWXQcqBuprsFCGw+FILFEXPNt1r1HxbYrKcm2gaEWbaPN1QfNWXxlDXXasGeTXeuO10NFsz2g21zuVHzqQHawL7SjSCaKFvIe10fI0PZLuSbPfQE+0OwMWJgjsHztiCJneEWnSGoSD7oQU781mpf7x/sk8nChFeu3cwc+NDyXE/Gx6MGRqEZwR0gf6yUgyWZeTckglqMFaV2F2Tp+ed3R1cZYKCOnFSVQ0jLGxhZHwoiX0jokzfXnmtW4Um68PvJ8ajVcCpJy4U36VTrFRXSCz06yfebXeWCDVaFgVYmEgJKIARmMghvQojHm7fl1HCSjWvUQ1WMWPQlMr9bs8Zf8in+ueYCtzJBEV9EiMl/RIVAewvjjb79tli3oHm8aC5vFTJgDaOOitqkHVKoYsyM7w3tSUb3HXVohCilti+jVEggRBzTKN0tb5pl12Zi1zVzB5tX4FRsrOX8HyEZxBqVLreuYqeLA5x05sFinVonCNuQoeqKqWazq1qFthrYJDdw0dG4Z3OK9FYQV7NWaa0Cg5WKW1x9C/g2HupXi64FQrh80VEWH8KnQgO9zVkMC0YNm2l4UqJFuE7tcLWyJIELqqf99VnbFYK18/1gp2jZ91CWzULcUuWCaqXYpX6yuSoKaxXUPNQVyzyLsorFtI+UK7plrAptd3aRUsNiz5ladhanurRhWNxUHFoEagXk3deUxVkBPEjIJbz9QNTLWGwrQcrGO1LIO6ClUJtmuol03l1BJcypp4VaEtM6ypqu+SBmmYINWZcglurN2EvzecYpvDDZtEXp9ZnFmcXdkXslpvrxG659pGvHkbTudyB4dGM3XFNYPmGm2zLyVgDIhijI9LqsqHVT3KJ+JKmJdEqIuCFld0COvC3HDXjewoFwPxiJDY8t3ihomK143/e+AKrX9pTjX5P2E58CJYDpxvDgRABvDCbWBve8tYa8sNHGUtOujVkGItBDHUg2x/Y7IFiaDgDCrZEJPmDzf95s2v5A79+sAzD/94cfZo8I7zTR0VD94n7wQfXXvy7mgRtlW8f4POy1/ahA/t3C5GQEQQRUGMSuIk2H35a6vwkdabT3ckd778sdE9B988OYL/+Ng3n2qZ+xnYvkYUCLQ1tS4HmrQD7cPPD/xo93dvvenM5196+/5T9/2AW7r+M2PkxPFzT99179kTLz04+6u/HXv0ll2p8/s++bUL4184jdrv/v1N95/bduqJ+O8y/xyafOu/dzz+ysV3f3sp1/RQ5q979j7/ziPZL957dvzp/MAjO8OdL/Rf/M7ZT7UIh7/UmvnJH167ufWho6Gjo//JLg+8vvNRvLf1xA1/ufunMw+Qf898/Pilnm88dWH5niNffabzup8vZubSryZe3JHtfOti4Yezz757/OunnxjsfPyVzMuvf/tfxUnxuYN///PYsVN3tR3KXVQOf/r4rUPP/en7u773wqs3Wl9+uyDRMxd++eS563d/4p4z7zx7eGE7tk9/lt9Hnryl5407+R2v7X2s9Vu/uFSO6f8AplRjuIogAAA=`,
+            'X-EBAY-API-IAF-TOKEN': `v^1.1#i^1#I^3#f^0#r^0#p^3#t^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`,
             'X-EBAY-API-SITEID': '0'
+        },
+        body: b
+    })
+    const data = JSON.parse(JSON.stringify(await parseStringPromise(await response.text())))
+    if (data.UploadSiteHostedPicturesResponse.Ack[0] === 'Failure') {
+        new Notification({
+            title: 'Image Upload Error',
+            body: 'Issue with uploading the image; Change the image and try again'
+        }).show()
+        return undefined
+    } else {
+        console.log(data.UploadSiteHostedPicturesResponse.SiteHostedPictureDetails[0].FullURL[0])
+        return data.UploadSiteHostedPicturesResponse.SiteHostedPictureDetails[0].FullURL[0]
+    }
+}
+
+// take in what???
+// Data json which we have to selectively parse? or front end gives the correct ones...
+export async function create_inventory_item() {
+    const sku = 50
+    const content = `{
+    "product": {
+        "title": "Test listing - do not bid or buy - awesome Apple watch test 2",
+        "aspects": {
+            "Feature":[
+              "Water resistance", "GPS"
+            ],
+            "CPU":[
+              "Dual-Core Processor"
+            ]
+        },
+        "description": "Test listing - do not bid or buy Built-in GPS. Water resistance to 50 meters.1 A new lightning-fast dual-core processor. And a display thats two times brighter than before. Full of features that help you stay active, motivated, and connected, Apple Watch Series 2 is designed for all the ways you move ",
+        "upc": ["888462079525"],
+        "imageUrls": [
+            "http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/S/1/S1/42/S1-42-alu-silver-sport-white-grid?wid=332&hei=392&fmt=jpeg&qlt=95&op_sharpen=0&resMode=bicub&op_usm=0.5,0.5,0,0&iccEmbed=0&layer=comp&.v=1472247758975",
+            "http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/4/2/42/stainless/42-stainless-sport-white-grid?wid=332&hei=392&fmt=jpeg&qlt=95&op_sharpen=0&resMode=bicub&op_usm=0.5,0.5,0,0&iccEmbed=0&layer=comp&.v=1472247760390",
+            "http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/4/2/42/ceramic/42-ceramic-sport-cloud-grid?wid=332&hei=392&fmt=jpeg&qlt=95&op_sharpen=0&resMode=bicub&op_usm=0.5,0.5,0,0&iccEmbed=0&layer=comp&.v=1472247758007"
+        ]
+    },
+    "condition": "NEW",
+    "packageWeightAndSize": {
+        "dimensions": {
+            "height": 5,
+            "length": 10,
+            "width": 15,
+            "unit": "INCH"
+        },
+        "packageType": "MAILING_BOX",
+        "weight": {
+            "value": 2,
+            "unit": "POUND"
+        }
+    },
+    "availability": {
+        "shipToLocationAvailability": {
+            "quantity": 10
         }
     }
+}`
+    const response = await fetch(
+        `https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item/${sku}`,
+        {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Accept-Language': 'en-US',
+                'Content-Language': 'en-US',
+                'Content-Length': `${content.length}`,
+                Authorization:
+                    'Bearer ' +
+                    `v^1.1#i^1#I^3#f^0#r^0#p^3#t^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`
+            },
+            body: content
+        }
+    )
 
-    const req = request(options, (res) => {
-        let response = ''
-        res.on('data', (chunk) => {
-            response += chunk
-        })
-        res.on('end', async () => {
-            console.log(response)
-            const r = JSON.parse(JSON.stringify(await parseStringPromise(response)))
-            console.log(r)
-            // failure
-            if (r.UploadSiteHostedPicturesResponse.Ack[0] === 'Failure') {
-                new Notification({
-                    title: 'Image Upload Error',
-                    body: 'Issue with uploading the image; Change the image and try again'
-                }).show()
+    console.log( 'lel' )
+    console.log( response.status )
+    if ( response.status !== 204 ) {
+        console.log( "problem" )
+        new Notification({
+            title: 'Listing Post Error',
+            body: 'Issue with Listing Post; Check that field information is correct; Please try again'
+        }).show()
+        return false
+    }
+    return true
+}
 
-                // success
-            } else {
-                console.log(
-                    r.UploadSiteHostedPicturesResponse.SiteHostedPictureDetails[0].FullURL[0]
-                )
-            }
-        })
-    })
-
-    req.write(body)
-    req.write(fileData)
-    req.write(ending)
-
-    req.end()
-
-    // create inventroy call
-
-    // create offer call
-
-    //pblsh offer call
+// pass sku and json blob containing everything else?
+export async function publish_offer () {
+    
+    
 }
