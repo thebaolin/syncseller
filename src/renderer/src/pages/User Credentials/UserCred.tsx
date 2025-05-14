@@ -45,9 +45,9 @@ const UserCred = (props) => {
                     <InputSection id="redirect_uri" title="Redirect URI" />
                     {/* Submit button */}
                     <div className="flex flex-col-2 justify-between pt-[20px]">
-                        <button 
-                            className="form-button w-[150px] mx-[20px]" 
-                            onClick={() => navigate("/app")}
+                        <button
+                            className="form-button w-[150px] mx-[20px]"
+                            onClick={() => navigate('/app')}
                         >
                             Go Back
                         </button>

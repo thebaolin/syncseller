@@ -5,7 +5,7 @@ import icon from '../../resources/icon.png?asset'
 import { app, BrowserWindow, ipcMain } from 'electron/main'
 import EbayAuthToken from 'ebay-oauth-nodejs-client'
 import { request } from 'node:https'
-import { ebay_oauth_flow, post_image, post_listing } from './ebay'
+import { ebay_oauth_flow, get_policies, post_listing } from './ebay'
 import { createDummyShopifyListing } from './shopify'
 import { setupEtsyOAuthHandlers } from './etsy'
 
@@ -175,8 +175,7 @@ app.whenReady().then(() => {
 
     setupEtsyOAuthHandlers()
 
-    post_listing('t.jpeg')
-
+    // get_policies()
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
@@ -229,7 +228,10 @@ ipcMain.handle('get-ebay-listing', async () => {
         console.error('Error fetching eBay listing:', error)
         throw error
     }
-})
+} )
+
+// returns assorted ebay policies in JSON
+ipcMain.handle( 'get-ebay-policies', async() => { return await get_policies() } )
 
 ipcMain.handle('generate-key', async () => {
     return generateSecurityKey()

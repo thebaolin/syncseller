@@ -38,29 +38,32 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 
                 {/* Protected Routes (Require Authentication) */}
                 <Route path="/app" element={<Layout />}>
-                    <Route index element={<HomePage/>}/>
+                    <Route index element={<HomePage />} />
                     <Route path="home" element={<ProtectedRoute element={<HomePage />} />} />
                     <Route
                         path="listinghistory"
                         element={<ProtectedRoute element={<ListingHistory />} />}
                     />
-                    <Route
-                        path="analytics"
-                        element={<ProtectedRoute element={<Analytics />} />}
-                    />
+                    <Route path="analytics" element={<ProtectedRoute element={<Analytics />} />} />
                     <Route
                         path="listingform"
                         element={<ProtectedRoute element={<ListingForm />} />}
                     />
                     <Route path="dbview" element={<ProtectedRoute element={<DBView />} />} />
                     {/* find where app/usercred is being used and remove */}
-                    <Route path="usercred" element={<ProtectedRoute element={<UserCred platform="eBay" />} />}/>
+                    <Route
+                        path="usercred"
+                        element={<ProtectedRoute element={<UserCred platform="eBay" />} />}
+                    />
                 </Route>
 
                 {/* Auth Layout */}
                 <Route path="/auth" element={<AuthLayout />}>
-                    <Route path="usercred" element={<ProtectedRoute element={<UserCred platform="eBay" />} />}/>
-                    <Route path='location' element={<ProtectedRoute element={<Location />}/>} />
+                    <Route
+                        path="usercred"
+                        element={<ProtectedRoute element={<UserCred platform="eBay" />} />}
+                    />
+                    <Route path="location" element={<ProtectedRoute element={<Location />} />} />
                 </Route>
             </Routes>
         </BrowserRouter>

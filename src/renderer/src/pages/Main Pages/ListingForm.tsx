@@ -77,7 +77,9 @@ const Dropdown = (props: SelectProps) => {
             <label htmlFor={id}>{label}</label>
             <br />
             <select className="w-full" id={id} name={id} value={value} onChange={onChange}>
-                <option value="" disabled>Select an option</option>
+                <option value="" disabled>
+                    Select an option
+                </option>
                 {options.map((option, index) => (
                     <option key={index} value={option}>
                         {option}
@@ -146,7 +148,7 @@ const ListingForm = () => {
         material: '',
         model: '',
         style: ''
-    });
+    })
 
     // Handle change
     const handleChange = (
@@ -160,41 +162,41 @@ const ListingForm = () => {
     }
 
     const requiredFields = {
-        price: "Price",
-        title: "Title",
-        description: "Description",
-        upc: "UPC",
-        condition: "Condition",
-        packageType: "Package Type",
-        weightUnit: "Weight Unit",
-        weight: "Weight",
-        unit: "Unit",
-        height: "Height",
-        length: "Length",
-        width: "Width",
-        quantity: "Quantity"
+        price: 'Price',
+        title: 'Title',
+        description: 'Description',
+        upc: 'UPC',
+        condition: 'Condition',
+        packageType: 'Package Type',
+        weightUnit: 'Weight Unit',
+        weight: 'Weight',
+        unit: 'Unit',
+        height: 'Height',
+        length: 'Length',
+        width: 'Width',
+        quantity: 'Quantity'
     }
 
     // Validate listing
     const validateListing = () => {
-        let missing: string[] = [];
+        let missing: string[] = []
 
         for (const key in requiredFields) {
             if (!listingData[key]) {
-                missing.push(requiredFields[key]);
+                missing.push(requiredFields[key])
             }
         }
 
         if (!missing) {
-            return true;
-        }
-        else {
+            return true
+        } else {
             alert(
-                "Missing required fields:\n" +
-                missing.map((m) => `-${m}`).join("\n") + '\n' +
-                listingData.aspects
+                'Missing required fields:\n' +
+                    missing.map((m) => `-${m}`).join('\n') +
+                    '\n' +
+                    listingData.aspects
             )
-            return false;
+            return false
         }
     }
 
@@ -202,10 +204,10 @@ const ListingForm = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
-        let listingAspects: string[] = [];
+        let listingAspects: string[] = []
         Object.entries(myAspects).map(([key, value]) => {
             if (value) {
-                listingAspects.push(key + ': ' + value);
+                listingAspects.push(key + ': ' + value)
             }
         })
         listingData.aspects = listingAspects.join(',')
@@ -235,10 +237,10 @@ const ListingForm = () => {
             [id === 'ebay'
                 ? 'onEbay'
                 : id === 'etsy'
-                    ? 'onEtsy'
-                    : id === 'shopify'
-                        ? 'onShopify'
-                        : '']: checked
+                  ? 'onEtsy'
+                  : id === 'shopify'
+                    ? 'onShopify'
+                    : '']: checked
         }))
     }
 
@@ -313,10 +315,10 @@ const ListingForm = () => {
                                     src={image}
                                     alt="image.name"
                                 ></img>
-                            </div >
+                            </div>
                         ))}
-                    </div >
-                </section >
+                    </div>
+                </section>
 
                 <section>
                     <SectionHeader label="Item Specifications" />
@@ -517,8 +519,8 @@ const ListingForm = () => {
                         </button>
                     </div>
                 </section>
-            </form >
-        </div >
+            </form>
+        </div>
     )
 }
 export default ListingForm

@@ -282,7 +282,6 @@ async function refresh() {
         refreshEbayOauth(JSON.parse(accessToken).access_token, JSON.parse(accessToken).expires_in)
     }
 }
-}
 
 // need ebay credentials and oauth set up
 // try to post image, then create inventory item, create offer and publish
@@ -392,7 +391,7 @@ export async function create_inventory_item() {
         {
             method: 'PUT',
             headers: {
-                'Accept': 'application/json',
+                Accept: 'application/json',
                 'Content-Type': 'application/json',
                 'Accept-Language': 'en-US',
                 'Content-Language': 'en-US',
@@ -405,10 +404,10 @@ export async function create_inventory_item() {
         }
     )
 
-    console.log( 'lel' )
-    console.log( response.status )
-    if ( response.status !== 204 ) {
-        console.log( "problem" )
+    console.log('lel')
+    console.log(response.status)
+    if (response.status !== 204) {
+        console.log('problem')
         new Notification({
             title: 'Listing Post Error',
             body: 'Issue with Listing Post; Check that field information is correct; Please try again'
@@ -419,7 +418,79 @@ export async function create_inventory_item() {
 }
 
 // pass sku and json blob containing everything else?
-export async function publish_offer () {
-    
-    
+export async function publish_offer() {}
+
+export async function get_policies() {
+    return {
+        payment: await get_payment(),
+        fulfillment: await get_fulfillment(),
+        return: await get_return(),
+        warehouse: await get_warehouse()
+    }
+}
+
+async function get_fulfillment() {
+    refresh()
+    const response = await fetch(
+        `https://api.sandbox.ebay.com/sell/account/v1/fulfillment_policy?marketplace_id=EBAY_US`,
+        {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                Authorization: 'Bearer ' + get_ebay_oauth().oauth_token
+            }
+        }
+    )
+    return (await response.json()).fulfillmentPolicies.map((elem) => [
+        elem.name,
+        elem.fulfillmentPolicyId
+    ])
+}
+
+async function get_payment() {
+    refresh()
+    const response = await fetch(
+        `https://api.sandbox.ebay.com/sell/account/v1/payment_policy?marketplace_id=EBAY_US`,
+        {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                Authorization: 'Bearer ' + get_ebay_oauth().oauth_token
+            }
+        }
+    )
+    return (await response.json()).paymentPolicies.map((elem) => [elem.name, elem.paymentPolicyId])
+}
+
+async function get_return() {
+    refresh()
+    const response = await fetch(
+        `https://api.sandbox.ebay.com/sell/account/v1/return_policy?marketplace_id=EBAY_US`,
+        {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                Authorization: 'Bearer ' + get_ebay_oauth().oauth_token
+            }
+        }
+    )
+    return (await response.json()).returnPolicies.map((elem) => [elem.name, elem.returnPolicyId])
+}
+
+async function get_warehouse() {
+    refresh()
+    const response = await fetch(
+        `https://api.sandbox.ebay.com/sell/inventory/v1/location?limit=20&offset=0`,
+        {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                Authorization: 'Bearer ' + get_ebay_oauth().oauth_token
+            }
+        }
+    )
+
+    return (await response.json()).locations
+        .filter((elem) => elem.merchantLocationStatus === 'ENABLED')
+        .map((elem) => [elem.name, elem.merchantLocationKey])
 }

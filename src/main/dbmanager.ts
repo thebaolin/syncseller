@@ -284,7 +284,7 @@ export function closeDB() {
 export function insertFullListing(data: any): { success: boolean; error?: string } {
     if (!db) return { success: false, error: 'Database not initialized' }
 
-    data.imageURL = data.images.map(listing =>{
+    data.imageURL = data.images.map((listing) => {
         listing.path(__dirname)
     })
 
@@ -486,14 +486,12 @@ export function setEbayCredentials(client_id, client_secret, redirect_uri) {
     ).run(client_id, client_secret, redirect_uri, 0)
 }
 
-export function warehouse () {
+export function warehouse() {
     db.prepare(`SELECT * FROM EbayCredentials`).all()[0].warehouse !== 0
 }
 
-export function set_warehouse () {
-    db.prepare(
-        'INSERT INTO EbayCredentials (warehouse) VALUES (?)'
-    ).run(1)
+export function set_warehouse() {
+    db.prepare('INSERT INTO EbayCredentials (warehouse) VALUES (?)').run(1)
 }
 
 export function get_ebay_oauth() {
