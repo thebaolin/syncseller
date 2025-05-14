@@ -101,6 +101,7 @@ function createTables() {
       clientId TEXT PRIMARY KEY,
       clientSecret TEXT NOT NULL,
       redirectUri TEXT NOT NULL
+      warehouse INTEGER NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS OAuth (
@@ -481,8 +482,12 @@ export function getEbayCredentials() {
 
 export function setEbayCredentials(client_id, client_secret, redirect_uri) {
     db.prepare(
-        'INSERT INTO EbayCredentials (clientId, clientSecret, redirectUri) VALUES (?, ?, ?)'
-    ).run(client_id, client_secret, redirect_uri)
+        'INSERT INTO EbayCredentials (clientId, clientSecret, redirectUri, warehouse) VALUES (?, ?, ?, ?)'
+    ).run(client_id, client_secret, redirect_uri, 0)
+}
+
+export function warehouse () {
+    db.prepare(`SELECT * FROM EbayCredentials`).all()[0].warehouse !== 0
 }
 
 export function get_ebay_oauth() {
