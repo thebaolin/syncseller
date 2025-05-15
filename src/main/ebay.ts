@@ -17,7 +17,9 @@ const scopes = [
     'https://api.ebay.com/oauth/api_scope/sell.inventory.readonly',
     'https://api.ebay.com/oauth/api_scope/sell.inventory',
     'https://api.ebay.com/oauth/api_scope/sell.account',
-    'https://api.ebay.com/oauth/api_scope/sell.account.readonly'
+    'https://api.ebay.com/oauth/api_scope/sell.account.readonly',
+    'https://api.ebay.com/oauth/api_scope/metadata.insights',
+    'https://api.ebay.com/oauth/api_scope'
 ]
 
 const enum policyType {
@@ -418,11 +420,14 @@ export async function create_inventory_item() {
 }
 
 // pass sku and json blob containing everything else?
-export async function publish_offer() {}
+export async function publish_offer () {
+    
+    
+}
 
 export async function get_policies() {
     return {
-        payment: await get_payment(),
+        payment: await get_payment(), 
         fulfillment: await get_fulfillment(),
         return: await get_return(),
         warehouse: await get_warehouse()

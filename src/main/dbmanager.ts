@@ -100,7 +100,7 @@ function createTables() {
     CREATE TABLE IF NOT EXISTS EbayCredentials (
       clientId TEXT PRIMARY KEY,
       clientSecret TEXT NOT NULL,
-      redirectUri TEXT NOT NULL
+      redirectUri TEXT NOT NULL,
       warehouse INTEGER NOT NULL
     );
 
@@ -480,6 +480,9 @@ export function getEbayCredentials() {
     return db.prepare(`SELECT * FROM EbayCredentials`).all()
 }
 
+// if getEbayCredentials().length === 0 if === 1 credentials exist
+// warehouse is true if warehouse exists, false otherwise only be called if getEbayCredentials().length === 1
+
 export function setEbayCredentials(client_id, client_secret, redirect_uri) {
     db.prepare(
         'INSERT INTO EbayCredentials (clientId, clientSecret, redirectUri, warehouse) VALUES (?, ?, ?, ?)'
@@ -489,6 +492,7 @@ export function setEbayCredentials(client_id, client_secret, redirect_uri) {
 export function warehouse() {
     db.prepare(`SELECT * FROM EbayCredentials`).all()[0].warehouse !== 0
 }
+
 
 export function set_warehouse() {
     db.prepare('INSERT INTO EbayCredentials (warehouse) VALUES (?)').run(1)

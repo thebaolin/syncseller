@@ -228,10 +228,12 @@ ipcMain.handle('get-ebay-listing', async () => {
         console.error('Error fetching eBay listing:', error)
         throw error
     }
-} )
+})
 
 // returns assorted ebay policies in JSON
-ipcMain.handle( 'get-ebay-policies', async() => { return await get_policies() } )
+ipcMain.handle('get-ebay-policies', async () => {
+    return await get_policies()
+})
 
 ipcMain.handle('generate-key', async () => {
     return generateSecurityKey()
