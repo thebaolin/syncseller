@@ -17,6 +17,7 @@ import PasswordScreen from './pages/Auth/dbpassword'
 import WelcomeScreen from './pages/Auth/WelcomeScreen'
 import NewUserScreen from './pages/Auth/NewUserScreen'
 import Location from './pages/Auth/Location'
+import PoliciesForm from './pages/Auth/Policies'
 
 // Authentication check function
 const isAuthenticated = () => {
@@ -54,7 +55,7 @@ ReactDOM.createRoot( document.getElementById( 'root' ) as HTMLElement ).render(
                     {/* find where app/usercred is being used and remove */ }
                     <Route
                         path="usercred"
-                        element={ <ProtectedRoute element={ <UserCred platform="eBay" /> } /> }
+                        element={ <ProtectedRoute element={ <UserCred /> } /> }
                     />
                 </Route>
 
@@ -62,9 +63,10 @@ ReactDOM.createRoot( document.getElementById( 'root' ) as HTMLElement ).render(
                 <Route path="/auth" element={ <AuthLayout /> }>
                     <Route
                         path="usercred"
-                        element={ <ProtectedRoute element={ <UserCred platform="eBay" /> } /> }
+                        element={ <ProtectedRoute element={ <UserCred /> } /> }
                     />
                     <Route path="warehouse" element={ <ProtectedRoute element={ <Warehouse /> } /> } />
+                    <Route path="policies" element={ <ProtectedRoute element={ <PoliciesForm /> } /> } />
                     <Route path="location" element={ <ProtectedRoute element={ <Location /> } /> } />
                 </Route>
             </Routes>

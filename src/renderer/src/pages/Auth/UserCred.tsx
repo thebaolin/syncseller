@@ -8,7 +8,7 @@ const InputSection = (args) => (
     </section>
 )
 
-const UserCred = (props) => {
+const UserCred = () => {
     const validateForm = async () => {
         const client_id = document.forms['credentials']['client_id'].value
         const client_secret = document.forms['credentials']['client_secret'].value
@@ -34,7 +34,7 @@ const UserCred = (props) => {
 
     return (
         <div className="content-full">
-            <h1 className="text-center text-xl">{`Enter ${props.platform} Credentials`}</h1>
+            <h1 className="text-center text-xl">{`Enter eBay Credentials`}</h1>
             <div className="w-1/3 m-auto">
                 <form id="credentials">
                     {/* Client ID */}

@@ -339,7 +339,7 @@ const ListingForm = () => {
                                         alt={filePaths[index]?.split(/[\\/]/).pop()}
                                     ></img>
                                 </div>
-                                <button onClick={() => removeImage(index)}>Remove</button>
+                                <button className="cursor-pointer" onClick={() => removeImage(index)}>Remove</button>
                             </div>
                         ))}
                     </div>
@@ -534,12 +534,12 @@ const ListingForm = () => {
 
                     <div className="flex flex-col-2 justify-evenly mt-[20px]">
                         {/* Submit Draft */}
-                        <button className="form-button w-[150px] mx-[20px] my-[15px]">
+                        <button className="form-button w-[150px] mx-[20px] my-[15px] cursor-pointer">
                             Save Draft
                         </button>
 
                         {/* Submit Listing */}
-                        <button className="form-button w-[150px] mx-[20px] my-[15px]" type="submit">
+                        <button className="form-button w-[150px] mx-[20px] my-[15px] cursor-pointer" type="submit">
                             Post Listing
                         </button>
                     </div>
