@@ -138,7 +138,8 @@ const ListingForm = () => {
         packageType: '',
         weight: 0,
         weightUnit: '',
-        quantity: 0
+        quantity: 0,
+        sku: 0
     })
 
     const [myAspects, setMyAspects] = useState({
@@ -215,21 +216,21 @@ const ListingForm = () => {
             console.log(listingData.aspects)
         }
 
-        if (response.success) {
-            alert('Listing submitted successfully!')
+        // if (response.success) {
+        //     alert('Listing submitted successfully!')
 
-            // if shopify button is checked
-            if (listingData.onShopify) {
-                try {
-                    await window.shopifyAPI.createShopifyListing()
-                    console.log('Shopify listing successfully sent!!!!')
-                } catch (err) {
-                    console.error('Failed to send listing to Shopify:', err)
-                }
-            }
-        } else {
-            alert(`Failed to submit listing: ${response.error}`)
-        }
+        //     // if shopify button is checked
+        //     if (listingData.onShopify) {
+        //         try {
+        //             await window.shopifyAPI.createShopifyListing()
+        //             console.log('Shopify listing successfully sent!!!!')
+        //         } catch (err) {
+        //             console.error('Failed to send listing to Shopify:', err)
+        //         }
+        //     }
+        // } else {
+        //     alert(`Failed to submit listing: ${response.error}`)
+        // }
     }
 
     // Handle submit draft
@@ -250,7 +251,7 @@ const ListingForm = () => {
     const [selectedFile, setSelectedFile] = useState<File[]>([])
     const [imagePreview, setImagePreview] = useState<string[]>([])
 
-    const handleFileChange = (event) => {
+    const handleFileChange = async(event) => {
         const file = event.target.files?.[0]
         if (file) {
             setSelectedFile((prev) => [...prev, file])
@@ -261,6 +262,12 @@ const ListingForm = () => {
             console.log('File selected:', file.name)
             console.log('Image preview URL:', objectUrl)
         }
+    }
+
+    const addImage = async(event) => {
+        const filePaths = await window.electionAPI.openFileDialog()
+        console.log('File paths: ', filePaths)
+        // handleFileChange(event)
     }
 
     const handleAspects = (event) => {
@@ -295,6 +302,13 @@ const ListingForm = () => {
 
                     {/* Upload Images */}
                     <div className="mx-[20px] my-[15px]">
+                        <button 
+                            className="form-button w-[150px] mx-[20px] my-[15px]"
+                            type="submit"
+                            onClick={addImage}
+                        >
+                        add images
+                    </button>
                         <label>
                             Upload images
                             <br />

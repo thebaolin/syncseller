@@ -13,6 +13,10 @@ const api = {}
 
 if (process.contextIsolated) {
     try {
+        contextBridge.exposeInMainWorld('electronAPI', {
+            openFileDialog: () => ipcRenderer.invoke('dialog:openFiles')
+        })
+        
         contextBridge.exposeInMainWorld('electron', {
             // Include the default Electron API
             ...electronAPI,
