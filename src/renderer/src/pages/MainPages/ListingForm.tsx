@@ -128,7 +128,7 @@ const ListingForm = () => {
         aspects: '[]',
         description: '',
         upc: '', //changed to str because of leading zeros and easier to count digits
-        images: [] as File[],
+        imageURL: [] as string[],
         condition: '',
         packageWeightAndSize: '',
         height: 0,
@@ -216,6 +216,8 @@ const ListingForm = () => {
             console.log(listingData.aspects)
         }
 
+        listingData.imageURL = filePaths
+
         // if (response.success) {
         //     alert('Listing submitted successfully!')
 
@@ -248,26 +250,21 @@ const ListingForm = () => {
         }))
     }
 
-    const [selectedFile, setSelectedFile] = useState<File[]>([])
     const [imagePreview, setImagePreview] = useState<string[]>([])
+    const [filePaths, setFilePaths] = useState<string[]>([])
 
-    const handleFileChange = async(event) => {
-        const file = event.target.files?.[0]
-        if (file) {
-            setSelectedFile((prev) => [...prev, file])
+    const addImage = async() => {
+        const filePaths = await window.electronAPI.openFileDialog() // get filepath
+        if (filePaths && filePaths.length > 0){
+            const filePath = filePaths[0]
+            const base64Image = await window.electronAPI.readImageAsBase64((filePath)) // get base64image
 
-            const objectUrl = URL.createObjectURL(file)
-            setImagePreview((prev) => [...prev, objectUrl])
+            setImagePreview((prev) => [...prev, base64Image])
+            setFilePaths((prev) => [...prev, filePath])
 
-            console.log('File selected:', file.name)
-            console.log('Image preview URL:', objectUrl)
+            console.log('File selected:', base64Image)
+            console.log('File paths:', filePath)
         }
-    }
-
-    const addImage = async(event) => {
-        const filePaths = await window.electionAPI.openFileDialog()
-        console.log('File paths: ', filePaths)
-        // handleFileChange(event)
     }
 
     const handleAspects = (event) => {
@@ -276,6 +273,11 @@ const ListingForm = () => {
             ...prevData,
             [name]: value
         }))
+    }
+
+    const removeImage = (index: number) => {
+        setFilePaths((prev) => prev.filter((_, i) => i != index))
+        setImagePreview((prev) => prev.filter((_, i) => i != index))
     }
 
     return (
@@ -302,36 +304,29 @@ const ListingForm = () => {
 
                     {/* Upload Images */}
                     <div className="mx-[20px] my-[15px]">
+                        Upload Images
                         <button 
                             className="form-button w-[150px] mx-[20px] my-[15px]"
                             type="submit"
                             onClick={addImage}
                         >
-                        add images
-                    </button>
-                        <label>
-                            Upload images
-                            <br />
-                        </label>
-                        <input
-                            type="file"
-                            id="fileUpload"
-                            accept="image/*"
-                            multiple
-                            onChange={handleFileChange}
-                        ></input>
+                            Add Images
+                        </button>
                     </div>
 
                     {/* Images Preview */}
                     <div className="grid grid-cols-4 mx-[15px] my-[15px]">
                         {imagePreview.map((image, index) => (
-                            <div className="flex-1 aspect-square shadow bg-white m-[5px]">
-                                <img
-                                    className="h-full object-cover"
-                                    id="output"
-                                    src={image}
-                                    alt="image.name"
-                                ></img>
+                            <div className="text-center" key={index}>
+                                <div className="flex-1 aspect-square shadow bg-white m-[5px]">
+                                    <img
+                                        className="h-full object-cover"
+                                        id="output"
+                                        src={image}
+                                        alt={filePaths[index]?.split(/[\\/]/).pop()}
+                                    ></img>
+                                </div>
+                                <button onClick={() => removeImage(index)}>Remove</button>
                             </div>
                         ))}
                     </div>

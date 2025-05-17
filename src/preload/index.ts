@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron/renderer'
 import { electronAPI } from '@electron-toolkit/preload'
+import fs from 'fs'
 import { createDummyShopifyListing } from '../main/shopify'
 
 console.log('preload is running')
@@ -14,7 +15,11 @@ const api = {}
 if (process.contextIsolated) {
     try {
         contextBridge.exposeInMainWorld('electronAPI', {
-            openFileDialog: () => ipcRenderer.invoke('dialog:openFiles')
+            openFileDialog: () => ipcRenderer.invoke('dialog:openFiles'),
+            readImageAsBase64: (path) => {
+                const data = fs.readFileSync(path);
+                return `data:image/${path.split('.').pop()};base64,${data.toString('base64')}`;
+            },
         })
         
         contextBridge.exposeInMainWorld('electron', {
