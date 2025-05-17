@@ -1,19 +1,21 @@
-import { useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 interface SideBarTabProps {
     link: string
     label: string
 }
 const SideBarTab = (props: SideBarTabProps) => {
     const { link, label } = props
-    const navigate = useNavigate()
     return (
         <div>
-            <button
-                className="h-fit h-min-[60px] w-full border-b-[2px] border-green-50 text-xl flex p-[15px] hover:bg-dustyrose hover:text-white focus:bg-dustyrose focus:text-white cursor-pointer"
-                onClick={() => navigate(link)}
+            <NavLink
+                className={({ isActive }) => isActive 
+                    ? "h-fit h-min-[60px] w-full border-b-[2px] border-green-50 text-xl flex p-[15px] bg-dustyrose text-white"
+                    : "h-fit h-min-[60px] w-full border-b-[2px] border-green-50 text-xl flex p-[15px] hover:bg-shadedpink cursor-pointer" 
+                }
+                to={link}
             >
                 {label}
-            </button>
+            </NavLink>
         </div>
     )
 }

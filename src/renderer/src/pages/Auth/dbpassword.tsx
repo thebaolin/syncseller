@@ -26,7 +26,7 @@ const PasswordScreen = () => {
             const response = await window.database.initializeDatabase(password, false, dbPath)
             if (response.success) {
                 localStorage.setItem('authenticated', 'true')
-                navigate('/app/home')
+                navigate('/app')
             } else {
                 if (response.error?.includes('Database does not exist')) {
                     setError('No database found. Please create one first.')

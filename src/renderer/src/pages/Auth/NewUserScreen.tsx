@@ -29,7 +29,7 @@ const NewUserScreen = () => {
             const response = await window.database.initializeDatabase(generatedKey, true, dbPath)
             if (response.success) {
                 localStorage.setItem('authenticated', 'true')
-                navigate('/app/home')
+                navigate('/app')
             } else {
                 alert(
                     response.error || 'Failed to initialize database. Database may already exist.'

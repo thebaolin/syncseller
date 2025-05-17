@@ -2,6 +2,7 @@
 
 @theme {
     --color-lightpink: #ffdde2;
+    --color-shadedpink: #f1b5bc;
     --color-bubblegum: #ffcbd3;
     --color-dustyrose: #d8a7b1;
     --color-sagegreen: #c4d7b2;
@@ -19,13 +20,6 @@ select {
 
 .form-button {
     @apply bg-sagegreen border-1 border-gray-500 rounded-sm shadow p-[5px] text-black hover:bg-dustyrose hover:text-white;
-}
-
-.heading {
-    text-align: center;
-    font-size: 24px;
-    width: 100%;
-    /* border-bottom: 1px solid black; */
 }
 
 .content {
@@ -61,16 +55,6 @@ tbody tr:hover {
     right: 115px;
     padding: 10px;
     background-color: rgb(255, 221, 226);
-}
-
-.menu-functions {
-    /* right: 210px; */
-    margin: 5px;
-    position: absolute;
-    height: 50px;
-    width: 50px;
-    background-color: rgb(255, 221, 226);
-    border-radius: 50%;
 }
 
 .analytics-row2 {
