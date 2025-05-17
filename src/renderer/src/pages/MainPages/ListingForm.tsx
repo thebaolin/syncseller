@@ -115,9 +115,8 @@ const CheckboxInput = (props) => (
 )
 
 const ebaySignIn = async(): Promise<boolean> => {
-        return await window.electron.ebaycreds() && await window.electron.warehouse()
-    }
-
+    return await window.electron.ebaycreds() && await window.electron.warehouse()
+}
 const ebayIsAuthenticated = await ebaySignIn()
 
 const ListingForm = () => {
@@ -224,6 +223,7 @@ const ListingForm = () => {
         }
 
         listingData.imageURL = filePaths
+        listingData.status = "Active"
 
         // if (response.success) {
         //     alert('Listing submitted successfully!')
@@ -254,7 +254,10 @@ const ListingForm = () => {
         // }
     }
 
-    // Handle submit draft
+    const handleDraft = (e: React.FormEvent) => {
+        e.preventDefault()
+    }
+
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, checked } = e.target
         setListingData((prev) => ({
@@ -523,7 +526,7 @@ const ListingForm = () => {
                             ></NumInput>
                         </div>
 
-                        <div className="flex-1">
+                        {/* <div className="flex-1">
                             <Dropdown
                                 id="status"
                                 value={listingData.status}
@@ -531,7 +534,7 @@ const ListingForm = () => {
                                 options={['Active', 'Sold', 'Deleted', 'Draft']}
                                 onChange={handleChange}
                             />
-                        </div>
+                        </div> */}
                     </div>
                 </section>
 
