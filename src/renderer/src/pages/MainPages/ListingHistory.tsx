@@ -30,7 +30,7 @@ const ListingHistory = () => {
                         <th>Price</th>
                     </tr>
                 </thead>
-                
+
                 <tbody>
                     {listings.map((listing, index) => (
                         <tr key={index}>
@@ -47,16 +47,19 @@ const ListingHistory = () => {
 
             {listings.length === 0 && (
                 <div className="w-full mt-[40px] text-center">
-                    <p className="">Your listings will show up here!
-                        <br/>
-                    Get started by creating a listing.</p>
-                    <button 
+                    <p className="">
+                        Your listings will show up here!
+                        <br />
+                        Get started by creating a listing.
+                    </p>
+                    <button
                         className="form-button w-[200px] mx-[20px] my-[15px]"
-                        onClick={() => navigate("/app/listingform")}
-                    >Create a Listing</button>
+                        onClick={() => navigate('/app/listingform')}
+                    >
+                        Create a Listing
+                    </button>
                 </div>
             )}
-            
         </div>
     )
 }

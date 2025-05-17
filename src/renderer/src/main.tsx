@@ -21,46 +21,46 @@ import PoliciesForm from './pages/Auth/Policies'
 
 // Authentication check function
 const isAuthenticated = () => {
-    return localStorage.getItem( 'authenticated' ) === 'true' // Change this logic as needed
+    return localStorage.getItem('authenticated') === 'true' // Change this logic as needed
 }
 
 // Protected Route Component
-const ProtectedRoute = ( { element }: { element: React.ReactNode } ) => {
+const ProtectedRoute = ({ element }: { element: React.ReactNode }) => {
     return isAuthenticated() ? element : <Navigate to="/" />
 }
 
-ReactDOM.createRoot( document.getElementById( 'root' ) as HTMLElement ).render(
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
         <BrowserRouter>
             <Routes>
-                {/* Login Screen (First Page) */ }
-                <Route path="/" element={ <WelcomeScreen /> } />
-                <Route path="/new-user" element={ <NewUserScreen /> } />
-                <Route path="/existing-user" element={ <PasswordScreen /> } />
+                {/* Login Screen (First Page) */}
+                <Route path="/" element={<WelcomeScreen />} />
+                <Route path="/new-user" element={<NewUserScreen />} />
+                <Route path="/existing-user" element={<PasswordScreen />} />
 
-                {/* Protected Routes (Require Authentication) */ }
-                <Route path="/app" element={ <Layout /> }>
-                    <Route index element={ <HomePage /> } />
-                    <Route path="home" element={ <ProtectedRoute element={ <HomePage /> } /> } />
+                {/* Protected Routes (Require Authentication) */}
+                <Route path="/app" element={<Layout />}>
+                    <Route index element={<HomePage />} />
+                    <Route path="home" element={<ProtectedRoute element={<HomePage />} />} />
                     <Route
                         path="listinghistory"
-                        element={ <ProtectedRoute element={ <ListingHistory /> } /> }
+                        element={<ProtectedRoute element={<ListingHistory />} />}
                     />
-                    <Route path="analytics" element={ <ProtectedRoute element={ <Analytics /> } /> } />
+                    <Route path="analytics" element={<ProtectedRoute element={<Analytics />} />} />
                     <Route
                         path="listingform"
-                        element={ <ProtectedRoute element={ <ListingForm /> } /> }
+                        element={<ProtectedRoute element={<ListingForm />} />}
                     />
-                    <Route path="dbview" element={ <ProtectedRoute element={ <DBView /> } /> } />
-                    {/* find where app/usercred is being used and remove */ }
+                    <Route path="dbview" element={<ProtectedRoute element={<DBView />} />} />
+                    {/* find where app/usercred is being used and remove */}
                     <Route
                         path="usercred"
                         element={ <ProtectedRoute element={ <UserCred /> } /> }
                     />
                 </Route>
 
-                {/* Auth Layout */ }
-                <Route path="/auth" element={ <AuthLayout /> }>
+                {/* Auth Layout */}
+                <Route path="/auth" element={<AuthLayout />}>
                     <Route
                         path="usercred"
                         element={ <ProtectedRoute element={ <UserCred /> } /> }

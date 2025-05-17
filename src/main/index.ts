@@ -5,7 +5,7 @@ import icon from '../../resources/icon.png?asset'
 import { app, BrowserWindow, ipcMain } from 'electron/main'
 import EbayAuthToken from 'ebay-oauth-nodejs-client'
 import { request } from 'node:https'
-import { ebay_oauth_flow, get_policies, post_listing } from './ebay'
+import { ebay_oauth_flow, get_policies, make_warehouse, post_listing } from './ebay'
 import { createDummyShopifyListing } from './shopify'
 import { setupEtsyOAuthHandlers } from './etsy'
 import { pathToFileURL } from 'node:url'
@@ -158,19 +158,17 @@ ipcMain.handle('select-db-save-location', async () => {
 
 ipcMain.handle('dialog:openFiles', async () => {
     try {
-        if (mainWindow){
+        if (mainWindow) {
             const result = await dialog.showOpenDialog(mainWindow, {
                 properties: ['openFile', 'multiSelections']
             })
             console.log('Filepaths: ', result.filePaths)
             return result.filePaths
-        }
-        else {
-            console.log("mainWindow is null")
+        } else {
+            console.log('mainWindow is null')
             return []
         }
-    }
-    catch (err) {
+    } catch (err) {
         console.error('Error opening dialog: ', err)
         return []
     }
@@ -191,11 +189,18 @@ app.whenReady().then(() => {
         ebay_oauth_flow(client_id, client_secret, redirect_uri)
     })
 
+    ipcMain.handle('make-warehouse', (e, data) => {
+        make_warehouse(data)
+    })
+
     // returns true if warehouse exists
     ipcMain.handle('warehouse', async () => {
         const t = await getEbayCredentials()
-        if ( t.length !== 0 ) { return false }
-        else { return t[ 0 ].warehouse !== 0 }
+        if (t.length !== 0) {
+            return false
+        } else {
+            return t[0].warehouse !== 0
+        }
     })
 
     // returns true if we have ebay creds
@@ -304,14 +309,13 @@ app.on('window-all-closed', () => {
 console.log('main process is running')
 
 ipcMain.on('selected-files', (event, imageFiles) => {
-    console.log('Received files from renderer:', imageFiles);
-    const urls = imageFiles.map(filePath => {
-        return pathToFileURL(filePath).href;
-    });
+    console.log('Received files from renderer:', imageFiles)
+    const urls = imageFiles.map((filePath) => {
+        return pathToFileURL(filePath).href
+    })
 
-    console.log('File URLs:', urls);
-   
-});
+    console.log('File URLs:', urls)
+})
 
 ipcMain.on('submit:todoForm', (event, args) => {
     console.log('Received form data:', args)
