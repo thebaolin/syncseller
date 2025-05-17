@@ -8,6 +8,7 @@ import { request } from 'node:https'
 import { ebay_oauth_flow, get_policies, post_listing } from './ebay'
 import { createDummyShopifyListing } from './shopify'
 import { setupEtsyOAuthHandlers } from './etsy'
+import { pathToFileURL } from 'node:url'
 
 ipcMain.handle('shopify:create-listing', async () => {
     return await createDummyShopifyListing()
@@ -278,6 +279,25 @@ ipcMain.handle('get-analytics-data', async () => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 
+ipcMain.handle('dialog:openFiles', async () => {
+    try {
+        if (!mainWindow) {
+        console.log('mainWindow is null');
+        return [];
+        }
+
+        const result = await dialog.showOpenDialog(mainWindow, {
+            properties: ['openFile', 'multiSelections'],
+        });
+
+        console.log('File paths:', result.filePaths);
+        return result.canceled ? [] : result.filePaths;
+    } catch (err) {
+        console.error('Error opening dialog:', err);
+        return [];
+    }
+});
+
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         closeDB()
@@ -287,6 +307,17 @@ app.on('window-all-closed', () => {
 
 // FOR TESTING, not being used
 console.log('main process is running')
+
+ipcMain.on('selected-files', (event, imageFiles) => {
+    console.log('Received files from renderer:', imageFiles);
+    const urls = imageFiles.map(filePath => {
+        return pathToFileURL(filePath).href;
+    });
+
+    console.log('File URLs:', urls);
+   
+});
+
 ipcMain.on('submit:todoForm', (event, args) => {
     console.log('Received form data:', args)
 })

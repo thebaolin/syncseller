@@ -130,6 +130,7 @@ const ListingForm = () => {
         upc: '', //changed to str because of leading zeros and easier to count digits
         imageURL: [] as string[],
         condition: '',
+        // condition enums
         packageWeightAndSize: '',
         height: 0,
         length: 0,
@@ -233,6 +234,18 @@ const ListingForm = () => {
         // } else {
         //     alert(`Failed to submit listing: ${response.error}`)
         // }
+        //     // if shopify button is checked
+        //     if (listingData.onShopify) {
+        //         try {
+        //             await window.shopifyAPI.createShopifyListing()
+        //             console.log('Shopify listing successfully sent!!!!')
+        //         } catch (err) {
+        //             console.error('Failed to send listing to Shopify:', err)
+        //         }
+        //     }
+        // } else {
+        //     alert(`Failed to submit listing: ${response.error}`)
+        // }
     }
 
     // Handle submit draft
@@ -266,7 +279,7 @@ const ListingForm = () => {
             console.log('File paths:', filePath)
         }
     }
-
+    
     const handleAspects = (event) => {
         const { name, value } = event.target
         setMyAspects((prevData) => ({
