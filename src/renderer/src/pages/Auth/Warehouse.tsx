@@ -8,7 +8,7 @@ const InputSection = (args) => (
     </section>
 )
 
-const Warehouse = (props) => {
+const Warehouse = () => {
     const validateForm = async () => {
         const zip = document.forms['credentials']['zipcode'].value
         const name = document.forms['credentials']['name'].value
@@ -37,6 +37,7 @@ const Warehouse = (props) => {
             city: city,
             address: address
         })
+
         return true
     }
 

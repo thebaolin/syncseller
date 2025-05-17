@@ -114,6 +114,12 @@ const CheckboxInput = (props) => (
     </label>
 )
 
+const ebaySignIn = async(): Promise<boolean> => {
+        return await window.electron.ebaycreds() && await window.electron.warehouse()
+    }
+
+const ebayIsAuthenticated = await ebaySignIn()
+
 const ListingForm = () => {
     // Listing object
     const [listingData, setListingData] = useState({
@@ -475,12 +481,12 @@ const ListingForm = () => {
                 <section>
                     <SectionHeader label="Listing Platforms" />
                     <div className="grid grid-cols-4 mx-[20px] my-[15px]">
-                        <CheckboxInput
+                        {ebayIsAuthenticated ? <CheckboxInput
                             id="ebay"
                             checked={listingData.onEbay}
                             onChange={handleCheckboxChange}
                             label="eBay"
-                        />
+                        /> : (<></>)}
 
                         <CheckboxInput
                             id="etsy"
