@@ -490,9 +490,8 @@ export function setEbayCredentials(client_id, client_secret, redirect_uri) {
 }
 
 export function warehouse() {
-    db.prepare(`SELECT * FROM EbayCredentials`).all()[0].warehouse !== 0
+    return db.prepare(`SELECT * FROM EbayCredentials`).all()[0].warehouse !== 0
 }
-
 
 export function set_warehouse() {
     db.prepare('INSERT INTO EbayCredentials (warehouse) VALUES (?)').run(1)

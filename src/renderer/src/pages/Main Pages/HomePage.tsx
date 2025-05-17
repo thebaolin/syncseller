@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import Ebay_logo from '../../assets/images/ebay-logo.png'
 import Etsy_logo from '../../assets/images/Etsy-Logo.png'
 import Shopify_logo from '../../assets/images/Shopify-Logo.png'
+import { electron } from 'process'
 
 const Icon = (props: { src: any }) => (
     <div className=" bg-white w-full h-[100px] flex items-center justify-center mx-4 rounded-xl hover:bg-dustyrose">
@@ -31,8 +32,21 @@ const HomePage = () => {
             </button>
 
             {/* eBay login button */}
-            <button className="form-button" onClick={() => navigate('/auth/usercred')}>
-                Log in to eBay
+
+            <button
+                className="form-button"
+                onClick={async () => {
+                    const cred = await window.electron.ebaycreds()
+                    const ware = await !window.electron.warehouse()
+                    console.log(`cred ${cred} ware ${ware}`)
+                    if (!cred) {
+                        navigate('/auth/usercred')
+                    } else if (!ware) {
+                        navigate('/auth/warehouse')
+                    }
+                }}
+            >
+                eBay setup
             </button>
 
             {/* Platforms */}

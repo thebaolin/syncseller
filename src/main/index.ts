@@ -165,7 +165,20 @@ app.whenReady().then(() => {
 
     ipcMain.handle('set-ebay-creds', (e, client_id, client_secret, redirect_uri) => {
         ebay_oauth_flow(client_id, client_secret, redirect_uri)
-        // message pass to create warehouse
+    })
+
+    // returns true if warehouse exists
+    ipcMain.handle('warehouse', async () => {
+        const t = await getEbayCredentials()
+        console.log(`warehouse ${t[0].warehouse !== 0}`)
+        return t[0].warehouse !== 0
+    })
+
+    // returns true if we have ebay creds
+    ipcMain.handle('creds', async () => {
+        const t = await getEbayCredentials()
+        console.log(`creds: ${t.length !== 0}`)
+        return t.length !== 0
     })
 
     // IPC test
@@ -198,7 +211,8 @@ import {
     insertFullListing,
     getListingHistory,
     closeDB,
-    getAnalyticsData
+    getAnalyticsData,
+    warehouse
 } from './dbmanager'
 
 // Listen for the 'create-listing' message from the rendering thing

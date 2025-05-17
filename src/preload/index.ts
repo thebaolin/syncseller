@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron/renderer'
 import { electronAPI } from '@electron-toolkit/preload'
 import { createDummyShopifyListing } from '../main/shopify'
+import { warehouse } from '../main/dbmanager'
 
 console.log('preload is running')
 
@@ -27,7 +28,13 @@ if (process.contextIsolated) {
             setEbayCredentials: (client_id: string, client_secret: string, redirect_uri: string) =>
                 ipcRenderer.invoke('set-ebay-creds', client_id, client_secret, redirect_uri),
             getEbayPolicies: () => {
-                ipcRenderer.invoke('get-ebay-policies')
+                return ipcRenderer.invoke('get-ebay-policies')
+            },
+            ebaycreds: () => {
+                return ipcRenderer.invoke('creds')
+            },
+            warehouse: async () => {
+                return await ipcRenderer.invoke('warehouse')
             }
         }),
             //contextBridge.exposeInMainWorld('electron', electronAPI)

@@ -12,6 +12,7 @@ import ListingHistory from './pages/Main Pages/ListingHistory'
 import Analytics from './pages/Main Pages/Analytics'
 import DBView from './pages/Testing Pages/testDBView'
 import UserCred from './pages/User Credentials/UserCred'
+import Warehouse from './pages/User Credentials/warehouse'
 import PasswordScreen from './pages/User Credentials/dbpassword'
 import WelcomeScreen from './pages/User Credentials/WelcomeScreen'
 import NewUserScreen from './pages/User Credentials/NewUserScreen'
@@ -63,6 +64,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                         path="usercred"
                         element={<ProtectedRoute element={<UserCred platform="eBay" />} />}
                     />
+                    <Route path="warehouse" element={<ProtectedRoute element={<Warehouse />} />} />
                     <Route path="location" element={<ProtectedRoute element={<Location />} />} />
                 </Route>
             </Routes>

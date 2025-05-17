@@ -17,9 +17,7 @@ const scopes = [
     'https://api.ebay.com/oauth/api_scope/sell.inventory.readonly',
     'https://api.ebay.com/oauth/api_scope/sell.inventory',
     'https://api.ebay.com/oauth/api_scope/sell.account',
-    'https://api.ebay.com/oauth/api_scope/sell.account.readonly',
-    'https://api.ebay.com/oauth/api_scope/metadata.insights',
-    'https://api.ebay.com/oauth/api_scope'
+    'https://api.ebay.com/oauth/api_scope/sell.account.readonly'
 ]
 
 const enum policyType {
@@ -51,6 +49,7 @@ export async function ebay_oauth_flow(client_id, client_secret, redirect_uri) {
     const oauth_url = ebayAuthToken.generateUserAuthorizationUrl('SANDBOX', scopes, {
         prompt: 'login'
     })
+    console.log(oauth_url)
 
     // try the url
     await win.loadURL(oauth_url)
@@ -420,7 +419,7 @@ export async function create_inventory_item() {
 }
 
 // pass sku and json blob containing everything else?
-export async function publish_offer ( id ) {
+export async function publish_offer(id) {
     refresh()
     const response = await fetch(
         `https://api.sandbox.ebay.com/sell/inventory/v1/offer/${id}/publish`,
@@ -429,35 +428,29 @@ export async function publish_offer ( id ) {
             headers: {
                 Accept: 'application/json',
                 'Accept-Language': 'en-US',
-                Authorization:
-                    'Bearer ' + get_ebay_oauth().oauth_token
-            },
+                Authorization: 'Bearer ' + get_ebay_oauth().oauth_token
+            }
         }
     )
-    if ( response.status !== 200 ) {
+    if (response.status !== 200) {
         refresh()
-        const response = await fetch(
-            `https://api.sandbox.ebay.com/sell/inventory/v1/offer/${id}`,
-            {
-                method: 'DELETE',
-                headers: {
-                    Accept: 'application/json',
-                    'Accept-Language': 'en-US',
-                    Authorization:
-                        'Bearer ' + get_ebay_oauth().oauth_token
-                },
+        const response = await fetch(`https://api.sandbox.ebay.com/sell/inventory/v1/offer/${id}`, {
+            method: 'DELETE',
+            headers: {
+                Accept: 'application/json',
+                'Accept-Language': 'en-US',
+                Authorization: 'Bearer ' + get_ebay_oauth().oauth_token
             }
-        )
+        })
         return
     }
     const r = await response.json()
     //r.listingId
-
 }
 
 export async function get_policies() {
     return {
-        payment: await get_payment(), 
+        payment: await get_payment(),
         fulfillment: await get_fulfillment(),
         return: await get_return(),
         warehouse: await get_warehouse()
