@@ -128,6 +128,7 @@ const ListingForm = () => {
         upc: '', //changed to str because of leading zeros and easier to count digits
         images: [] as File[],
         condition: '',
+        // condition enums
         packageWeightAndSize: '',
         height: 0,
         length: 0,
@@ -136,7 +137,9 @@ const ListingForm = () => {
         packageType: '',
         weight: 0,
         weightUnit: '',
-        quantity: 0
+        quantity: 0,
+        sku: 0,
+        // marketPlaceId: 0
     })
 
     const [myAspects, setMyAspects] = useState({
@@ -202,29 +205,37 @@ const ListingForm = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
-        let listingAspects: string[] = [];
-        Object.entries(myAspects).map(([key,value]) => {
-            if (value){
-                listingAspects.push(key + ': ' + value);
-            }
-        })
-        listingData.aspects = listingAspects.join(',')
+        // const filePaths = selectedFile.map(file => file.path);
+        // window.electronAPI.sendSelectedFiles(filePaths)
+        
+        // console.log(window.electronAPI);
+        // console.log("submitted", filePaths)
 
-        if (response.success) {
-            alert('Listing submitted successfully!')
+        
 
-            // if shopify button is checked
-            if (listingData.onShopify) {
-                try {
-                    await window.shopifyAPI.createShopifyListing()
-                    console.log('Shopify listing successfully sent!!!!')
-                } catch (err) {
-                    console.error('Failed to send listing to Shopify:', err)
-                }
-            }
-        } else {
-            alert(`Failed to submit listing: ${response.error}`)
-        }
+        // let listingAspects: string[] = [];
+        // Object.entries(myAspects).map(([key,value]) => {
+        //     if (value){
+        //         listingAspects.push(key + ': ' + value);
+        //     }
+        // })
+        // listingData.aspects = listingAspects.join(',')
+
+        // if (response.success) {
+        //     alert('Listing submitted successfully!')
+
+        //     // if shopify button is checked
+        //     if (listingData.onShopify) {
+        //         try {
+        //             await window.shopifyAPI.createShopifyListing()
+        //             console.log('Shopify listing successfully sent!!!!')
+        //         } catch (err) {
+        //             console.error('Failed to send listing to Shopify:', err)
+        //         }
+        //     }
+        // } else {
+        //     alert(`Failed to submit listing: ${response.error}`)
+        // }
     }
 
     // Handle submit draft
@@ -242,10 +253,13 @@ const ListingForm = () => {
         }))
     }
 
+    // file object array
     const [selectedFile, setSelectedFile] = useState<File[]>([])
+
+    // local url array
     const [imagePreview, setImagePreview] = useState<string[]>([])
 
-    const handleFileChange = (event) => {
+    const handleFileChange = async(event) => {
         const file = event.target.files?.[0]
         if (file) {
             setSelectedFile((prev) => [...prev, file])
@@ -258,6 +272,12 @@ const ListingForm = () => {
         }
     }
 
+    const addImage = async(event) => {
+        const filePath = await window.electronAPI.openFileDialog();
+        console.log('Selected file paths:', filePath);
+    }
+
+    
     const handleAspects = (event) => {
         const { name, value } = event.target
         setMyAspects((prevData) => ({
@@ -290,6 +310,14 @@ const ListingForm = () => {
 
                     {/* Upload Images */}
                     <div className="mx-[20px] my-[15px]">
+                        <button 
+                            className="form-button w-[150px] mx-[20px] my-[15px]" 
+                            type="submit"
+                            onClick={addImage}
+                        >
+                            Add Image
+                        </button>
+
                         <label>
                             Upload images
                             <br />
