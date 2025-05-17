@@ -8,9 +8,10 @@ const SideBarTab = (props: SideBarTabProps) => {
     return (
         <div>
             <NavLink
-                className={({ isActive }) => isActive 
-                    ? "h-fit h-min-[60px] w-full border-b-[2px] border-green-50 text-xl flex p-[15px] bg-dustyrose text-white"
-                    : "h-fit h-min-[60px] w-full border-b-[2px] border-green-50 text-xl flex p-[15px] hover:bg-shadedpink cursor-pointer" 
+                className={({ isActive }) =>
+                    isActive
+                        ? 'h-fit h-min-[60px] w-full border-b-[2px] border-green-50 text-xl flex p-[15px] bg-dustyrose text-white'
+                        : 'h-fit h-min-[60px] w-full border-b-[2px] border-green-50 text-xl flex p-[15px] hover:bg-shadedpink cursor-pointer'
                 }
                 to={link}
             >

@@ -17,11 +17,11 @@ if (process.contextIsolated) {
         contextBridge.exposeInMainWorld('electronAPI', {
             openFileDialog: () => ipcRenderer.invoke('dialog:openFiles'),
             readImageAsBase64: (path) => {
-                const data = fs.readFileSync(path);
-                return `data:image/${path.split('.').pop()};base64,${data.toString('base64')}`;
-            },
+                const data = fs.readFileSync(path)
+                return `data:image/${path.split('.').pop()};base64,${data.toString('base64')}`
+            }
         })
-        
+
         contextBridge.exposeInMainWorld('electron', {
             // Include the default Electron API
             ...electronAPI,
@@ -43,6 +43,9 @@ if (process.contextIsolated) {
             },
             warehouse: async () => {
                 return await ipcRenderer.invoke('warehouse')
+            },
+            make_warehouse: (data) => {
+                ipcRenderer.invoke('make-warehouse', data)
             }
         }),
             //contextBridge.exposeInMainWorld('electron', electronAPI)

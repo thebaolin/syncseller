@@ -213,7 +213,7 @@ const ListingForm = () => {
             }
         })
         listingData.aspects = listingAspects.join(',')
-        if (listingData.aspects){
+        if (listingData.aspects) {
             console.log(listingData.aspects)
         }
 
@@ -266,11 +266,11 @@ const ListingForm = () => {
     const [imagePreview, setImagePreview] = useState<string[]>([])
     const [filePaths, setFilePaths] = useState<string[]>([])
 
-    const addImage = async() => {
+    const addImage = async () => {
         const filePaths = await window.electronAPI.openFileDialog() // get filepath
-        if (filePaths && filePaths.length > 0){
+        if (filePaths && filePaths.length > 0) {
             const filePath = filePaths[0]
-            const base64Image = await window.electronAPI.readImageAsBase64((filePath)) // get base64image
+            const base64Image = await window.electronAPI.readImageAsBase64(filePath) // get base64image
 
             setImagePreview((prev) => [...prev, base64Image])
             setFilePaths((prev) => [...prev, filePath])
@@ -279,7 +279,7 @@ const ListingForm = () => {
             console.log('File paths:', filePath)
         }
     }
-    
+
     const handleAspects = (event) => {
         const { name, value } = event.target
         setMyAspects((prevData) => ({
@@ -318,7 +318,7 @@ const ListingForm = () => {
                     {/* Upload Images */}
                     <div className="mx-[20px] my-[15px]">
                         Upload Images
-                        <button 
+                        <button
                             className="form-button w-[150px] mx-[20px] my-[15px]"
                             type="submit"
                             onClick={addImage}

@@ -9,7 +9,8 @@ import {
     getEbayCredentials,
     refreshEbayOauth,
     setEbayCredentials,
-    setEbayOauth
+    setEbayOauth,
+    set_warehouse
 } from './dbmanager'
 
 // oauth scopes for what api calls you can make
@@ -521,4 +522,46 @@ async function get_warehouse() {
     return (await response.json()).locations
         .filter((elem) => elem.merchantLocationStatus === 'ENABLED')
         .map((elem) => [elem.name, elem.merchantLocationKey])
+}
+
+export async function make_warehouse(data) {
+    refresh()
+    const content = `{
+        "location": {
+            "address": {
+                "city" : ${data.city}
+                "postalCode" : ${data.zip}
+                "country": "US",
+                "stateOrProvince" : ${data.state},
+                "addressLine1" : ${data.address},
+            }
+        },
+        "name": ${data.name},
+        "merchantLocationStatus": "ENABLED",
+        "locationTypes": [
+            "WAREHOUSE"
+        ]
+    }`
+    const response = await fetch(
+        `https://api.sandbox.ebay.com/sell/inventory/v1/location/${data.key}`,
+        {
+            method: 'POST',
+            headers: {
+                Authorization: 'Bearer ' + get_ebay_oauth().oauth_token,
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'Content-Length': `${content.length}`
+            }
+        }
+    )
+    console.log(data)
+    console.log(await response.json())
+    if (response.status !== 204) {
+        new Notification({
+            title: 'Warehouse Error',
+            body: 'Incorrect information supplied; Please try again'
+        }).show()
+    } else {
+        set_warehouse()
+    }
 }
