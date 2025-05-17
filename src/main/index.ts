@@ -279,25 +279,6 @@ ipcMain.handle('get-analytics-data', async () => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 
-ipcMain.handle('dialog:openFiles', async () => {
-    try {
-        if (!mainWindow) {
-        console.log('mainWindow is null');
-        return [];
-        }
-
-        const result = await dialog.showOpenDialog(mainWindow, {
-            properties: ['openFile', 'multiSelections'],
-        });
-
-        console.log('File paths:', result.filePaths);
-        return result.canceled ? [] : result.filePaths;
-    } catch (err) {
-        console.error('Error opening dialog:', err);
-        return [];
-    }
-});
-
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         closeDB()
