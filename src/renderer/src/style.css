@@ -26,7 +26,7 @@ select {
     @apply flex-1 min-h-[calc(100vh-60px)] border-r-[2px] border-b-[2px] border-t-[2px] border-green-50 bg-lightpink py-[30px] px-[20px] overflow-hidden rounded-lg;
 }
 
-.content-full{
+.content-full {
     @apply mt-[60px] min-h-[calc(100vh-60px)] border-[2px] bg-lightpink fixed rounded-lg w-full border-green-50 pt-[50px];
 }
 

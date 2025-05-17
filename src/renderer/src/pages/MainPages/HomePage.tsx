@@ -31,10 +31,7 @@ const HomePage = () => {
             </button>
 
             {/* eBay login button */}
-            <button 
-                className="form-button"
-                onClick={() => navigate("/auth/usercred")}
-            >
+            <button className="form-button" onClick={() => navigate('/auth/usercred')}>
                 Log in to eBay
             </button>
 

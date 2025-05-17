@@ -100,7 +100,8 @@ function createTables() {
     CREATE TABLE IF NOT EXISTS EbayCredentials (
       clientId TEXT PRIMARY KEY,
       clientSecret TEXT NOT NULL,
-      redirectUri TEXT NOT NULL
+      redirectUri TEXT NOT NULL,
+      warehouse INTEGER NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS OAuth (
@@ -283,7 +284,7 @@ export function closeDB() {
 export function insertFullListing(data: any): { success: boolean; error?: string } {
     if (!db) return { success: false, error: 'Database not initialized' }
 
-    data.imageURL = data.images.map(listing =>{
+    data.imageURL = data.images.map((listing) => {
         listing.path(__dirname)
     })
 
@@ -479,10 +480,22 @@ export function getEbayCredentials() {
     return db.prepare(`SELECT * FROM EbayCredentials`).all()
 }
 
+// if getEbayCredentials().length === 0 if === 1 credentials exist
+// warehouse is true if warehouse exists, false otherwise only be called if getEbayCredentials().length === 1
+
 export function setEbayCredentials(client_id, client_secret, redirect_uri) {
     db.prepare(
-        'INSERT INTO EbayCredentials (clientId, clientSecret, redirectUri) VALUES (?, ?, ?)'
-    ).run(client_id, client_secret, redirect_uri)
+        'INSERT INTO EbayCredentials (clientId, clientSecret, redirectUri, warehouse) VALUES (?, ?, ?, ?)'
+    ).run(client_id, client_secret, redirect_uri, 0)
+}
+
+export function warehouse() {
+    db.prepare(`SELECT * FROM EbayCredentials`).all()[0].warehouse !== 0
+}
+
+
+export function set_warehouse() {
+    db.prepare('INSERT INTO EbayCredentials (warehouse) VALUES (?)').run(1)
 }
 
 export function get_ebay_oauth() {
