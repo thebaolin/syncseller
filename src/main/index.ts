@@ -170,8 +170,8 @@ app.whenReady().then(() => {
     // returns true if warehouse exists
     ipcMain.handle('warehouse', async () => {
         const t = await getEbayCredentials()
-        console.log(`warehouse ${t[0].warehouse !== 0}`)
-        return t[0].warehouse !== 0
+        if ( t.length !== 0 ) { return false }
+        else { return t[ 0 ].warehouse !== 0 }
     })
 
     // returns true if we have ebay creds

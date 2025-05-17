@@ -24,7 +24,7 @@ const Warehouse = ( props ) => {
 
     return (
         <div className="content-full">
-            <h1 className="heading">{ `Inventory Location` }</h1>
+            <h1 className="text-center text-xl">{ `Inventory Location` }</h1>
             <div className="w-1/3 m-auto">
                 <form id="credentials">
                     <InputSection id="zipcode" title="Zipcode" />

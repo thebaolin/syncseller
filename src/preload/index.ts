@@ -1,7 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron/renderer'
 import { electronAPI } from '@electron-toolkit/preload'
 import { createDummyShopifyListing } from '../main/shopify'
-import { warehouse } from '../main/dbmanager'
 
 console.log('preload is running')
 
