@@ -8,6 +8,7 @@ import { request } from 'node:https'
 import { ebay_oauth_flow, get_policies, post_listing } from './ebay'
 import { createDummyShopifyListing } from './shopify'
 import { setupEtsyOAuthHandlers } from './etsy'
+import { pathToFileURL } from 'node:url'
 
 ipcMain.handle('shopify:create-listing', async () => {
     return await createDummyShopifyListing()
@@ -78,9 +79,11 @@ async function getPolicyIDs(auth: string) {
     }
 }
 
+let mainWindow: BrowserWindow | null = null
+
 function createWindow(): void {
     // Create the browser window.
-    const mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         width: 900,
         height: 670,
         show: false,
@@ -152,6 +155,27 @@ ipcMain.handle('select-db-save-location', async () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
+
+ipcMain.handle('dialog:openFiles', async () => {
+    try {
+        if (mainWindow){
+            const result = await dialog.showOpenDialog(mainWindow, {
+                properties: ['openFile', 'multiSelections']
+            })
+            console.log('Filepaths: ', result.filePaths)
+            return result.filePaths
+        }
+        else {
+            console.log("mainWindow is null")
+            return []
+        }
+    }
+    catch (err) {
+        console.error('Error opening dialog: ', err)
+        return []
+    }
+})
+
 app.whenReady().then(() => {
     // Set app user model id for windows
     electronApp.setAppUserModelId('com.electron')
@@ -268,6 +292,7 @@ ipcMain.handle('get-analytics-data', async () => {
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
+
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         closeDB()
@@ -277,6 +302,17 @@ app.on('window-all-closed', () => {
 
 // FOR TESTING, not being used
 console.log('main process is running')
+
+ipcMain.on('selected-files', (event, imageFiles) => {
+    console.log('Received files from renderer:', imageFiles);
+    const urls = imageFiles.map(filePath => {
+        return pathToFileURL(filePath).href;
+    });
+
+    console.log('File URLs:', urls);
+   
+});
+
 ipcMain.on('submit:todoForm', (event, args) => {
     console.log('Received form data:', args)
 })

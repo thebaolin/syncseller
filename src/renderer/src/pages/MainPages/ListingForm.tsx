@@ -128,8 +128,9 @@ const ListingForm = () => {
         aspects: '[]',
         description: '',
         upc: '', //changed to str because of leading zeros and easier to count digits
-        images: [] as File[],
+        imageURL: [] as string[],
         condition: '',
+        // condition enums
         packageWeightAndSize: '',
         height: 0,
         length: 0,
@@ -138,7 +139,8 @@ const ListingForm = () => {
         packageType: '',
         weight: 0,
         weightUnit: '',
-        quantity: 0
+        quantity: 0,
+        sku: 0
     })
 
     const [myAspects, setMyAspects] = useState({
@@ -215,21 +217,35 @@ const ListingForm = () => {
             console.log(listingData.aspects)
         }
 
-        if (response.success) {
-            alert('Listing submitted successfully!')
+        listingData.imageURL = filePaths
 
-            // if shopify button is checked
-            if (listingData.onShopify) {
-                try {
-                    await window.shopifyAPI.createShopifyListing()
-                    console.log('Shopify listing successfully sent!!!!')
-                } catch (err) {
-                    console.error('Failed to send listing to Shopify:', err)
-                }
-            }
-        } else {
-            alert(`Failed to submit listing: ${response.error}`)
-        }
+        // if (response.success) {
+        //     alert('Listing submitted successfully!')
+
+        //     // if shopify button is checked
+        //     if (listingData.onShopify) {
+        //         try {
+        //             await window.shopifyAPI.createShopifyListing()
+        //             console.log('Shopify listing successfully sent!!!!')
+        //         } catch (err) {
+        //             console.error('Failed to send listing to Shopify:', err)
+        //         }
+        //     }
+        // } else {
+        //     alert(`Failed to submit listing: ${response.error}`)
+        // }
+        //     // if shopify button is checked
+        //     if (listingData.onShopify) {
+        //         try {
+        //             await window.shopifyAPI.createShopifyListing()
+        //             console.log('Shopify listing successfully sent!!!!')
+        //         } catch (err) {
+        //             console.error('Failed to send listing to Shopify:', err)
+        //         }
+        //     }
+        // } else {
+        //     alert(`Failed to submit listing: ${response.error}`)
+        // }
     }
 
     // Handle submit draft
@@ -247,28 +263,34 @@ const ListingForm = () => {
         }))
     }
 
-    const [selectedFile, setSelectedFile] = useState<File[]>([])
     const [imagePreview, setImagePreview] = useState<string[]>([])
+    const [filePaths, setFilePaths] = useState<string[]>([])
 
-    const handleFileChange = (event) => {
-        const file = event.target.files?.[0]
-        if (file) {
-            setSelectedFile((prev) => [...prev, file])
+    const addImage = async() => {
+        const filePaths = await window.electronAPI.openFileDialog() // get filepath
+        if (filePaths && filePaths.length > 0){
+            const filePath = filePaths[0]
+            const base64Image = await window.electronAPI.readImageAsBase64((filePath)) // get base64image
 
-            const objectUrl = URL.createObjectURL(file)
-            setImagePreview((prev) => [...prev, objectUrl])
+            setImagePreview((prev) => [...prev, base64Image])
+            setFilePaths((prev) => [...prev, filePath])
 
-            console.log('File selected:', file.name)
-            console.log('Image preview URL:', objectUrl)
+            console.log('File selected:', base64Image)
+            console.log('File paths:', filePath)
         }
     }
-
+    
     const handleAspects = (event) => {
         const { name, value } = event.target
         setMyAspects((prevData) => ({
             ...prevData,
             [name]: value
         }))
+    }
+
+    const removeImage = (index: number) => {
+        setFilePaths((prev) => prev.filter((_, i) => i != index))
+        setImagePreview((prev) => prev.filter((_, i) => i != index))
     }
 
     return (
@@ -295,29 +317,29 @@ const ListingForm = () => {
 
                     {/* Upload Images */}
                     <div className="mx-[20px] my-[15px]">
-                        <label>
-                            Upload images
-                            <br />
-                        </label>
-                        <input
-                            type="file"
-                            id="fileUpload"
-                            accept="image/*"
-                            multiple
-                            onChange={handleFileChange}
-                        ></input>
+                        Upload Images
+                        <button 
+                            className="form-button w-[150px] mx-[20px] my-[15px]"
+                            type="submit"
+                            onClick={addImage}
+                        >
+                            Add Images
+                        </button>
                     </div>
 
                     {/* Images Preview */}
                     <div className="grid grid-cols-4 mx-[15px] my-[15px]">
                         {imagePreview.map((image, index) => (
-                            <div className="flex-1 aspect-square shadow bg-white m-[5px]">
-                                <img
-                                    className="h-full object-cover"
-                                    id="output"
-                                    src={image}
-                                    alt="image.name"
-                                ></img>
+                            <div className="text-center" key={index}>
+                                <div className="flex-1 aspect-square shadow bg-white m-[5px]">
+                                    <img
+                                        className="h-full object-cover"
+                                        id="output"
+                                        src={image}
+                                        alt={filePaths[index]?.split(/[\\/]/).pop()}
+                                    ></img>
+                                </div>
+                                <button onClick={() => removeImage(index)}>Remove</button>
                             </div>
                         ))}
                     </div>
