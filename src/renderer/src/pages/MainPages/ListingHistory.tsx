@@ -1,9 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import sortAscending from '../../assets/images/sort_asc.png'
+import sortDescending from '../../assets/images/sort_des.png'
 
 const ListingHistory = () => {
     const navigate = useNavigate()
     const [listings, setListings] = useState([])
+    
+    const [orders, setOrders] = useState({
+        itemID: 'ascending',
+        dateCreated: 'ascending',
+        title: 'ascending',
+        status: 'ascending',
+        platform: 'ascending',
+        price: 'ascending',
+    })
 
     useEffect(() => {
         const fetchListings = async () => {
@@ -19,10 +30,22 @@ const ListingHistory = () => {
     }, [])
     return (
         <div className="content">
+            <button className="h-[20px] w-[20px] rounded-[50%]">
+                <img className="object-cover" src={sortAscending}/>
+            </button>
             <table>
                 <thead>
                     <tr>
-                        <th>Item ID</th>
+                        <th>Item ID 
+                            {orders.itemID === 'ascending' 
+                                ? <button className="h-[20px] w-[20px] rounded-[50%] cursor-pointer ml-[5px]">
+                                    <img className="object-cover" src={sortAscending}/>
+                                </button>
+                                : <button className="h-[20px] w-[20px] rounded-[50%] cursor-pointer ml-[5px]">
+                                    <img className="object-cover" src={sortDescending}/>
+                                </button>
+                            }
+                        </th>
                         <th>Date Created</th>
                         <th>Title</th>
                         <th>Status</th>
