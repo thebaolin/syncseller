@@ -20,7 +20,7 @@ const Dropdown = (props: SelectProps) => {
                     Select an option
                 </option>
                 {(options || []).map(([label, id], index) => (
-                    <option key={index} value={label}>
+                    <option key={index} value={[label,id]}>
                         {label}
                     </option>
                 ))}
@@ -33,10 +33,10 @@ const PoliciesForm = () => {
     const navigate = useNavigate()
 
     const [policies, setPolicies] = useState({
-        fulfillment: "",
-        payment: "",
-        return: "",
-        warehouse: "",
+        fulfillment: ["", 0],
+        payment: ["", 0],
+        return: ["", 0],
+        warehouse: ["", 0],
     })
 
     const handlePolicies = (event) => {
@@ -73,6 +73,10 @@ const PoliciesForm = () => {
     useEffect(() => {
         fetchPolicies() 
     }, [])
+
+    const handleSubmit = () => {
+        console.log(policies)
+    }
 
     return (
         <div className="content-full">
@@ -116,7 +120,7 @@ const PoliciesForm = () => {
                         </button>
                         <button
                             className="form-button w-[150px] mx-[20px]"
-                            // onClick={handleSubmit}
+                            onClick={handleSubmit}
                             form="user-cred-form"
                         >
                             Submit
