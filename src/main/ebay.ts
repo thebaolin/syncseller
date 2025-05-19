@@ -10,7 +10,8 @@ import {
     refreshEbayOauth,
     setEbayCredentials,
     setEbayOauth,
-    set_warehouse
+    set_warehouse,
+    getEbayPolicies
 } from './dbmanager'
 
 // oauth scopes for what api calls you can make
@@ -294,17 +295,25 @@ export async function post_listing(data) {
     await refresh()
 
     // process image urls first
-    data.imageURL = await Promise.all( data.imageURL.map( ( elem ) => { return post_image( elem ) } ) )
+    data.imageURL = await Promise.all(
+        data.imageURL.map((elem) => {
+            return post_image(elem)
+        })
+    )
     console.log(data)
 
-    // Error found
-    if ( data.imageURL.find( ( elem ) => { return elem === "Error" } ) !== undefined ) {
+    // Error found in
+    if (
+        data.imageURL.find((elem) => {
+            return elem === 'Error'
+        }) !== undefined
+    ) {
         return
     }
-
-
     // create inventory call
-
+    if (!(await create_inventory_item(data))) {
+        return
+    }
 
     // create offer call
 
@@ -347,48 +356,66 @@ export async function post_image(path: string): Promise<string> {
             title: 'Image Upload Error',
             body: 'Issue with uploading the image; Change the image and try again'
         }).show()
-        return "Error"
+        return 'Error'
     } else {
         console.log(data.UploadSiteHostedPicturesResponse.SiteHostedPictureDetails[0].FullURL[0])
         return data.UploadSiteHostedPicturesResponse.SiteHostedPictureDetails[0].FullURL[0]
     }
 }
 
-// take in what???
 // Data json which we have to selectively parse? or front end gives the correct ones...
 export async function create_inventory_item(data) {
+    let condition
+    if (data.condition === 'New with tags' || data.condition === 'New without tags') {
+        condition = 'NEW'
+    } else if (data.condition === 'New with imperfections') {
+        condition = 'LIKE_NEW'
+    } else if (data.condition === 'Pre-owned: Excellent') {
+        condition = 'USED_EXCELLENT'
+    } else if (data.condition === 'Pre-owned - Good') {
+        condition = 'USED_GOOD'
+    } else {
+        condition = 'USED_ACCEPTABLE'
+    }
+
+    let unit: string
+    if (data.unit === 'inches') {
+        unit = 'INCH'
+    } else {
+        unit = 'CENTIMETER'
+    }
+    let wunit
+    if (data.weightUnit === 'pounds') {
+        wunit = 'POUND'
+    } else if (data.weightUnit === 'ounces') {
+        wunit = 'OUNCE'
+    } else if (data.weightUnit === 'grams') {
+        wunit = 'GRAM'
+    } else {
+        wunit = 'KILOGRAM'
+    }
     const content = `{
     "product": {
-        "title": "Test listing - do not bid or buy - awesome Apple watch test 2",
-        "aspects": {
-            "Feature":[
-              "Water resistance", "GPS"
-            ],
-            "CPU":[
-              "Dual-Core Processor"
-            ]
-        },
-        "description": "Test listing - do not bid or buy Built-in GPS. Water resistance to 50 meters.1 A new lightning-fast dual-core processor. And a display thats two times brighter than before. Full of features that help you stay active, motivated, and connected, Apple Watch Series 2 is designed for all the ways you move ",
-        "upc": ["888462079525"],
-        "imageUrls": ${data.imageURL}
+        "title": "${data.title}",
+        "description": "${data.description}",
+        "imageUrls": ${imgurl(data.imageURL)}
     },
-    "condition": "NEW",
+    "condition": "${condition}",
     "packageWeightAndSize": {
         "dimensions": {
-            "height": 5,
-            "length": 10,
-            "width": 15,
-            "unit": "INCH"
+            "height": "${data.height}",
+            "length": "${data.length}",
+            "width": "${data.width}",
+            "unit": "${unit}"
         },
-        "packageType": "MAILING_BOX",
         "weight": {
-            "value": 2,
-            "unit": "POUND"
+            "value": "${data.weight}",
+            "unit": "${wunit}"
         }
     },
     "availability": {
         "shipToLocationAvailability": {
-            "quantity": ${data.quantity}
+            "quantity": "${data.quantity}"
         }
     }
 }`
@@ -402,17 +429,16 @@ export async function create_inventory_item(data) {
                 'Accept-Language': 'en-US',
                 'Content-Language': 'en-US',
                 'Content-Length': `${content.length}`,
-                Authorization:
-                    'Bearer ' + get_ebay_oauth().oauth_token
+                Authorization: 'Bearer ' + get_ebay_oauth().oauth_token
             },
             body: content
         }
     )
 
-    console.log('lel')
+    console.log(content)
     console.log(response.status)
     if (response.status !== 204) {
-        console.log('problem')
+        console.log(await response.json())
         new Notification({
             title: 'Listing Post Error',
             body: 'Issue with Listing Post; Check that field information is correct; Please try again'
@@ -420,6 +446,19 @@ export async function create_inventory_item(data) {
         return false
     }
     return true
+}
+
+function imgurl(data) {
+    let s = '['
+    for (const url of data) {
+        s += '"'
+        s += url
+        s += '"'
+        s += ','
+    }
+    s = s.substring(0, s.length - 1)
+    s += ']'
+    return s
 }
 
 // pass sku and json blob containing everything else?
@@ -446,10 +485,48 @@ export async function publish_offer(id) {
                 Authorization: 'Bearer ' + get_ebay_oauth().oauth_token
             }
         })
-        return
+        return false
     }
     const r = await response.json()
     //r.listingId
+    return true
+}
+
+async function create_offer(data) {
+    refresh()
+    const policies = getEbayPolicies()
+    const content = `
+{
+    "sku": ${data.sku},
+    "marketplaceId": "EBAY_US",
+    "format": "FIXED_PRICE",
+    "quantityLimitPerBuyer": 1,
+    "pricingSummary": {
+        "price": {
+            "value": ${data.price},
+            "currency": "USD"
+        }
+    },
+    "listingPolicies": {
+        "fulfillmentPolicyId": ${policies.fulfillment},
+        "paymentPolicyId": ${policies.payment},
+        "returnPolicyId": ${policies.return}
+    },
+    "categoryId": "165260",
+    "merchantLocationKey": ${policies.warehouse}
+}`
+    const response = await fetch(`https://api.sandbox.ebay.com/sell/inventory/v1/offer`, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'Accept-Language': 'en-US',
+            'Content-Language': 'en-US',
+            'Content-Length': `${content.length}`,
+            Authorization: 'Bearer ' + get_ebay_oauth().oauth_token
+        },
+        body: content
+    })
 }
 
 export async function get_policies() {

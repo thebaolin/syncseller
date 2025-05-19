@@ -199,16 +199,16 @@ app.whenReady().then(() => {
 
     ipcMain.handle('choose-policies', (e, data) => {
         set_policies(data)
-    } )
-    
-    ipcMain.handle( 'policy', async () => {
+    })
+
+    ipcMain.handle('policy', async () => {
         return getEbayPolicies().length !== 0
     })
 
     // returns true if warehouse exists
     ipcMain.handle('warehouse', async () => {
         const t = await getEbayCredentials()
-        if ( t.length === 0 ) {
+        if (t.length === 0) {
             return false
         }
         return t[0].warehouse !== 0

@@ -6,30 +6,30 @@ interface SelectProps {
     value: any
     label: string
     options: any[]
-    onChange: ( e: React.ChangeEvent<HTMLSelectElement> ) => void
+    onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
 }
 
-const Dropdown = ( props: SelectProps ) => {
+const Dropdown = (props: SelectProps) => {
     const { id, label, value, options, onChange } = props
     return (
         <div className="mx-[20px] my-[15px]">
-            <label htmlFor={ id }>{ label }</label>
+            <label htmlFor={id}>{label}</label>
             <br />
             <select
                 className="w-full"
-                id={ id }
-                name={ id }
-                value={ `${ value[ 0 ] }|${ value[ 1 ] }` }
-                onChange={ onChange }
+                id={id}
+                name={id}
+                value={`${value[0]}|${value[1]}`}
+                onChange={onChange}
             >
                 <option value="|0" disabled>
                     Select an option
                 </option>
-                { ( options || [] ).map( ( [ label, id ], index ) => (
-                    <option key={ index } value={ `${ label }|${ id }` }>
-                        { label }
+                {(options || []).map(([label, id], index) => (
+                    <option key={index} value={`${label}|${id}`}>
+                        {label}
                     </option>
-                ) ) }
+                ))}
             </select>
         </div>
     )
@@ -38,33 +38,33 @@ const Dropdown = ( props: SelectProps ) => {
 const PoliciesForm = () => {
     const navigate = useNavigate()
 
-    const [ policies, setPolicies ] = useState<{
-        fulfillment: [ string, number ]
-        payment: [ string, number ]
-        return: [ string, number ]
-        warehouse: [ string, number ]
-    }>( {
-        fulfillment: [ '', 0 ],
-        payment: [ '', 0 ],
-        return: [ '', 0 ],
-        warehouse: [ '', 0 ]
-    } )
+    const [policies, setPolicies] = useState<{
+        fulfillment: [string, number]
+        payment: [string, number]
+        return: [string, number]
+        warehouse: [string, number]
+    }>({
+        fulfillment: ['', 0],
+        payment: ['', 0],
+        return: ['', 0],
+        warehouse: ['', 0]
+    })
 
-    const handlePolicies = ( event ) => {
+    const handlePolicies = (event) => {
         const { name, value } = event.target
-        const [ label, idStr ] = value.split( '|' )
-        const id = Number( idStr )
+        const [label, idStr] = value.split('|')
+        const id = Number(idStr)
 
-        setPolicies( ( prevData ) => ( {
+        setPolicies((prevData) => ({
             ...prevData,
-            [ name ]: [ label, id ]
-        } ) )
+            [name]: [label, id]
+        }))
     }
 
-    const [ fulfillmentOptions, setFulfillmentOptions ] = useState<[ string, number ][]>( [] )
-    const [ paymentOptions, setPaymentOptions ] = useState<[ string, number ][]>( [] )
-    const [ returnOptions, setReturnOptions ] = useState<[ string, number ][]>( [] )
-    const [ warehouseOptions, setWarehouseOptions ] = useState<[ string, number ][]>( [] )
+    const [fulfillmentOptions, setFulfillmentOptions] = useState<[string, number][]>([])
+    const [paymentOptions, setPaymentOptions] = useState<[string, number][]>([])
+    const [returnOptions, setReturnOptions] = useState<[string, number][]>([])
+    const [warehouseOptions, setWarehouseOptions] = useState<[string, number][]>([])
 
     const fetchPolicies = async () => {
         try {
@@ -75,32 +75,32 @@ const PoliciesForm = () => {
                 warehouse
             } = await window.electron.getEbayPolicies()
 
-            setFulfillmentOptions( fulfillment )
-            setPaymentOptions( payment )
-            setReturnOptions( returnPolicy )
-            setWarehouseOptions( warehouse )
+            setFulfillmentOptions(fulfillment)
+            setPaymentOptions(payment)
+            setReturnOptions(returnPolicy)
+            setWarehouseOptions(warehouse)
 
-            console.log( 'fulfillment: ', fulfillment )
-            console.log( 'payment: ', payment )
-            console.log( 'return: ', returnPolicy )
-            console.log( 'warehouse: ', warehouse )
-        } catch ( err ) {
-            console.error( 'Failed policies: ', err )
+            console.log('fulfillment: ', fulfillment)
+            console.log('payment: ', payment)
+            console.log('return: ', returnPolicy)
+            console.log('warehouse: ', warehouse)
+        } catch (err) {
+            console.error('Failed policies: ', err)
         }
     }
 
-    useEffect( () => {
+    useEffect(() => {
         fetchPolicies()
-    }, [] )
+    }, [])
 
     const validatePolicies = () => {
         if (
-            ( policies.fulfillment[ 0 ] === '' && policies.fulfillment[ 1 ] === 0 ) ||
-            ( policies.payment[ 0 ] === '' && policies.payment[ 1 ] === 0 ) ||
-            ( policies.return[ 0 ] === '' && policies.return[ 1 ] === 0 ) ||
-            ( policies.warehouse[ 0 ] === '' && policies.warehouse[ 1 ] === 0 )
+            (policies.fulfillment[0] === '' && policies.fulfillment[1] === 0) ||
+            (policies.payment[0] === '' && policies.payment[1] === 0) ||
+            (policies.return[0] === '' && policies.return[1] === 0) ||
+            (policies.warehouse[0] === '' && policies.warehouse[1] === 0)
         ) {
-            alert( 'Missing Field' )
+            alert('Missing Field')
             return false
         }
         return true
@@ -108,11 +108,10 @@ const PoliciesForm = () => {
 
     const handleSubmit = () => {
         const valid = validatePolicies()
-        if ( valid ) {
-            console.log( policies.payment[ 1 ] )
-            window.electron.choose_policies( policies )
+        if (valid) {
+            console.log(policies.payment[1])
+            window.electron.choose_policies(policies)
         }
-
     }
 
     return (
@@ -123,41 +122,41 @@ const PoliciesForm = () => {
                     <Dropdown
                         id="fulfillment"
                         label="Fulfillment"
-                        value={ policies.fulfillment }
-                        options={ fulfillmentOptions }
-                        onChange={ handlePolicies }
+                        value={policies.fulfillment}
+                        options={fulfillmentOptions}
+                        onChange={handlePolicies}
                     />
                     <Dropdown
                         id="payment"
                         label="Payment"
-                        value={ policies.payment }
-                        options={ paymentOptions }
-                        onChange={ handlePolicies }
+                        value={policies.payment}
+                        options={paymentOptions}
+                        onChange={handlePolicies}
                     />
                     <Dropdown
                         id="return"
                         label="Return"
-                        value={ policies.return }
-                        options={ returnOptions }
-                        onChange={ handlePolicies }
+                        value={policies.return}
+                        options={returnOptions}
+                        onChange={handlePolicies}
                     />
                     <Dropdown
                         id="warehouse"
                         label="Warehouse"
-                        value={ policies.warehouse }
-                        options={ warehouseOptions }
-                        onChange={ handlePolicies }
+                        value={policies.warehouse}
+                        options={warehouseOptions}
+                        onChange={handlePolicies}
                     />
                     <div className="flex flex-col-2 justify-between pt-[20px]">
                         <button
                             className="form-button w-[150px] mx-[20px]"
-                            onClick={ () => navigate( '/app/home' ) }
+                            onClick={() => navigate('/app/home')}
                         >
                             Go Back
                         </button>
                         <button
                             className="form-button w-[150px] mx-[20px]"
-                            onClick={ handleSubmit }
+                            onClick={handleSubmit}
                             form="user-cred-form"
                         >
                             Submit
