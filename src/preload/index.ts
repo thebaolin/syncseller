@@ -46,6 +46,12 @@ if (process.contextIsolated) {
             },
             make_warehouse: (data) => {
                 ipcRenderer.invoke('make-warehouse', data)
+            },
+            post_ebay: (data) => {
+                ipcRenderer.invoke('post-ebay', data)
+            },
+            choose_policies: (data) => {
+                ipcRenderer.invoke('choose-policies', data)
             }
         }),
             //contextBridge.exposeInMainWorld('electron', electronAPI)

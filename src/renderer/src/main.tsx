@@ -53,21 +53,18 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                     />
                     <Route path="dbview" element={<ProtectedRoute element={<DBView />} />} />
                     {/* find where app/usercred is being used and remove */}
-                    <Route
-                        path="usercred"
-                        element={ <ProtectedRoute element={ <UserCred /> } /> }
-                    />
+                    <Route path="usercred" element={<ProtectedRoute element={<UserCred />} />} />
                 </Route>
 
                 {/* Auth Layout */}
                 <Route path="/auth" element={<AuthLayout />}>
+                    <Route path="usercred" element={<ProtectedRoute element={<UserCred />} />} />
+                    <Route path="warehouse" element={<ProtectedRoute element={<Warehouse />} />} />
                     <Route
-                        path="usercred"
-                        element={ <ProtectedRoute element={ <UserCred /> } /> }
+                        path="policies"
+                        element={<ProtectedRoute element={<PoliciesForm />} />}
                     />
-                    <Route path="warehouse" element={ <ProtectedRoute element={ <Warehouse /> } /> } />
-                    <Route path="policies" element={ <ProtectedRoute element={ <PoliciesForm /> } /> } />
-                    <Route path="location" element={ <ProtectedRoute element={ <Location /> } /> } />
+                    <Route path="location" element={<ProtectedRoute element={<Location />} />} />
                 </Route>
             </Routes>
         </BrowserRouter>

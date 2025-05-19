@@ -223,7 +223,9 @@ const ListingForm = () => {
         }
 
         listingData.imageURL = filePaths
-        listingData.status = "Active"
+        listingData.status = 'Active'
+
+        //window.electron.post_ebay( listingData )
 
         // if (response.success) {
         //     alert('Listing submitted successfully!')
@@ -348,7 +350,12 @@ const ListingForm = () => {
                                         alt={filePaths[index]?.split(/[\\/]/).pop()}
                                     ></img>
                                 </div>
-                                <button className="cursor-pointer" onClick={() => removeImage(index)}>Remove</button>
+                                <button
+                                    className="cursor-pointer"
+                                    onClick={() => removeImage(index)}
+                                >
+                                    Remove
+                                </button>
                             </div>
                         ))}
                     </div>
@@ -549,7 +556,10 @@ const ListingForm = () => {
                         </button>
 
                         {/* Submit Listing */}
-                        <button className="form-button w-[150px] mx-[20px] my-[15px] cursor-pointer" type="submit">
+                        <button
+                            className="form-button w-[150px] mx-[20px] my-[15px] cursor-pointer"
+                            type="submit"
+                        >
                             Post Listing
                         </button>
                     </div>

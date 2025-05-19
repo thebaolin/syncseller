@@ -193,6 +193,14 @@ app.whenReady().then(() => {
         make_warehouse(data)
     })
 
+    ipcMain.handle('post-ebay', (e, data) => {
+        post_listing(data)
+    })
+
+    ipcMain.handle('choose-policies', (e, data) => {
+        set_policies(data)
+    })
+
     // returns true if warehouse exists
     ipcMain.handle('warehouse', async () => {
         const t = await getEbayCredentials()
@@ -241,7 +249,8 @@ import {
     getListingHistory,
     closeDB,
     getAnalyticsData,
-    warehouse
+    warehouse,
+    set_policies
 } from './dbmanager'
 
 // Listen for the 'create-listing' message from the rendering thing

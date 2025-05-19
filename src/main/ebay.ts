@@ -289,13 +289,14 @@ async function refresh() {
 // try to post image, then create inventory item, create offer and publish
 // if any of those fail, notify user
 // only write to db on a complete success
-export async function post_listing() {
+export async function post_listing(data) {
     // check if refresh required
     // await refresh()
 
     // we iterate over this for each image path
     // if any image fails, send a message to user and exit
     // await post_image('t.jpeg')
+    //data.imageURL
     await create_inventory_item()
 
     // create inventory call

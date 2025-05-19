@@ -98,10 +98,17 @@ function createTables() {
     );
 
     CREATE TABLE IF NOT EXISTS EbayCredentials (
-      clientId TEXT PRIMARY KEY,
+      clientId TEXT,
       clientSecret TEXT NOT NULL,
       redirectUri TEXT NOT NULL,
       warehouse INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS EbayPolicies (
+      payment TEXT PRIMARY KEY,
+      return TEXT NOT NULL,
+      fulfillment TEXT NOT NULL,
+      warehouse TEXT NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS OAuth (
@@ -491,6 +498,32 @@ export function setEbayCredentials(client_id, client_secret, redirect_uri) {
 
 export function set_warehouse() {
     db.prepare('INSERT INTO EbayCredentials (warehouse) VALUES (?)').run(1)
+}
+
+export function set_policies(data) {
+    if (getEbayPolicies().length === 0) {
+        db.prepare(
+            'INSERT INTO EbayPolicies (payment, fulfillment, return, warehouse) VALUES (?, ?, ?, ?)'
+        ).run(
+            `${data.payment[1]}`,
+            `${data.fulfillment[1]}`,
+            `${data.return[1]}`,
+            `${data.warehouse[1]}`
+        )
+    } else {
+        db.prepare(
+            'UPDATE EbayPolicies SET payment = ?, fulfillment = ?, return = ?, warehouse = ?'
+        ).run(
+            `${data.payment[1]}`,
+            `${data.fulfillment[1]}`,
+            `${data.return[1]}`,
+            `${data.warehouse[1]}`
+        )
+    }
+}
+
+export function getEbayPolicies() {
+    return db.prepare(`SELECT * FROM EbayPolicies`).all()
 }
 
 export function get_ebay_oauth() {
