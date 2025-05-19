@@ -62,6 +62,7 @@ function createTables() {
         weight REAL,
         weightUnit TEXT,
         quantity INTEGER,
+        imageURL TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       );
@@ -291,9 +292,22 @@ export function closeDB() {
 export function insertFullListing(data: any): { success: boolean; error?: string } {
     if (!db) return { success: false, error: 'Database not initialized' }
 
-    data.imageURL = data.images.map((listing) => {
-        listing.path(__dirname)
-    })
+
+    // i dont think this works?
+    // data.imageURL = data.images.map((listing) => {
+    //     listing.path(__dirname)
+    // })
+
+    // for each img, if its alr string path, keep it
+    // filter out empty strings
+    // join valid img paths into string separated by comma
+    if (Array.isArray(data.images)) {
+        data.imageURL = data.images
+            .map((img) => typeof img === 'string' ? img : img?.path || '')
+            .filter((p) => p)
+            .join(',') // "/path/img1.jpg,/path/img2.jpg"
+    }
+    
 
     const insert = db.transaction(() => {
         //insert into Items table (only once)
@@ -380,11 +394,11 @@ export function insertFullListing(data: any): { success: boolean; error?: string
                     INSERT INTO Shopify (
                         item_id, listing_id, title, description, upc,
                         condition, height, length, width, unit,
-                        weight, weightUnit, quantity
+                        weight, weightUnit, quantity, imageURL
                     ) VALUES (
                         @item_id, @listing_id, @title, @description, @upc,
                         @condition, @height, @length, @width, @unit,
-                        @weight, @weightUnit, @quantity
+                        @weight, @weightUnit, @quantity, @imageURL
                     )
                 `)
                 shopifyStmt.run({
@@ -400,7 +414,8 @@ export function insertFullListing(data: any): { success: boolean; error?: string
                     unit: data.unit,
                     weight: data.weight,
                     weightUnit: data.weightUnit,
-                    quantity: data.quantity
+                    quantity: data.quantity,
+                    imageURL: data.imageURL
                 })
             }
         }

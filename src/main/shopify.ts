@@ -4,6 +4,7 @@ import { getLatestShopifyListing } from './dbmanager'
 dotenv.config()
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
 
+// our shop main page: https://syncseller.myshopify.com/products/
 // example listing i did: https://syncseller.myshopify.com/products/test-product-from-syncseller-16
 
 // Hardcoded for now (dev only):

@@ -224,38 +224,28 @@ const ListingForm = () => {
 
         listingData.imageURL = filePaths
         listingData.status = 'Active'
-        window.electron.post_ebay(listingData)
+        listingData.imageURL = filePaths.join(',')
+        const response = await window.database.insertFullListing({ ...listingData })
+        
+        //window.electron.post_ebay(listingData)
 
-        //window.electron.post_ebay( listingData )
-
-        // if (response.success) {
-        //     alert('Listing submitted successfully!')
-
-        //     // if shopify button is checked
-        //     if (listingData.onShopify) {
-        //         try {
-        //             await window.shopifyAPI.createShopifyListing()
-        //             console.log('Shopify listing successfully sent!!!!')
-        //         } catch (err) {
-        //             console.error('Failed to send listing to Shopify:', err)
-        //         }
-        //     }
-        // } else {
-        //     alert(`Failed to submit listing: ${response.error}`)
-        // }
-        //     // if shopify button is checked
-        //     if (listingData.onShopify) {
-        //         try {
-        //             await window.shopifyAPI.createShopifyListing()
-        //             console.log('Shopify listing successfully sent!!!!')
-        //         } catch (err) {
-        //             console.error('Failed to send listing to Shopify:', err)
-        //         }
-        //     }
-        // } else {
-        //     alert(`Failed to submit listing: ${response.error}`)
-        // }
+        if (response.success) {
+            alert('Listing submitted successfully!')
+        
+            // if shopify button is checked
+            if (listingData.onShopify) {
+                try {
+                    await window.shopifyAPI.createShopifyListing()
+                    console.log('Shopify listing successfully sent!!!!')
+                } catch (err) {
+                    console.error('Failed to send listing to Shopify:', err)
+                }
+            }
+        } else {
+            alert(`Failed to submit listing: ${response.error}`)
+        }
     }
+        
 
     const handleDraft = (e: React.FormEvent) => {
         e.preventDefault()
@@ -569,4 +559,5 @@ const ListingForm = () => {
         </div>
     )
 }
+
 export default ListingForm
