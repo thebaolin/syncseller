@@ -41,8 +41,8 @@ if (process.contextIsolated) {
             ebaycreds: () => {
                 return ipcRenderer.invoke('creds')
             },
-            warehouse: async () => {
-                return await ipcRenderer.invoke('warehouse')
+            warehouse: () => {
+                return ipcRenderer.invoke('warehouse')
             },
             make_warehouse: (data) => {
                 ipcRenderer.invoke('make-warehouse', data)
@@ -52,6 +52,9 @@ if (process.contextIsolated) {
             },
             choose_policies: (data) => {
                 ipcRenderer.invoke('choose-policies', data)
+            },
+            policy: () => {
+                return ipcRenderer.invoke('policy')
             }
         }),
             //contextBridge.exposeInMainWorld('electron', electronAPI)

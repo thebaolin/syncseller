@@ -199,16 +199,19 @@ app.whenReady().then(() => {
 
     ipcMain.handle('choose-policies', (e, data) => {
         set_policies(data)
+    } )
+    
+    ipcMain.handle( 'policy', async () => {
+        return getEbayPolicies().length !== 0
     })
 
     // returns true if warehouse exists
     ipcMain.handle('warehouse', async () => {
         const t = await getEbayCredentials()
-        if (t.length !== 0) {
+        if ( t.length === 0 ) {
             return false
-        } else {
-            return t[0].warehouse !== 0
         }
+        return t[0].warehouse !== 0
     })
 
     // returns true if we have ebay creds
@@ -225,7 +228,6 @@ app.whenReady().then(() => {
 
     setupEtsyOAuthHandlers()
 
-    // get_policies()
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
@@ -249,8 +251,8 @@ import {
     getListingHistory,
     closeDB,
     getAnalyticsData,
-    warehouse,
-    set_policies
+    set_policies,
+    getEbayPolicies
 } from './dbmanager'
 
 // Listen for the 'create-listing' message from the rendering thing

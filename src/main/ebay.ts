@@ -291,22 +291,30 @@ async function refresh() {
 // only write to db on a complete success
 export async function post_listing(data) {
     // check if refresh required
-    // await refresh()
+    await refresh()
 
-    // we iterate over this for each image path
-    // if any image fails, send a message to user and exit
-    // await post_image('t.jpeg')
-    //data.imageURL
-    await create_inventory_item()
+    // process image urls first
+    data.imageURL = await Promise.all( data.imageURL.map( ( elem ) => { return post_image( elem ) } ) )
+    console.log(data)
+
+    // Error found
+    if ( data.imageURL.find( ( elem ) => { return elem === "Error" } ) !== undefined ) {
+        return
+    }
+
 
     // create inventory call
+
 
     // create offer call
 
     //publish offer call
+
+    // write back link to db?
 }
-async function post_image(path: string): Promise<string | undefined> {
+export async function post_image(path: string): Promise<string> {
     // constructs the request body
+    refresh()
     const fileData = readFileSync(path)
     const boundary = '-b'
     let body = `--${boundary}\r\nContent-Disposition: form-data; name="XMLRequest"\r\nContent-Type: text/xml\r\n\r\n`
@@ -328,7 +336,7 @@ async function post_image(path: string): Promise<string | undefined> {
             'Content-Length': `${contentLength}`,
             'X-EBAY-API-COMPATIBILITY-LEVEL': '967',
             'X-EBAY-API-CALL-NAME': 'UploadSiteHostedPictures',
-            'X-EBAY-API-IAF-TOKEN': `v^1.1#i^1#I^3#f^0#r^0#p^3#t^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`,
+            'X-EBAY-API-IAF-TOKEN': `${get_ebay_oauth().oauth_token}`,
             'X-EBAY-API-SITEID': '0'
         },
         body: b
@@ -339,7 +347,7 @@ async function post_image(path: string): Promise<string | undefined> {
             title: 'Image Upload Error',
             body: 'Issue with uploading the image; Change the image and try again'
         }).show()
-        return undefined
+        return "Error"
     } else {
         console.log(data.UploadSiteHostedPicturesResponse.SiteHostedPictureDetails[0].FullURL[0])
         return data.UploadSiteHostedPicturesResponse.SiteHostedPictureDetails[0].FullURL[0]
@@ -348,8 +356,7 @@ async function post_image(path: string): Promise<string | undefined> {
 
 // take in what???
 // Data json which we have to selectively parse? or front end gives the correct ones...
-export async function create_inventory_item() {
-    const sku = 50
+export async function create_inventory_item(data) {
     const content = `{
     "product": {
         "title": "Test listing - do not bid or buy - awesome Apple watch test 2",
@@ -363,11 +370,7 @@ export async function create_inventory_item() {
         },
         "description": "Test listing - do not bid or buy Built-in GPS. Water resistance to 50 meters.1 A new lightning-fast dual-core processor. And a display thats two times brighter than before. Full of features that help you stay active, motivated, and connected, Apple Watch Series 2 is designed for all the ways you move ",
         "upc": ["888462079525"],
-        "imageUrls": [
-            "http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/S/1/S1/42/S1-42-alu-silver-sport-white-grid?wid=332&hei=392&fmt=jpeg&qlt=95&op_sharpen=0&resMode=bicub&op_usm=0.5,0.5,0,0&iccEmbed=0&layer=comp&.v=1472247758975",
-            "http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/4/2/42/stainless/42-stainless-sport-white-grid?wid=332&hei=392&fmt=jpeg&qlt=95&op_sharpen=0&resMode=bicub&op_usm=0.5,0.5,0,0&iccEmbed=0&layer=comp&.v=1472247760390",
-            "http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/4/2/42/ceramic/42-ceramic-sport-cloud-grid?wid=332&hei=392&fmt=jpeg&qlt=95&op_sharpen=0&resMode=bicub&op_usm=0.5,0.5,0,0&iccEmbed=0&layer=comp&.v=1472247758007"
-        ]
+        "imageUrls": ${data.imageURL}
     },
     "condition": "NEW",
     "packageWeightAndSize": {
@@ -385,12 +388,12 @@ export async function create_inventory_item() {
     },
     "availability": {
         "shipToLocationAvailability": {
-            "quantity": 10
+            "quantity": ${data.quantity}
         }
     }
 }`
     const response = await fetch(
-        `https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item/${sku}`,
+        `https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item/${data.sku}`,
         {
             method: 'PUT',
             headers: {
@@ -400,8 +403,7 @@ export async function create_inventory_item() {
                 'Content-Language': 'en-US',
                 'Content-Length': `${content.length}`,
                 Authorization:
-                    'Bearer ' +
-                    `v^1.1#i^1#I^3#f^0#r^0#p^3#t^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`
+                    'Bearer ' + get_ebay_oauth().oauth_token
             },
             body: content
         }
