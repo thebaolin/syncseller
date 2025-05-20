@@ -33,8 +33,9 @@ if (process.contextIsolated) {
             send: (channel, data) => ipcRenderer.send(channel, data),
             on: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args)),
             ebay: () => ipcRenderer.send('ebay'),
-            setEbayCredentials: (client_id: string, client_secret: string, redirect_uri: string) =>
-                ipcRenderer.invoke('set-ebay-creds', client_id, client_secret, redirect_uri),
+            setEbayCredentials: ( client_id: string, client_secret: string, redirect_uri: string ) => {
+                return ipcRenderer.invoke( 'set-ebay-creds', client_id, client_secret, redirect_uri )
+            },
             getEbayPolicies: () => {
                 return ipcRenderer.invoke('get-ebay-policies')
             },
@@ -45,7 +46,7 @@ if (process.contextIsolated) {
                 return ipcRenderer.invoke('warehouse')
             },
             make_warehouse: (data) => {
-                ipcRenderer.invoke('make-warehouse', data)
+                return ipcRenderer.invoke('make-warehouse', data)
             },
             post_ebay: (data) => {
                 return ipcRenderer.invoke('post-ebay', data)

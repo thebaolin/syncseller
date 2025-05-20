@@ -65,7 +65,7 @@ export async function ebay_oauth_flow(client_id, client_secret, redirect_uri) {
             body: 'Incorrect credentials supplied; Please try again'
         }).show()
         win.close()
-        return
+        return false
     }
 
     // assumes no error in url
@@ -142,7 +142,7 @@ export async function ebay_oauth_flow(client_id, client_secret, redirect_uri) {
             make_policy(response.access_token, policyType.fulfillment)
             make_policy(response.access_token, policyType.payment)
             make_policy(response.access_token, policyType.return)
-            return
+            return true
         }
     })
 }
@@ -619,14 +619,14 @@ export async function make_warehouse(data) {
     const content = `{
         "location": {
             "address": {
-                "city" : ${data.city}
-                "postalCode" : ${data.zip}
+                "city" : "${data.city}",
+                "postalCode" : "${data.zip}",
                 "country": "US",
-                "stateOrProvince" : ${data.state},
-                "addressLine1" : ${data.address},
+                "stateOrProvince" : "${data.state}",
+                "addressLine1" : "${data.address}"
             }
         },
-        "name": ${data.name},
+        "name": "${data.name}",
         "merchantLocationStatus": "ENABLED",
         "locationTypes": [
             "WAREHOUSE"
@@ -641,17 +641,21 @@ export async function make_warehouse(data) {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
                 'Content-Length': `${content.length}`
-            }
+            },
+            body: content
         }
     )
-    console.log(data)
-    console.log(await response.json())
+    console.log(content)
+    console.log(`https://api.sandbox.ebay.com/sell/inventory/v1/location/${data.key}`)
     if (response.status !== 204) {
+        console.log(await response.json())
         new Notification({
             title: 'Warehouse Error',
             body: 'Incorrect information supplied; Please try again'
-        }).show()
+        } ).show()
+        return false
     } else {
         set_warehouse()
+        return true
     }
 }

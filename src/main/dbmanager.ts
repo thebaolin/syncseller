@@ -510,7 +510,7 @@ export function setEbayCredentials(client_id, client_secret, redirect_uri) {
 }
 
 export function set_warehouse() {
-    db.prepare('INSERT INTO EbayCredentials (warehouse) VALUES (?)').run(1)
+    db.prepare('UPDATE EbayCredentials SET warehouse = ?').run(1)
 }
 
 export function set_policies(data) {

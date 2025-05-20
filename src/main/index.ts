@@ -186,11 +186,11 @@ app.whenReady().then(() => {
     })
 
     ipcMain.handle('set-ebay-creds', (e, client_id, client_secret, redirect_uri) => {
-        ebay_oauth_flow(client_id, client_secret, redirect_uri)
+        return ebay_oauth_flow(client_id, client_secret, redirect_uri)
     })
 
     ipcMain.handle('make-warehouse', (e, data) => {
-        make_warehouse(data)
+        return make_warehouse(data)
     })
 
     ipcMain.handle('post-ebay', (e, data) => {
