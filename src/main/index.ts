@@ -201,7 +201,10 @@ app.whenReady().then(() => {
         set_policies(data)
     })
 
-    ipcMain.handle('policy', async () => {
+    ipcMain.handle( 'policy', async () => {
+        if ( typeof getEbayPolicies() === 'boolean' ) {
+            return getEbayPolicies()
+        }
         return getEbayPolicies().length !== 0
     })
 

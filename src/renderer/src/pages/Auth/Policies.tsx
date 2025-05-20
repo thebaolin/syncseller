@@ -112,6 +112,7 @@ const PoliciesForm = () => {
             console.log( policies.payment[ 1 ] )
             window.electron.choose_policies( policies )
             alert( "Successfully set policies" )
+            navigate( '/app' )
         }
     }
 
