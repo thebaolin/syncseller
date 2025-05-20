@@ -114,7 +114,7 @@ const CheckboxInput = (props) => (
     </label>
 )
 
-const ebaySetup : boolean = await window.electron.policy()
+const ebaySetup: boolean = await window.electron.policy()
 
 const ListingForm = () => {
     // Listing object
@@ -232,17 +232,17 @@ const ListingForm = () => {
                 if (listingData.onEbay) {
                     window.electron.post_ebay(listingData)
                 }
-                alert('Listing submitted successfully!')
+                alert('Listing submitted successfully to Ebay and Shopify')
             } catch (err) {
                 alert('Listing Failed to Submit')
                 console.error('Failed to send listing to Shopify:', err)
             }
         } else if (listingData.onEbay) {
             if (await window.electron.post_ebay(listingData)) {
-                alert('Listing submitted successfully!')
+                alert('Listing submitted successfully to Ebay')
                 window.database.insertFullListing({ ...listingData })
             } else {
-                alert('Listing Failed to Submit')
+                alert('Listing Failed to Submit to Ebay')
             }
         }
     }
@@ -483,14 +483,14 @@ const ListingForm = () => {
                     <SectionHeader label="Listing Platforms" />
                     <div className="grid grid-cols-4 mx-[20px] my-[15px]">
                         {/* {ebayIsAuthenticated ?  */}
-                        {ebaySetup &&
+                        {ebaySetup && (
                             <CheckboxInput
                                 id="ebay"
                                 checked={listingData.onEbay}
                                 onChange={handleCheckboxChange}
                                 label="eBay"
                             />
-                        }
+                        )}
 
                         <CheckboxInput
                             id="etsy"

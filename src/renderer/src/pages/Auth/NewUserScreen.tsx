@@ -58,14 +58,20 @@ const NewUserScreen = () => {
                 value={generatedKey}
                 className="w-full max-w-md text-center p-2 border rounded"
             />
-            <button onClick={handleCopy} className="bg-sagegreen border-1 border-gray-500 rounded-sm shadow p-[5px] text-black hover:bg-dustyrose hover:text-white w-[250px] mx-[20px] my-[15px]">
+            <button
+                onClick={handleCopy}
+                className="bg-sagegreen border-1 border-gray-500 rounded-sm shadow p-[5px] text-black hover:bg-dustyrose hover:text-white w-[250px] mx-[20px] my-[15px]"
+            >
                 {copied ? 'Copied!' : 'Copy Key'}
             </button>
             <p className="text-center text-sm text-gray-600 max-w-md">
                 When you press Continue, you’ll be asked to choose where to save your encrypted
                 database.
             </p>
-            <button onClick={handleContinue} className="bg-purple-300 border-1 border-gray-500 rounded-sm shadow p-[5px] text-black hover:bg-dustyrose hover:text-white w-[250px] mx-[20px] my-[15px]">
+            <button
+                onClick={handleContinue}
+                className="bg-purple-300 border-1 border-gray-500 rounded-sm shadow p-[5px] text-black hover:bg-dustyrose hover:text-white w-[250px] mx-[20px] my-[15px]"
+            >
                 Continue
             </button>
             <button

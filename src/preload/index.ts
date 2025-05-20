@@ -33,8 +33,12 @@ if (process.contextIsolated) {
             send: (channel, data) => ipcRenderer.send(channel, data),
             on: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args)),
             ebay: () => ipcRenderer.send('ebay'),
-            setEbayCredentials: ( client_id: string, client_secret: string, redirect_uri: string ) => {
-                return ipcRenderer.invoke( 'set-ebay-creds', client_id, client_secret, redirect_uri )
+            setEbayCredentials: (
+                client_id: string,
+                client_secret: string,
+                redirect_uri: string
+            ) => {
+                return ipcRenderer.invoke('set-ebay-creds', client_id, client_secret, redirect_uri)
             },
             getEbayPolicies: () => {
                 return ipcRenderer.invoke('get-ebay-policies')

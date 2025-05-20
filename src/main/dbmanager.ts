@@ -535,7 +535,7 @@ export function set_policies(data) {
     }
 }
 
-export function getEbayPolicies () {
+export function getEbayPolicies() {
     if (!db) return false
     return db.prepare(`SELECT * FROM EbayPolicies`).all()
 }

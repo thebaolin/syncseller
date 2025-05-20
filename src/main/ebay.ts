@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Notification } from 'electron/main'
+import { BrowserWindow, Notification } from 'electron/main'
 import EbayAuthToken from 'ebay-oauth-nodejs-client'
 import { request } from 'node:https'
 import { readFileSync } from 'fs'
@@ -322,14 +322,18 @@ export async function post_listing(data) {
     }
 
     // create offer call
+    const offerid = await create_offer(data)
+    if (offerid === undefined) {
+        return false
+    }
+    console.log(offerid)
 
     //publish offer call
-
-    return true
+    return publish_offer(offerid)
 }
 export async function post_image(path: string): Promise<string> {
     // constructs the request body
-    refresh()
+    await refresh()
     const fileData = readFileSync(path)
     const boundary = '-b'
     let body = `--${boundary}\r\nContent-Disposition: form-data; name="XMLRequest"\r\nContent-Type: text/xml\r\n\r\n`
@@ -473,7 +477,7 @@ function imgurl(data) {
 
 // pass sku and json blob containing everything else?
 export async function publish_offer(id) {
-    refresh()
+    await refresh()
     const response = await fetch(
         `https://api.sandbox.ebay.com/sell/inventory/v1/offer/${id}/publish`,
         {
@@ -486,8 +490,9 @@ export async function publish_offer(id) {
         }
     )
     if (response.status !== 200) {
-        refresh()
-        const response = await fetch(`https://api.sandbox.ebay.com/sell/inventory/v1/offer/${id}`, {
+        console.log(await response.json())
+        await refresh()
+        await fetch(`https://api.sandbox.ebay.com/sell/inventory/v1/offer/${id}`, {
             method: 'DELETE',
             headers: {
                 Accept: 'application/json',
@@ -497,34 +502,34 @@ export async function publish_offer(id) {
         })
         return false
     }
-    const r = await response.json()
-    //r.listingId
+    console.log((await response.json()).listingId)
     return true
 }
 
 async function create_offer(data) {
-    refresh()
-    const policies = getEbayPolicies()
+    await refresh()
+    const policies = getEbayPolicies()[0]
     const content = `
 {
-    "sku": ${data.sku},
+    "sku": "${data.sku}",
     "marketplaceId": "EBAY_US",
     "format": "FIXED_PRICE",
     "quantityLimitPerBuyer": 1,
     "pricingSummary": {
         "price": {
-            "value": ${data.price},
+            "value": "${data.price}",
             "currency": "USD"
         }
     },
     "listingPolicies": {
-        "fulfillmentPolicyId": ${policies.fulfillment},
-        "paymentPolicyId": ${policies.payment},
-        "returnPolicyId": ${policies.return}
+        "fulfillmentPolicyId": "${policies.fulfillment}",
+        "paymentPolicyId": "${policies.payment}",
+        "returnPolicyId": "${policies.return}"
     },
     "categoryId": "165260",
-    "merchantLocationKey": ${policies.warehouse}
+    "merchantLocationKey": "${policies.warehouse}"
 }`
+    console.log(content)
     const response = await fetch(`https://api.sandbox.ebay.com/sell/inventory/v1/offer`, {
         method: 'POST',
         headers: {
@@ -537,6 +542,15 @@ async function create_offer(data) {
         },
         body: content
     })
+    if (response.status !== 201) {
+        console.log(await response.json())
+        new Notification({
+            title: 'Offer publishing Error',
+            body: 'Incorrect information supplied; Please try again'
+        }).show()
+        return undefined
+    }
+    return (await response.json()).offerId
 }
 
 export async function get_policies() {
@@ -549,7 +563,7 @@ export async function get_policies() {
 }
 
 async function get_fulfillment() {
-    refresh()
+    await refresh()
     const response = await fetch(
         `https://api.sandbox.ebay.com/sell/account/v1/fulfillment_policy?marketplace_id=EBAY_US`,
         {
@@ -567,7 +581,7 @@ async function get_fulfillment() {
 }
 
 async function get_payment() {
-    refresh()
+    await refresh()
     const response = await fetch(
         `https://api.sandbox.ebay.com/sell/account/v1/payment_policy?marketplace_id=EBAY_US`,
         {
@@ -582,7 +596,7 @@ async function get_payment() {
 }
 
 async function get_return() {
-    refresh()
+    await refresh()
     const response = await fetch(
         `https://api.sandbox.ebay.com/sell/account/v1/return_policy?marketplace_id=EBAY_US`,
         {
@@ -597,7 +611,7 @@ async function get_return() {
 }
 
 async function get_warehouse() {
-    refresh()
+    await refresh()
     const response = await fetch(
         `https://api.sandbox.ebay.com/sell/inventory/v1/location?limit=20&offset=0`,
         {
@@ -615,7 +629,7 @@ async function get_warehouse() {
 }
 
 export async function make_warehouse(data) {
-    refresh()
+    await refresh()
     const content = `{
         "location": {
             "address": {
@@ -652,7 +666,7 @@ export async function make_warehouse(data) {
         new Notification({
             title: 'Warehouse Error',
             body: 'Incorrect information supplied; Please try again'
-        } ).show()
+        }).show()
         return false
     } else {
         set_warehouse()
