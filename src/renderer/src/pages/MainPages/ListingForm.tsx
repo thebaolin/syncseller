@@ -114,16 +114,12 @@ const CheckboxInput = (props) => (
     </label>
 )
 
-// const ebaySignIn = async(): Promise<boolean> => {
-//     return await window.electron.ebaycreds() && await window.electron.warehouse()
-// }
-// const ebayIsAuthenticated = await ebaySignIn()
 const ebaySetup : boolean = await window.electron.policy()
 
 const ListingForm = () => {
     // Listing object
     const [listingData, setListingData] = useState({
-        onEbay: true,
+        onEbay: false,
         onEtsy: false,
         onShopify: false,
         external_listing: 'eBay-xxxxx', // placeholder
@@ -529,6 +525,15 @@ const ListingForm = () => {
                                 label="Quantity"
                                 onChange={handleChange}
                             ></NumInput>
+                        </div>
+
+                        <div className="flex-1">
+                            <NumInput
+                                id="sku"
+                                value={listingData.sku}
+                                label="SKU"
+                                onChange={handleChange}
+                            />
                         </div>
 
                         {/* <div className="flex-1">
