@@ -47,7 +47,7 @@ const PasswordScreen = () => {
             <h1 className="text-4xl font-mono mb-4">SyncSeller</h1>
             <button
                 onClick={pickDatabase}
-                className="px-4 py-2 bg-blue-500 text-white rounded w-full max-w-md"
+                className="bg-sagegreen border-1 border-gray-500 rounded-sm shadow p-[5px] text-black hover:bg-dustyrose hover:text-white max-w-md w-full mx-[20px] my-[15px]"
             >
                 Choose Database File
             </button>
@@ -72,14 +72,14 @@ const PasswordScreen = () => {
 
             <button
                 onClick={handleLogin}
-                className="px-4 py-2 bg-green-500 text-white rounded w-full max-w-md"
+                className="bg-purple-300 border-1 border-gray-500 rounded-sm shadow p-[5px] text-black hover:bg-dustyrose hover:text-white max-w-md w-full mx-[20px] my-[15px]"
             >
                 Continue
             </button>
 
             <button
                 onClick={() => navigate('/')}
-                className="px-4 py-2 bg-gray-500 text-white rounded w-full max-w-md"
+                className="bg-gray-400 border-1 border-gray-500 rounded-sm shadow p-[5px] max-w-md w-full text-black hover:bg-dustyrose hover:text-white mx-[20px] my-[15px]"
             >
                 Back
             </button>
