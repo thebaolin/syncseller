@@ -22,9 +22,7 @@ const ListingHistory = () => {
             <table>
                 <thead>
                     <tr>
-                        <th>
-                            Item ID
-                        </th>
+                        <th>Item ID</th>
                         <th>Date Created</th>
                         <th>Title</th>
                         <th>Status</th>

@@ -225,27 +225,30 @@ const ListingForm = () => {
         listingData.imageURL = filePaths
         listingData.status = 'Active'
         listingData.imageURL = filePaths.join(',')
-        const response = await window.database.insertFullListing({ ...listingData })
-        
-        //window.electron.post_ebay(listingData)
 
-        if (response.success) {
-            alert('Listing submitted successfully!')
-        
-            // if shopify button is checked
-            if (listingData.onShopify) {
-                try {
-                    await window.shopifyAPI.createShopifyListing()
-                    console.log('Shopify listing successfully sent!!!!')
-                } catch (err) {
-                    console.error('Failed to send listing to Shopify:', err)
+        // if shopify button is checked
+        if (listingData.onShopify) {
+            try {
+                await window.shopifyAPI.createShopifyListing()
+                window.database.insertFullListing({ ...listingData })
+                console.log('Shopify listing successfully sent!!!!')
+                if (listingData.onEbay) {
+                    window.electron.post_ebay(listingData)
                 }
+                alert('Listing submitted successfully!')
+            } catch (err) {
+                alert('Listing Failed to Submit')
+                console.error('Failed to send listing to Shopify:', err)
             }
-        } else {
-            alert(`Failed to submit listing: ${response.error}`)
+        } else if (listingData.onEbay) {
+            if (await window.electron.post_ebay(listingData)) {
+                alert('Listing submitted successfully!')
+                window.database.insertFullListing({ ...listingData })
+            } else {
+                alert('Listing Failed to Submit')
+            }
         }
     }
-        
 
     const handleDraft = (e: React.FormEvent) => {
         e.preventDefault()
