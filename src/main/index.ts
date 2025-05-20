@@ -194,7 +194,7 @@ app.whenReady().then(() => {
     })
 
     ipcMain.handle('post-ebay', (e, data) => {
-        post_listing(data)
+        return post_listing(data)
     })
 
     ipcMain.handle('choose-policies', (e, data) => {

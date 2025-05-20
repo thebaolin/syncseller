@@ -295,31 +295,37 @@ export async function post_listing(data) {
     await refresh()
 
     // process image urls first
-    data.imageURL = await Promise.all(
-        data.imageURL.map((elem) => {
-            return post_image(elem)
-        })
-    )
+    if (data.imageURL.includes(',')) {
+        data.imageURL = await Promise.all(
+            data.imageURL.split(',').map((elem) => {
+                return post_image(elem)
+            })
+        )
+        if (
+            data.imageURL.find((elem) => {
+                return elem === 'Error'
+            }) !== undefined
+        ) {
+            return false
+        }
+    } else {
+        data.imageURL = await post_image(data.imageURL)
+        if (data.imageURL === 'Error') {
+            return false
+        }
+    }
     console.log(data)
 
-    // Error found in
-    if (
-        data.imageURL.find((elem) => {
-            return elem === 'Error'
-        }) !== undefined
-    ) {
-        return
-    }
     // create inventory call
     if (!(await create_inventory_item(data))) {
-        return
+        return false
     }
 
     // create offer call
 
     //publish offer call
 
-    // write back link to db?
+    return true
 }
 export async function post_image(path: string): Promise<string> {
     // constructs the request body
@@ -449,16 +455,20 @@ export async function create_inventory_item(data) {
 }
 
 function imgurl(data) {
-    let s = '['
-    for (const url of data) {
-        s += '"'
-        s += url
-        s += '"'
-        s += ','
+    if (typeof data !== 'string') {
+        let s = '['
+        for (const url of data) {
+            s += '"'
+            s += url
+            s += '"'
+            s += ','
+        }
+        s = s.substring(0, s.length - 1)
+        s += ']'
+        return s
+    } else {
+        return '[' + '"' + data + '"' + ']'
     }
-    s = s.substring(0, s.length - 1)
-    s += ']'
-    return s
 }
 
 // pass sku and json blob containing everything else?

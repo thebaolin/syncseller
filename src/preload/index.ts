@@ -48,7 +48,7 @@ if (process.contextIsolated) {
                 ipcRenderer.invoke('make-warehouse', data)
             },
             post_ebay: (data) => {
-                ipcRenderer.invoke('post-ebay', data)
+                return ipcRenderer.invoke('post-ebay', data)
             },
             choose_policies: (data) => {
                 ipcRenderer.invoke('choose-policies', data)

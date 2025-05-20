@@ -292,7 +292,6 @@ export function closeDB() {
 export function insertFullListing(data: any): { success: boolean; error?: string } {
     if (!db) return { success: false, error: 'Database not initialized' }
 
-
     // i dont think this works?
     // data.imageURL = data.images.map((listing) => {
     //     listing.path(__dirname)
@@ -303,11 +302,10 @@ export function insertFullListing(data: any): { success: boolean; error?: string
     // join valid img paths into string separated by comma
     if (Array.isArray(data.images)) {
         data.imageURL = data.images
-            .map((img) => typeof img === 'string' ? img : img?.path || '')
+            .map((img) => (typeof img === 'string' ? img : img?.path || ''))
             .filter((p) => p)
             .join(',') // "/path/img1.jpg,/path/img2.jpg"
     }
-    
 
     const insert = db.transaction(() => {
         //insert into Items table (only once)
