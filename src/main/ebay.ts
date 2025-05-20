@@ -502,8 +502,8 @@ export async function publish_offer(id) {
         })
         return false
     }
-    console.log((await response.json()).listingId)
-    return true
+    const lid = (await response.json()).listingId
+    return `https://sandbox.ebay.com/itm/${lid}`
 }
 
 async function create_offer(data) {

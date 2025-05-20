@@ -229,18 +229,18 @@ const ListingForm = () => {
                 await window.shopifyAPI.createShopifyListing()
                 window.database.insertFullListing({ ...listingData })
                 console.log('Shopify listing successfully sent!!!!')
-                if (listingData.onEbay) {
-                    window.electron.post_ebay(listingData)
-                }
-                alert('Listing submitted successfully to Ebay and Shopify')
+                listingData.onShopify = false
+                alert('Listing submitted successfully Shopify')
             } catch (err) {
                 alert('Listing Failed to Submit')
                 console.error('Failed to send listing to Shopify:', err)
             }
-        } else if (listingData.onEbay) {
-            if (await window.electron.post_ebay(listingData)) {
+        }
+        if (listingData.onEbay) {
+            const ebayurl = await window.electron.post_ebay(listingData)
+            if (typeof ebayurl === 'string') {
                 alert('Listing submitted successfully to Ebay')
-                window.database.insertFullListing({ ...listingData })
+                window.database.insertFullListing({ ...listingData, ebayurl: ebayurl })
             } else {
                 alert('Listing Failed to Submit to Ebay')
             }

@@ -35,7 +35,8 @@ function createTables() {
       weightUnit TEXT,
       quantity INTEGER,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      url TEXT
     );
 
     CREATE TABLE IF NOT EXISTS Etsy (
@@ -349,11 +350,11 @@ export function insertFullListing(data: any): { success: boolean; error?: string
                   INSERT INTO Ebay (
                       item_id, listing_id, title, aspects, description, upc, imageURL,
                       condition, height, length, width, unit,
-                      packageType, weight, weightUnit, quantity
+                      packageType, weight, weightUnit, quantity, url
                   ) VALUES (
                       @item_id, @listing_id, @title, @aspects, @description, @upc, @imageURL,
                       @condition, @height, @length, @width, @unit,
-                      @packageType, @weight, @weightUnit, @quantity
+                      @packageType, @weight, @weightUnit, @quantity, @url
                   )
                 `)
 
@@ -373,7 +374,8 @@ export function insertFullListing(data: any): { success: boolean; error?: string
                     packageType: data.packageType,
                     weight: data.weight,
                     weightUnit: data.weightUnit,
-                    quantity: data.quantity
+                    quantity: data.quantity,
+                    url: data.ebayurl
                 })
             } else if (platformName === 'Etsy') {
                 const etsyStmt = db.prepare(`
