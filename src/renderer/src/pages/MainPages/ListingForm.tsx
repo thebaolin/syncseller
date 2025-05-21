@@ -202,7 +202,7 @@ const ListingForm = () => {
             }
         }
 
-        if (!missing) {
+        if (missing.length === 0) {
             return true
         } else {
             alert('Missing required fields:\n' + missing.map((m) => `-${m}`).join('\n'))
@@ -232,10 +232,15 @@ const ListingForm = () => {
             listingData.status = 'Active'
             listingData.imageURL = filePaths.join(',')
 
+            let response;
+
             if (listingData.onEbay) {
                 listingData.onEbay = false
-                const response = await window.database.insertFullListing({ ...listingData })
+                response = await window.database.insertFullListing({ ...listingData })
                 listingData.onEbay = true
+            }
+            else {
+                response = await window.database.insertFullListing({ ...listingData })
             }
 
             if (response.success) {
