@@ -204,10 +204,7 @@ const ListingForm = () => {
         if (!missing) {
             return true
         } else {
-            alert(
-                'Missing required fields:\n' +
-                    missing.map((m) => `-${m}`).join('\n')
-            )
+            alert('Missing required fields:\n' + missing.map((m) => `-${m}`).join('\n'))
             return false
         }
     }
@@ -218,7 +215,7 @@ const ListingForm = () => {
 
         const valid = validateListing()
 
-        if (valid){
+        if (valid) {
             let listingAspects: string[] = []
             Object.entries(myAspects).map(([key, value]) => {
                 if (value) {
@@ -234,14 +231,15 @@ const ListingForm = () => {
             listingData.status = 'Active'
             listingData.imageURL = filePaths.join(',')
 
-            
-            const response = await window.database.insertFullListing({ ...listingData })
-            
-            //window.electron.post_ebay(listingData)
+            if (listingData.onEbay) {
+                listingData.onEbay = false
+                const response = await window.database.insertFullListing({ ...listingData })
+                listingData.onEbay = true
+            }
 
             if (response.success) {
                 alert('Listing submitted successfully!')
-            
+
                 // if shopify button is checked
                 if (listingData.onShopify) {
                     // Delay to ensure DB write is complete before attempting to read from it
@@ -257,9 +255,19 @@ const ListingForm = () => {
             } else {
                 alert(`Failed to submit listing: ${response.error}`)
             }
+
+            if (listingData.onEbay) {
+                const url = await window.electron.post_ebay(listingData)
+                if (typeof url === 'string') {
+                    listingData.onShopify = false
+                    window.database.insertFullListing({ ...listingData, ebayurl: url })
+                    alert('Successfully posted to Ebay')
+                } else {
+                    alert('Failed to post to Ebay')
+                }
+            }
         }
     }
-        
 
     const handleDraft = (e: React.FormEvent) => {
         e.preventDefault()
@@ -303,9 +311,9 @@ const ListingForm = () => {
             [name]: value
         }))
         setListingData((prev) => ({
-        ...prev,
-        [name]: value
-    }))
+            ...prev,
+            [name]: value
+        }))
     }
 
     const removeImage = (index: number) => {
@@ -384,7 +392,6 @@ const ListingForm = () => {
                                     onChange={handleAspects}
                                 />
                             </div>
-
                         ))}
                     </div>
 
@@ -501,14 +508,14 @@ const ListingForm = () => {
                 <section>
                     <SectionHeader label="Listing Platforms" />
                     <div className="grid grid-cols-4 mx-[20px] my-[15px]">
-                        {ebaySetup &&
+                        {ebaySetup && (
                             <CheckboxInput
                                 id="ebay"
                                 checked={listingData.onEbay}
                                 onChange={handleCheckboxChange}
                                 label="eBay"
                             />
-                        }
+                        )}
 
                         <CheckboxInput
                             id="etsy"

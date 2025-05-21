@@ -29,12 +29,11 @@ function generateDescriptionHtml(listing) {
             `<strong>Dimensions:</strong> ${listing.length} x ${listing.width} x ${listing.height} ${listing.unit}<br/>`
         )
     if (listing.weight)
-        parts.push(
-            `<strong>Weight:</strong> ${listing.weight} ${listing.weightUnit}<br/>`
-        )
+        parts.push(`<strong>Weight:</strong> ${listing.weight} ${listing.weightUnit}<br/>`)
     if (listing.upc) parts.push(`<strong>UPC:</strong> ${listing.upc}<br/>`)
     if (listing.quantity) parts.push(`<strong>Quantity:</strong> ${listing.quantity}<br/>`)
-    if (listing.packageType) parts.push(`<strong>Package Type:</strong> ${listing.packageType}<br/>`)
+    if (listing.packageType)
+        parts.push(`<strong>Package Type:</strong> ${listing.packageType}<br/>`)
 
     return parts.join('\n')
 }
@@ -117,19 +116,19 @@ export async function createDummyShopifyListing() {
             console.error('Shopify user errors..:', result?.userErrors || 'No product returned')
             return
         }
-        
+
         console.log(`Product created: ${product.title} (ID: ${product.id})`)
-        
+
         // Slugify the title and build product URL
         const slugifiedTitle = listing.title
             .toLowerCase()
             .replace(/[^\w\s-]/g, '') // remove non-alphanumeric characters
             .trim()
             .replace(/\s+/g, '-')
-        
+
         const productURL = `https://${SHOPIFY_STORE}/products/${slugifiedTitle}`
         console.log(`Generated Shopify URL: ${productURL}`)
-        
+
         // Save the URL to DB
         setShopifyProductURL(listing.item_id, productURL)
 

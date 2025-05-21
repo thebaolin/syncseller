@@ -44,9 +44,11 @@ const ListingHistory = () => {
                             <td>${listing.price}</td>
                             <td>
                                 {listing.url ? (
-                                    <a href={listing.url} target="_blank" rel="noopener noreferrer">link</a>
+                                    <a href={listing.url} target="_blank" rel="noopener noreferrer">
+                                        link
+                                    </a>
                                 ) : (
-                                    "-"
+                                    '-'
                                 )}
                             </td>
                         </tr>

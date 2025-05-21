@@ -33,10 +33,12 @@ const HomePage = () => {
 
     return (
         <div className="content">
-            <h1 className="text-lg font-bold mx-[20px] mb-4">Hello Beewb, welcome to SyncSeller!</h1>
-          
+            <h1 className="text-lg font-bold mx-[20px] mb-4">
+                Hello Beewb, welcome to SyncSeller!
+            </h1>
+
             {/* Platforms */}
-            <SectionHeader label="Listing Platforms"/>
+            <SectionHeader label="Listing Platforms" />
             <section className="flex flex-col-3">
                 <div className="flex-1 mx-4">
                     <Icon src={Ebay_logo} />
@@ -56,9 +58,8 @@ const HomePage = () => {
                     >
                         eBay setup
                     </button>
-
                 </div>
-                
+
                 <div className="flex-1 mx-4">
                     <Icon src={Etsy_logo} />
 
@@ -67,7 +68,7 @@ const HomePage = () => {
                         Etsy setup
                     </button>
                 </div>
-                
+
                 <div className="flex-1 mx-4">
                     <Icon src={Shopify_logo} />
                 </div>

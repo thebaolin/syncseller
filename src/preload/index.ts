@@ -80,7 +80,6 @@ if (process.contextIsolated) {
                 getAnalyticsData: () => ipcRenderer.invoke('get-analytics-data'),
                 getProfitByMonth: () => ipcRenderer.invoke('get-profit-by-month'),
                 getSoldByPlatform: () => ipcRenderer.invoke('get-sold-by-platform')
-
             }),
             // expose shopify listing functionality
             contextBridge.exposeInMainWorld('shopifyAPI', {

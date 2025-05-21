@@ -8,7 +8,7 @@ const ListingHistory = () => {
     const [barData, setBarData] = useState<{ label: string; count: number }[]>([])
     const barChartRef = useRef<SVGSVGElement | null>(null)
     const soldItems = listings
-        .filter(l => l.status === 'Sold' && l.date_sold)
+        .filter((l) => l.status === 'Sold' && l.date_sold)
         .sort((a, b) => new Date(b.date_sold).getTime() - new Date(a.date_sold).getTime())
         .slice(0, 10) // top 10 most recent
     useEffect(() => {
@@ -58,19 +58,17 @@ const ListingHistory = () => {
         const chartWidth = width - margin.left - margin.right
         const chartHeight = height - margin.top - margin.bottom
 
-        const g = svg
-            .append('g')
-            .attr('transform', `translate(${margin.left},${margin.top})`)
+        const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`)
 
         const x = d3
             .scaleBand()
-            .domain(barData.map(d => d.label))
+            .domain(barData.map((d) => d.label))
             .range([0, chartWidth])
             .padding(0.4)
 
         const y = d3
             .scaleLinear()
-            .domain([0, d3.max(barData, d => d.count)! || 1])
+            .domain([0, d3.max(barData, (d) => d.count)! || 1])
             .nice()
             .range([chartHeight, 0])
 
@@ -83,10 +81,7 @@ const ListingHistory = () => {
             .attr('font-size', '12px')
 
         //y-axis
-        g.append('g')
-            .call(d3.axisLeft(y).ticks(5))
-            .selectAll('text')
-            .attr('font-size', '12px')
+        g.append('g').call(d3.axisLeft(y).ticks(5)).selectAll('text').attr('font-size', '12px')
 
         //bars
         g.selectAll('.bar')
@@ -94,10 +89,10 @@ const ListingHistory = () => {
             .enter()
             .append('rect')
             .attr('class', 'bar')
-            .attr('x', d => x(d.label)!)
-            .attr('y', d => y(d.count))
+            .attr('x', (d) => x(d.label)!)
+            .attr('y', (d) => y(d.count))
             .attr('width', x.bandwidth())
-            .attr('height', d => chartHeight - y(d.count))
+            .attr('height', (d) => chartHeight - y(d.count))
             .attr('fill', '#3B82F6')
 
         //labels
@@ -105,12 +100,12 @@ const ListingHistory = () => {
             .data(barData)
             .enter()
             .append('text')
-            .attr('x', d => x(d.label)! + x.bandwidth() / 2)
-            .attr('y', d => y(d.count) - 5)
+            .attr('x', (d) => x(d.label)! + x.bandwidth() / 2)
+            .attr('y', (d) => y(d.count) - 5)
             .attr('text-anchor', 'middle')
             .attr('font-size', '12px')
             .attr('fill', '#333')
-            .text(d => d.count)
+            .text((d) => d.count)
     }, [barData])
 
     useEffect(() => {
@@ -125,29 +120,28 @@ const ListingHistory = () => {
         const chartWidth = width - margin.left - margin.right
         const chartHeight = height - margin.top - margin.bottom
 
-        const g = svg
-            .append('g')
-            .attr('transform', `translate(${margin.left},${margin.top})`)
+        const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`)
 
         const x = d3
             .scalePoint()
-            .domain(profitData.map(d => d.month))
+            .domain(profitData.map((d) => d.month))
             .range([0, chartWidth])
             .padding(0.5)
 
         const y = d3
             .scaleLinear()
-            .domain([0, d3.max(profitData, d => d.profit)!])
+            .domain([0, d3.max(profitData, (d) => d.profit)!])
             .nice()
             .range([chartHeight, 0])
 
         //xaxis
-        const xAxis = g.append('g')
+        const xAxis = g
+            .append('g')
             .attr('transform', `translate(0,${chartHeight})`)
             .call(d3.axisBottom(x).tickSizeOuter(0))
 
-        
-        xAxis.selectAll('text')
+        xAxis
+            .selectAll('text')
             .attr('text-anchor', 'end')
             .attr('transform', 'rotate(-40)')
             .attr('dx', '-0.8em')
@@ -155,10 +149,7 @@ const ListingHistory = () => {
             .style('font-size', '12px')
 
         //y-ax
-        g.append('g')
-            .call(d3.axisLeft(y).ticks(5))
-            .selectAll('text')
-            .style('font-size', '12px')
+        g.append('g').call(d3.axisLeft(y).ticks(5)).selectAll('text').style('font-size', '12px')
 
         //label
         svg.append('text')
@@ -168,8 +159,6 @@ const ListingHistory = () => {
             .text('Month')
             .style('font-size', '14px')
 
-
-        
         svg.append('text')
             .attr('text-anchor', 'middle')
             .attr('transform', `translate(15, ${height / 2}) rotate(-90)`)
@@ -177,9 +166,10 @@ const ListingHistory = () => {
             .style('font-size', '14px')
 
         //line
-        const line = d3.line<{ month: string; profit: number }>()
-            .x(d => x(d.month)!)
-            .y(d => y(d.profit))
+        const line = d3
+            .line<{ month: string; profit: number }>()
+            .x((d) => x(d.month)!)
+            .y((d) => y(d.profit))
             .curve(d3.curveMonotoneX)
 
         g.append('path')
@@ -190,13 +180,12 @@ const ListingHistory = () => {
             .attr('d', line)
     }, [profitData])
 
-
     const totalRevenue = listings
-        .filter(l => l.status === 'Sold')
+        .filter((l) => l.status === 'Sold')
         .reduce((sum, l) => sum + l.price, 0)
 
-    const itemsSold = listings.filter(l => l.status === 'Sold').length
-    const itemsPosted = listings.filter(l => ['Active', 'Draft'].includes(l.status)).length
+    const itemsSold = listings.filter((l) => l.status === 'Sold').length
+    const itemsPosted = listings.filter((l) => ['Active', 'Draft'].includes(l.status)).length
 
     const [platformData, setPlatformData] = useState<{ platform: string; sold_count: number }[]>([])
     const pieChartRef = useRef<SVGSVGElement | null>(null)
@@ -223,18 +212,17 @@ const ListingHistory = () => {
         const height = 300
         const radius = Math.min(width, height) / 2
 
-        const g = svg
-            .append('g')
-            .attr('transform', `translate(${width / 2},${height / 2})`)
+        const g = svg.append('g').attr('transform', `translate(${width / 2},${height / 2})`)
 
-        const color = d3.scaleOrdinal()
-            .domain(platformData.map(d => d.platform))
+        const color = d3
+            .scaleOrdinal()
+            .domain(platformData.map((d) => d.platform))
             .range(d3.schemeCategory10)
 
-        const pie = d3.pie<{ platform: string; sold_count: number }>()
-            .value(d => d.sold_count)
+        const pie = d3.pie<{ platform: string; sold_count: number }>().value((d) => d.sold_count)
 
-        const arc = d3.arc<d3.PieArcDatum<{ platform: string; sold_count: number }>>()
+        const arc = d3
+            .arc<d3.PieArcDatum<{ platform: string; sold_count: number }>>()
             .innerRadius(0)
             .outerRadius(radius)
 
@@ -243,31 +231,29 @@ const ListingHistory = () => {
             .enter()
             .append('path')
             .attr('d', arc)
-            .attr('fill', d => color(d.data.platform))
+            .attr('fill', (d) => color(d.data.platform))
             .attr('stroke', '#fff')
             .attr('stroke-width', 1.5)
 
-        const total = d3.sum(platformData, d => d.sold_count)
+        const total = d3.sum(platformData, (d) => d.sold_count)
 
         g.selectAll('text')
             .data(pie(platformData))
             .enter()
             .append('text')
-            .text(d => {
+            .text((d) => {
                 const percent = ((d.data.sold_count / total) * 100).toFixed(1)
                 return `${d.data.platform}\n${percent}%`
             })
-            .attr('transform', d => `translate(${arc.centroid(d)})`)
+            .attr('transform', (d) => `translate(${arc.centroid(d)})`)
             .attr('text-anchor', 'middle')
             .style('white-space', 'pre')
             .attr('font-size', '11px')
             .attr('fill', 'white')
-
     }, [platformData])
 
-
     return (
-        <div className='content'>
+        <div className="content">
             <div className="w-full max-w-[1300px] mx-auto space-y-6 px-4">
                 <div className="grid grid-cols-3 gap-4">
                     <div className="bg-white p-4 rounded-xl shadow">
@@ -315,7 +301,6 @@ const ListingHistory = () => {
                             />
                         </div>
                     </div>
-
                 </div>
 
                 {/* bar chart and items sold */}
@@ -340,19 +325,24 @@ const ListingHistory = () => {
                                 {soldItems.map((item, index) => (
                                     <li key={index} className="border-b pb-1">
                                         <div className="flex justify-between">
-                                            <span className="font-medium">{item.title || item.external_listing}</span>
-                                            <span className="text-green-600 font-semibold">${item.price.toFixed(2)}</span>
+                                            <span className="font-medium">
+                                                {item.title || item.external_listing}
+                                            </span>
+                                            <span className="text-green-600 font-semibold">
+                                                ${item.price.toFixed(2)}
+                                            </span>
                                         </div>
                                         <div className="text-xs text-gray-500 flex justify-between">
                                             <span>{item.platform}</span>
-                                            <span>{new Date(item.date_sold).toLocaleDateString()}</span>
+                                            <span>
+                                                {new Date(item.date_sold).toLocaleDateString()}
+                                            </span>
                                         </div>
                                     </li>
                                 ))}
                             </ul>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>

@@ -227,7 +227,6 @@ export function initializeDatabase(password: string, isCreateMode: boolean, dbPa
 //     return stmt.all()
 // }
 
-
 // export function insertData(status: string): void {
 //     if (!db) throw new Error('Database is not initialized.')
 
@@ -357,8 +356,7 @@ export function insertFullListing(data: any): { success: boolean; error?: string
                 platform.platform_id,
                 data.external_listing,
                 status.id,
-                data.price,
-                
+                data.price
             )
             const listingId = listingResult.lastInsertRowid
 
@@ -526,17 +524,17 @@ export function getAnalyticsData(): { success: boolean; data?: any[]; error?: st
 }
 
 export function getProfitByMonth(): {
-  success: boolean
-  data?: { month: string; total_sales: number }[]
-  error?: string
+    success: boolean
+    data?: { month: string; total_sales: number }[]
+    error?: string
 } {
-  if (!db) {
-    console.error("DB not initialized")
-    return { success: false, error: 'Database not initialized' }
-  }
+    if (!db) {
+        console.error('DB not initialized')
+        return { success: false, error: 'Database not initialized' }
+    }
 
-  try {
-    const stmt = `
+    try {
+        const stmt = `
       SELECT 
         strftime('%Y-%m', date_sold) AS month,
         SUM(price) AS total_sales
@@ -546,24 +544,25 @@ export function getProfitByMonth(): {
       ORDER BY month;
     `
 
-    const data = db.prepare(stmt).all()
+        const data = db.prepare(stmt).all()
 
-    return { success: true, data }
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Unknown error' }
-  }
+        return { success: true, data }
+    } catch (err: any) {
+        return { success: false, error: err.message || 'Unknown error' }
+    }
 }
 
-
 export function getSoldByPlatform(): {
-  success: boolean
-  data?: { platform: string; sold_count: number }[]
-  error?: string
+    success: boolean
+    data?: { platform: string; sold_count: number }[]
+    error?: string
 } {
-  if (!db) return { success: false, error: 'Database not initialized' }
+    if (!db) return { success: false, error: 'Database not initialized' }
 
-  try {
-    const data = db.prepare(`
+    try {
+        const data = db
+            .prepare(
+                `
       SELECT 
         L_Platforms.name AS platform,
         COUNT(*) AS sold_count
@@ -572,15 +571,15 @@ export function getSoldByPlatform(): {
       JOIN L_Listing_Status ON Listings.status_id = L_Listing_Status.id
       WHERE L_Listing_Status.status = 'Sold'
       GROUP BY platform;
-    `).all()
+    `
+            )
+            .all()
 
-    return { success: true, data }
-  } catch (err: any) {
-    return { success: false, error: err.message }
-  }
+        return { success: true, data }
+    } catch (err: any) {
+        return { success: false, error: err.message }
+    }
 }
-
-
 
 // for ebay app
 export function getEbayCredentials() {
