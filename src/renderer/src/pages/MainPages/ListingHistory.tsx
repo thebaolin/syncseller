@@ -3,21 +3,21 @@ import { useNavigate } from 'react-router-dom'
 
 const ListingHistory = () => {
     const navigate = useNavigate()
-    const [ listings, setListings ] = useState( [] )
-    console.log( listings )
+    const [listings, setListings] = useState([])
+    console.log(listings)
 
-    useEffect( () => {
+    useEffect(() => {
         const fetchListings = async () => {
             const result = await window.database.getListingHistory()
-            if ( result.success ) {
-                setListings( result.data )
+            if (result.success) {
+                setListings(result.data)
             } else {
-                console.error( 'Failed to fetch listings:', result.error )
+                console.error('Failed to fetch listings:', result.error)
             }
         }
 
         fetchListings()
-    }, [] )
+    }, [])
     return (
         <div className="content">
             <table>
@@ -34,20 +34,27 @@ const ListingHistory = () => {
                 </thead>
 
                 <tbody>
-                    { listings.map( ( listing, index ) => (
-                        <tr key={ index }>
-                            <td>{ listing.item_id }</td>
-                            <td>{ new Date( listing.created_at ).toLocaleDateString() }</td>
-                            <td>{ listing.title }</td>
-                            <td>{ listing.status }</td>
-                            <td>{ listing.platform }</td>
-                            <td>${ listing.price }</td>
+                    {listings.map((listing, index) => (
+                        <tr key={index}>
+                            <td>{listing.item_id}</td>
+                            <td>{new Date(listing.created_at).toLocaleDateString()}</td>
+                            <td>{listing.title}</td>
+                            <td>{listing.status}</td>
+                            <td>{listing.platform}</td>
+                            <td>${listing.price}</td>
+                            <td>
+                                {listing.url ? (
+                                    <a href={listing.url} target="_blank" rel="noopener noreferrer">link</a>
+                                ) : (
+                                    "-"
+                                )}
+                            </td>
                         </tr>
-                    ) ) }
+                    ))}
                 </tbody>
             </table>
 
-            { listings.length === 0 && (
+            {listings.length === 0 && (
                 <div className="w-full mt-[40px] text-center">
                     <p className="">
                         Your listings will show up here!
@@ -56,12 +63,12 @@ const ListingHistory = () => {
                     </p>
                     <button
                         className="form-button w-[200px] mx-[20px] my-[15px]"
-                        onClick={ () => navigate( '/app/listingform' ) }
+                        onClick={() => navigate('/app/listingform')}
                     >
                         Create a Listing
                     </button>
                 </div>
-            ) }
+            )}
         </div>
     )
 }

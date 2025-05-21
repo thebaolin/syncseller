@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron/renderer'
 import { electronAPI } from '@electron-toolkit/preload'
 import fs from 'fs'
 import { createDummyShopifyListing } from '../main/shopify'
+import { getProfitByMonth } from '../main/dbmanager'
 
 console.log('preload is running')
 
@@ -77,7 +78,10 @@ if (process.contextIsolated) {
                 generateKey: () => ipcRenderer.invoke('generate-key'),
                 insertFullListing: (data) => ipcRenderer.invoke('insert-full-listing', data),
                 getListingHistory: () => ipcRenderer.invoke('get-listing-history'),
-                getAnalyticsData: () => ipcRenderer.invoke('get-analytics-data')
+                getAnalyticsData: () => ipcRenderer.invoke('get-analytics-data'),
+                getProfitByMonth: () => ipcRenderer.invoke('get-profit-by-month'),
+                getSoldByPlatform: () => ipcRenderer.invoke('get-sold-by-platform')
+
             }),
             // expose shopify listing functionality
             contextBridge.exposeInMainWorld('shopifyAPI', {
