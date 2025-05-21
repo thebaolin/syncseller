@@ -64,7 +64,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                         path="policies"
                         element={<ProtectedRoute element={<PoliciesForm />} />}
                     />
-                    <Route path="location" element={<ProtectedRoute element={<Location />} />} />
                 </Route>
             </Routes>
         </BrowserRouter>
