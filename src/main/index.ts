@@ -3,8 +3,6 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { app, BrowserWindow, ipcMain } from 'electron/main'
-import EbayAuthToken from 'ebay-oauth-nodejs-client'
-import { request } from 'node:https'
 import { ebay_oauth_flow, get_policies, make_warehouse, post_listing } from './ebay'
 import { createDummyShopifyListing } from './shopify'
 import { setupEtsyOAuthHandlers } from './etsy'
@@ -12,10 +10,7 @@ import { pathToFileURL } from 'node:url'
 import {
     initializeDatabase,
     getEbayCredentials,
-    setEbayCredentials,
-    get_ebay_oauth,
     generateSecurityKey,
-    setEbayOauth,
     insertFullListing,
     getListingHistory,
     closeDB,
@@ -30,70 +25,6 @@ ipcMain.handle('shopify:create-listing', async () => {
     return await createDummyShopifyListing()
 })
 
-// oauth scopes for what api calls you can make
-const scopes = [
-    'https://api.ebay.com/oauth/api_scope/sell.inventory.readonly',
-    'https://api.ebay.com/oauth/api_scope/sell.inventory',
-    'https://api.ebay.com/oauth/api_scope/sell.account',
-    'https://api.ebay.com/oauth/api_scope/sell.account.readonly'
-]
-
-const BASE_URL = 'https://api.ebay.com/sell/account/v1'
-const HEADERS = (auth: string) => ({
-    Authorization: `Bearer ${auth}`,
-    'Content-Type': 'application/json',
-    Accept: 'application/json'
-})
-
-async function fetchPolicies(endpoint: string, auth: string) {
-    return new Promise((resolve, reject) => {
-        const options = {
-            hostname: 'api.ebay.com',
-            path: `/sell/account/v1/${endpoint}`,
-            method: 'GET',
-            headers: HEADERS(auth)
-        }
-
-        const req = request(options, (res) => {
-            let responseBody = ''
-
-            res.on('data', (chunk) => {
-                responseBody += chunk
-            })
-
-            res.on('end', () => {
-                try {
-                    const jsonData = JSON.parse(responseBody)
-                    resolve(jsonData)
-                } catch (error) {
-                    reject(error)
-                }
-            })
-        })
-
-        req.on('error', (e) => reject(e))
-        req.end()
-    })
-}
-
-async function getPolicyIDs(auth: string) {
-    try {
-        const [fulfillment, payment, returnPolicy] = await Promise.all([
-            fetchPolicies('fulfillment_policy', auth),
-            fetchPolicies('payment_policy', auth),
-            fetchPolicies('return_policy', auth)
-        ])
-
-        return {
-            fulfillmentPolicyId: fulfillment.policies?.[0]?.fulfillmentPolicyId || null,
-            paymentPolicyId: payment.policies?.[0]?.paymentPolicyId || null,
-            returnPolicyId: returnPolicy.policies?.[0]?.returnPolicyId || null
-        }
-    } catch (error) {
-        console.error('Error fetching policy IDs:', error)
-        return null
-    }
-}
 
 let mainWindow: BrowserWindow | null = null
 
@@ -240,9 +171,6 @@ app.whenReady().then(() => {
         return t.length !== 0
     })
 
-    // IPC test
-    ipcMain.on('ping', () => console.log('pong'))
-
     createWindow()
 
     setupEtsyOAuthHandlers()
@@ -285,10 +213,7 @@ ipcMain.handle('get-profit-by-month', () => {
 ipcMain.handle('get-sold-by-platform', () => {
     return getSoldByPlatform()
 })
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-
+// Quit when all windows are closed, except on macOS.
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         closeDB()
@@ -310,119 +235,4 @@ ipcMain.on('selected-files', (event, imageFiles) => {
 
 ipcMain.on('submit:todoForm', (event, args) => {
     console.log('Received form data:', args)
-})
-
-ipcMain.on('ebay', async () => {
-    const ebayAuthToken = new EbayAuthToken({
-        clientId: 'RandyLu-sand-SBX-e41907e53-a28e5f11',
-        clientSecret: 'SBX-41907e53e228-9004-4bbf-81f5-a63c',
-        redirectUri: 'Randy_Lu-RandyLu-sand-SB-domszhbw',
-        env: 'SANDBOX'
-    })
-    // oauth scopes for what api calls you can make
-
-    // gets an authorization token for the user
-    win.loadURL(oauth_url).then(() => {
-        win.webContents.on('did-redirect-navigation', async (details) => {
-            const access_code = new URL(details.url).searchParams.get('code')
-            if (access_code) {
-                const accessToken = await ebayAuthToken.exchangeCodeForAccessToken(
-                    'SANDBOX',
-                    access_code
-                )
-                console.log(accessToken)
-                const auth = JSON.parse(accessToken).access_token
-                console.log(auth)
-
-                const policyIDs = await getPolicyIDs(auth)
-                console.log('Policy IDs:', policyIDs)
-
-                // extracted and populated from db entry x
-                const data = `{
-    "product": {
-        "title": "Test listing - do not bid or buy - awesome Apple watch test 2",
-        "aspects": {
-            "Feature":[
-              "Water resistance", "GPS"
-            ],
-            "CPU":[
-              "Dual-Core Processor"
-            ]
-        },
-        "description": "Test listing - do not bid or buy. Built-in GPS. Water resistance to 50 meters.1 A new lightning-fast dual-core processor. And a display that is two times brighter than before. Full of features that help you stay active, motivated, and connected, Apple Watch Series 2 is designed for all the ways you move ",
-        "upc": ["888462079525"],
-        "imageUrls": [
-            "http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/S/1/S1/42/S1-42-alu-silver-sport-white-grid?wid=332&hei=392&fmt=jpeg&qlt=95&op_sharpen=0&resMode=bicub&op_usm=0.5,0.5,0,0&iccEmbed=0&layer=comp&.v=1472247758975",
-            "http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/4/2/42/stainless/42-stainless-sport-white-grid?wid=332&hei=392&fmt=jpeg&qlt=95&op_sharpen=0&resMode=bicub&op_usm=0.5,0.5,0,0&iccEmbed=0&layer=comp&.v=1472247760390",
-            "http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/4/2/42/ceramic/42-ceramic-sport-cloud-grid?wid=332&hei=392&fmt=jpeg&qlt=95&op_sharpen=0&resMode=bicub&op_usm=0.5,0.5,0,0&iccEmbed=0&layer=comp&.v=1472247758007"
-        ]
-    },
-    "condition": "NEW",
-    "packageWeightAndSize": {
-        "dimensions": {
-            "height": 5,
-            "length": 10,
-            "width": 15,
-            "unit": "INCH"
-        },
-        "packageType": "MAILING_BOX",
-        "weight": {
-            "value": 2,
-            "unit": "POUND"
-        }
-    },
-    "availability": {
-        "shipToLocationAvailability": {
-            "quantity": 10
-        }
-    }
-}`
-
-                // Define the options for the HTTPS request
-                const options = {
-                    hostname: 'api.sandbox.ebay.com',
-                    path: 'https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item/50',
-                    method: 'PUT',
-                    headers: {
-                        Authorization: 'Bearer ' + auth,
-                        Accept: 'application/json',
-                        'Content-Length': data.length,
-                        'Content-Type': 'application/json',
-                        'Content-Language': 'en-US'
-                    }
-                }
-
-                // REPLACE WITH RESPONSE HANDLING CODE
-                // Create the request
-                const req = request(options, (res) => {
-                    let responseBody = ''
-
-                    // Listen for data from the response
-                    res.on('data', (chunk) => {
-                        responseBody += chunk
-                    })
-
-                    // Listen for the end of the response
-                    res.on('end', () => {
-                        console.log('Response:', responseBody)
-                    })
-                })
-
-                // Handle any errors with the request
-                req.on('error', (e) => {
-                    console.error(`Problem with request: ${e.message}`)
-                })
-
-                // Write data to the request body
-                req.write(data)
-
-                req.end()
-
-                win.loadURL('https://sandbox.ebay.com/itm/110579720432')
-
-                // store into the db somehow
-                return
-            }
-        })
-    })
 })
