@@ -122,7 +122,7 @@ const ebaySetup: boolean = await window.electron.policy()
 const ListingForm = () => {
     // Listing object
     const [listingData, setListingData] = useState({
-        onEbay: true,
+        onEbay: false,
         onEtsy: false,
         onShopify: false,
         external_listing: 'eBay-xxxxx', // placeholder
@@ -188,7 +188,8 @@ const ListingForm = () => {
         height: 'Height',
         length: 'Length',
         width: 'Width',
-        quantity: 'Quantity'
+        quantity: 'Quantity',
+        sku: 'SKU'
     }
 
     // Validate listing
@@ -548,6 +549,16 @@ const ListingForm = () => {
                                 id="quantity"
                                 value={listingData.quantity}
                                 label="Quantity"
+                                onChange={handleChange}
+                            ></NumInput>
+                        </div>
+
+                         <div className="flex-1">
+                            {/* sku - integer */}
+                            <NumInput
+                                id="sku"
+                                value={listingData.sku}
+                                label="SKU"
                                 onChange={handleChange}
                             ></NumInput>
                         </div>
