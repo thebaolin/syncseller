@@ -64,6 +64,7 @@ function createTables() {
         weightUnit TEXT,
         quantity INTEGER,
         imageURL TEXT,
+        shopifyURL TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       );
@@ -251,6 +252,11 @@ export function getEbayListing() {
     const row = stmt.all()
     console.log(row)
     return row
+}
+
+export function setShopifyProductURL(itemId: number, url: string) {
+    if (!db) throw new Error('Database not initialized')
+    db.prepare(`UPDATE Shopify SET shopifyURL = ? WHERE item_id = ?`).run(url, itemId)
 }
 
 export function getLatestShopifyListing() {
@@ -446,7 +452,8 @@ export function getListingHistory(): { success: boolean; data?: any[]; error?: s
               Listings.created_at,
               L_Listing_Status.status AS status,
               Listings.price,
-              L_Platforms.name AS platform
+              L_Platforms.name AS platform',
+              Shopify.shopifyURL
           FROM Listings
           LEFT JOIN Ebay ON Listings.listing_id = Ebay.listing_id
           LEFT JOIN Etsy ON Listings.listing_id = Etsy.listing_id

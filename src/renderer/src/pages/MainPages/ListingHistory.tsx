@@ -42,6 +42,15 @@ const ListingHistory = () => {
                             <td>{ listing.status }</td>
                             <td>{ listing.platform }</td>
                             <td>${ listing.price }</td>
+                            <td>
+                                {listing.url ? (
+                                    <a href={listing.shopifyUrl} target="_blank" rel="noopener noreferrer">
+                                    View Listing
+                                    </a>
+                                ) : (
+                                    '—'
+                                )}
+                            </td>
                         </tr>
                     ) ) }
                 </tbody>

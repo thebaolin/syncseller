@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-import { getLatestShopifyListing } from './dbmanager'
+import { setShopifyProductURL, getLatestShopifyListing } from './dbmanager'
 
 dotenv.config()
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
@@ -12,6 +12,7 @@ const SHOPIFY_STORE = 'syncseller.myshopify.com'
 const ACCESS_TOKEN = process.env.SHOPIFY_ACCESS_TOKEN!
 const ADMIN_API_VERSION = '2024-01'
 const ONLINE_STORE_PUBLICATION_ID = 'gid://shopify/Publication/269566476652'
+
 
 export async function createDummyShopifyListing() {
     const endpoint = `https://${SHOPIFY_STORE}/admin/api/${ADMIN_API_VERSION}/graphql.json`
@@ -80,10 +81,30 @@ export async function createDummyShopifyListing() {
         const product = result?.product
         const variantId = product?.variants?.edges?.[0]?.node?.id
 
+        // if (!product || result.userErrors.length > 0 || !variantId) {
+        //     console.error('Shopify user errors..:', result?.userErrors || 'No product returned')
+        //     return
+        // }
+
         if (!product || result.userErrors.length > 0 || !variantId) {
             console.error('Shopify user errors..:', result?.userErrors || 'No product returned')
             return
         }
+        
+        console.log(`Product created: ${product.title} (ID: ${product.id})`)
+        
+        // ✅ Slugify the title and build product URL
+        const slugifiedTitle = listing.title
+            .toLowerCase()
+            .replace(/[^\w\s-]/g, '') // remove non-alphanumeric characters
+            .trim()
+            .replace(/\s+/g, '-')
+        
+        const productURL = `https://${SHOPIFY_STORE}/products/${slugifiedTitle}`
+        console.log(`Generated Shopify URL: ${productURL}`)
+        
+        // ✅ Save the URL to DB
+        setShopifyProductURL(listing.item_id, productURL)
 
         console.log(`Product created: ${product.title} (ID: ${product.id})`)
 
