@@ -10,7 +10,6 @@ import HomePage from './pages/MainPages/HomePage'
 import ListingForm from './pages/MainPages/ListingForm'
 import ListingHistory from './pages/MainPages/ListingHistory'
 import Analytics from './pages/MainPages/Analytics'
-import DBView from './pages/Testing Pages/testDBView'
 import UserCred from './pages/Auth/UserCred'
 import Warehouse from './pages/Auth/Warehouse'
 import PasswordScreen from './pages/Auth/dbpassword'
@@ -51,7 +50,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                         path="listingform"
                         element={<ProtectedRoute element={<ListingForm />} />}
                     />
-                    <Route path="dbview" element={<ProtectedRoute element={<DBView />} />} />
                     {/* find where app/usercred is being used and remove */}
                     <Route path="usercred" element={<ProtectedRoute element={<UserCred />} />} />
                 </Route>
