@@ -131,6 +131,13 @@ const ListingForm = () => {
 
         title: '',
         aspects: '[]',
+        size: '',
+        color: '',
+        brand: '',
+        material: '',
+        model: '',
+        style: '',
+
         description: '',
         upc: '', //changed to str because of leading zeros and easier to count digits
         imageURL: [] as string[],
@@ -293,6 +300,10 @@ const ListingForm = () => {
             ...prevData,
             [name]: value
         }))
+        setListingData((prev) => ({
+        ...prev,
+        [name]: value
+    }))
     }
 
     const removeImage = (index: number) => {
@@ -371,6 +382,7 @@ const ListingForm = () => {
                                     onChange={handleAspects}
                                 />
                             </div>
+
                         ))}
                     </div>
 

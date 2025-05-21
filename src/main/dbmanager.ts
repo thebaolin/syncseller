@@ -282,7 +282,13 @@ export function getLatestShopifyListing() {
                 s.unit,
                 s.weight,
                 s.weightUnit,
-                s.quantity
+                s.quantity,
+                s.model,
+                s.size,
+                s.color,
+                s.brand,
+                s.material,
+                s.style
             FROM Items i
             JOIN Listings l ON i.item_id = l.item_id
             JOIN Shopify s ON s.item_id = i.item_id
