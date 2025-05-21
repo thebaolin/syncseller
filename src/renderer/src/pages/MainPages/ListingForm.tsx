@@ -114,12 +114,15 @@ const CheckboxInput = (props) => (
     </label>
 )
 
-const ebaySetup: boolean = await window.electron.policy()
+// const ebaySignIn = async(): Promise<boolean> => {
+//     return await window.electron.ebaycreds() && await window.electron.warehouse()
+// }
+// const ebayIsAuthenticated = await ebaySignIn()
 
 const ListingForm = () => {
     // Listing object
     const [listingData, setListingData] = useState({
-        onEbay: false,
+        onEbay: true,
         onEtsy: false,
         onShopify: false,
         external_listing: 'eBay-xxxxx', // placeholder
@@ -222,30 +225,31 @@ const ListingForm = () => {
         listingData.imageURL = filePaths
         listingData.status = 'Active'
         listingData.imageURL = filePaths.join(',')
+        
+        const response = await window.database.insertFullListing({ ...listingData })
+        
+        //window.electron.post_ebay(listingData)
 
-        // if shopify button is checked
-        if (listingData.onShopify) {
-            try {
-                await window.shopifyAPI.createShopifyListing()
-                window.database.insertFullListing({ ...listingData })
-                console.log('Shopify listing successfully sent!!!!')
-                listingData.onShopify = false
-                alert('Listing submitted successfully Shopify')
-            } catch (err) {
-                alert('Listing Failed to Submit')
-                console.error('Failed to send listing to Shopify:', err)
+        if (response.success) {
+            alert('Listing submitted successfully!')
+        
+            // if shopify button is checked
+            if (listingData.onShopify) {
+                // Delay to ensure DB write is complete before attempting to read from it
+                setTimeout(async () => {
+                    try {
+                        await window.shopifyAPI.createShopifyListing()
+                        console.log('Shopify listing successfully sent!!!!')
+                    } catch (err) {
+                        console.error('Failed to send listing to Shopify:', err)
+                    }
+                }, 250) // 250ms delay — adjust if needed
             }
-        }
-        if (listingData.onEbay) {
-            const ebayurl = await window.electron.post_ebay(listingData)
-            if (typeof ebayurl === 'string') {
-                alert('Listing submitted successfully to Ebay')
-                window.database.insertFullListing({ ...listingData, ebayurl: ebayurl })
-            } else {
-                alert('Listing Failed to Submit to Ebay')
-            }
+        } else {
+            alert(`Failed to submit listing: ${response.error}`)
         }
     }
+        
 
     const handleDraft = (e: React.FormEvent) => {
         e.preventDefault()
@@ -322,8 +326,8 @@ const ListingForm = () => {
                         Upload Images
                         <button
                             className="form-button w-[150px] mx-[20px] my-[15px]"
+                            type="submit"
                             onClick={addImage}
-                            type="button"
                         >
                             Add Images
                         </button>
@@ -483,14 +487,12 @@ const ListingForm = () => {
                     <SectionHeader label="Listing Platforms" />
                     <div className="grid grid-cols-4 mx-[20px] my-[15px]">
                         {/* {ebayIsAuthenticated ?  */}
-                        {ebaySetup && (
-                            <CheckboxInput
-                                id="ebay"
-                                checked={listingData.onEbay}
-                                onChange={handleCheckboxChange}
-                                label="eBay"
-                            />
-                        )}
+                        <CheckboxInput
+                            id="ebay"
+                            checked={listingData.onEbay}
+                            onChange={handleCheckboxChange}
+                            label="eBay"
+                        />
 
                         <CheckboxInput
                             id="etsy"
@@ -525,15 +527,6 @@ const ListingForm = () => {
                                 label="Quantity"
                                 onChange={handleChange}
                             ></NumInput>
-                        </div>
-
-                        <div className="flex-1">
-                            <NumInput
-                                id="sku"
-                                value={listingData.sku}
-                                label="SKU"
-                                onChange={handleChange}
-                            />
                         </div>
 
                         {/* <div className="flex-1">
