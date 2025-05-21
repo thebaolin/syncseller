@@ -505,7 +505,7 @@ export function getProfitByMonth(): {
   error?: string
 } {
   if (!db) {
-    console.error("❌ DB not initialized")
+    console.error("DB not initialized")
     return { success: false, error: 'Database not initialized' }
   }
 
@@ -520,13 +520,10 @@ export function getProfitByMonth(): {
       ORDER BY month;
     `
 
-    console.log("📊 Running SQL query:\n", stmt)
     const data = db.prepare(stmt).all()
-    console.log("✅ Profit query result:", data)
 
     return { success: true, data }
   } catch (err: any) {
-    console.error("❌ Exception in getProfitByMonth:", err)
     return { success: false, error: err.message || 'Unknown error' }
   }
 }

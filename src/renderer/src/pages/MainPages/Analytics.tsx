@@ -8,17 +8,15 @@ const ListingHistory = () => {
     const [barData, setBarData] = useState<{ label: string; count: number }[]>([])
     const barChartRef = useRef<SVGSVGElement | null>(null)
     const soldItems = listings
-        .filter(l => l.status === 'Sold' && l.date_sold) // optional: ensure date_sold exists
+        .filter(l => l.status === 'Sold' && l.date_sold)
         .sort((a, b) => new Date(b.date_sold).getTime() - new Date(a.date_sold).getTime())
         .slice(0, 10) // top 10 most recent
-console.log("✅ Sold Items:", soldItems)
     useEffect(() => {
         async function fetchData() {
             const result = await window.database.getAnalyticsData()
             if (result.success) {
                 setListings(result.data)
 
-                // 🔹 Add Sold vs. Posted computation here
                 const soldCount = result.data.filter((l: any) => l.status === 'Sold').length
                 const postedCount = result.data.filter((l: any) =>
                     ['Active', 'Draft'].includes(l.status)
@@ -76,7 +74,7 @@ console.log("✅ Sold Items:", soldItems)
             .nice()
             .range([chartHeight, 0])
 
-        // X Axis
+        //x-axis
         g.append('g')
             .attr('transform', `translate(0,${chartHeight})`)
             .call(d3.axisBottom(x))
@@ -84,13 +82,13 @@ console.log("✅ Sold Items:", soldItems)
             .attr('text-anchor', 'middle')
             .attr('font-size', '12px')
 
-        // Y Axis
+        //y-axis
         g.append('g')
             .call(d3.axisLeft(y).ticks(5))
             .selectAll('text')
             .attr('font-size', '12px')
 
-        // Bars
+        //bars
         g.selectAll('.bar')
             .data(barData)
             .enter()
@@ -102,7 +100,7 @@ console.log("✅ Sold Items:", soldItems)
             .attr('height', d => chartHeight - y(d.count))
             .attr('fill', '#3B82F6')
 
-        // Labels above bars
+        //labels
         g.selectAll('.label')
             .data(barData)
             .enter()
@@ -143,12 +141,12 @@ console.log("✅ Sold Items:", soldItems)
             .nice()
             .range([chartHeight, 0])
 
-        // X Axis
+        //xaxis
         const xAxis = g.append('g')
             .attr('transform', `translate(0,${chartHeight})`)
             .call(d3.axisBottom(x).tickSizeOuter(0))
 
-        // ✅ Rotate X tick labels
+        
         xAxis.selectAll('text')
             .attr('text-anchor', 'end')
             .attr('transform', 'rotate(-40)')
@@ -156,14 +154,13 @@ console.log("✅ Sold Items:", soldItems)
             .attr('dy', '0.15em')
             .style('font-size', '12px')
 
-        // Y Axis
+        //y-ax
         g.append('g')
             .call(d3.axisLeft(y).ticks(5))
             .selectAll('text')
             .style('font-size', '12px')
 
-        // ✅ Axis Labels
-        // X Label
+        //label
         svg.append('text')
             .attr('text-anchor', 'middle')
             .attr('x', width / 2)
@@ -172,14 +169,14 @@ console.log("✅ Sold Items:", soldItems)
             .style('font-size', '14px')
 
 
-        // Y Label
+        
         svg.append('text')
             .attr('text-anchor', 'middle')
             .attr('transform', `translate(15, ${height / 2}) rotate(-90)`)
             .text('Profit')
             .style('font-size', '14px')
 
-        // Line
+        //line
         const line = d3.line<{ month: string; profit: number }>()
             .x(d => x(d.month)!)
             .y(d => y(d.profit))
@@ -250,7 +247,6 @@ console.log("✅ Sold Items:", soldItems)
             .attr('stroke', '#fff')
             .attr('stroke-width', 1.5)
 
-        // Optional labels
         const total = d3.sum(platformData, d => d.sold_count)
 
         g.selectAll('text')
@@ -263,7 +259,7 @@ console.log("✅ Sold Items:", soldItems)
             })
             .attr('transform', d => `translate(${arc.centroid(d)})`)
             .attr('text-anchor', 'middle')
-            .style('white-space', 'pre') // allow line break
+            .style('white-space', 'pre')
             .attr('font-size', '11px')
             .attr('fill', 'white')
 
@@ -273,28 +269,27 @@ console.log("✅ Sold Items:", soldItems)
     return (
         <div className='content'>
             <div className="w-full max-w-[1300px] mx-auto space-y-6 px-4">
-                {/* Top Summary Row */}
                 <div className="grid grid-cols-3 gap-4">
                     <div className="bg-white p-4 rounded-xl shadow">
                         <h2 className="text-xl font-semibold mb-2">Revenue</h2>
                         <h1 className="text-4xl font-bold">${totalRevenue.toFixed(2)}</h1>
-                        <h3 className="text-gray-500">+20% of last week revenue</h3>
+                        {/* <h3 className="text-gray-500">+20% of last week revenue</h3> */}
                     </div>
 
                     <div className="bg-white p-4 rounded-xl shadow">
                         <h2 className="text-xl font-semibold mb-2">Items Sold</h2>
                         <h1 className="text-4xl font-bold">{itemsSold}</h1>
-                        <h3 className="text-gray-500">+33% of last week items sold</h3>
+                        {/* <h3 className="text-gray-500">+33% of last week items sold</h3> */}
                     </div>
 
                     <div className="bg-white p-4 rounded-xl shadow">
                         <h2 className="text-xl font-semibold mb-2">Items Posted</h2>
                         <h1 className="text-4xl font-bold">{itemsPosted}</h1>
-                        <h3 className="text-gray-500">-8% of last week items posted</h3>
+                        {/* <h3 className="text-gray-500">-8% of last week items posted</h3> */}
                     </div>
                 </div>
 
-                {/* Profit Line Chart + Platform Pie Chart */}
+                {/* line and Pie Chart */}
                 <div className="grid grid-cols-[2fr_1fr] gap-4">
                     <div className="bg-white p-4 rounded-xl shadow">
                         <h2 className="text-xl font-semibold mb-2">Profit</h2>
@@ -323,7 +318,7 @@ console.log("✅ Sold Items:", soldItems)
 
                 </div>
 
-                {/* Bar Chart + Sold Items */}
+                {/* bar chart and items sold */}
                 <div className="grid grid-cols-[2fr_1fr] gap-4">
                     <div className="bg-white p-4 rounded-xl shadow">
                         <h2 className="text-xl font-semibold mb-2">Sold vs. Posted</h2>
@@ -339,24 +334,24 @@ console.log("✅ Sold Items:", soldItems)
                     </div>
 
                     <div className="bg-white p-4 rounded-xl shadow">
-  <h2 className="text-xl font-semibold mb-2">Sold Items</h2>
-  <div className="overflow-y-auto max-h-[300px]">
-    <ul className="text-sm text-gray-700 space-y-2">
-      {soldItems.map((item, index) => (
-        <li key={index} className="border-b pb-1">
-          <div className="flex justify-between">
-            <span className="font-medium">{item.title || item.external_listing}</span>
-            <span className="text-green-600 font-semibold">${item.price.toFixed(2)}</span>
-          </div>
-          <div className="text-xs text-gray-500 flex justify-between">
-            <span>{item.platform}</span>
-            <span>{new Date(item.date_sold).toLocaleDateString()}</span>
-          </div>
-        </li>
-      ))}
-    </ul>
-  </div>
-</div>
+                        <h2 className="text-xl font-semibold mb-2">Sold Items</h2>
+                        <div className="overflow-y-auto max-h-[300px]">
+                            <ul className="text-sm text-gray-700 space-y-2">
+                                {soldItems.map((item, index) => (
+                                    <li key={index} className="border-b pb-1">
+                                        <div className="flex justify-between">
+                                            <span className="font-medium">{item.title || item.external_listing}</span>
+                                            <span className="text-green-600 font-semibold">${item.price.toFixed(2)}</span>
+                                        </div>
+                                        <div className="text-xs text-gray-500 flex justify-between">
+                                            <span>{item.platform}</span>
+                                            <span>{new Date(item.date_sold).toLocaleDateString()}</span>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
 
                 </div>
             </div>
