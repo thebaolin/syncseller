@@ -70,7 +70,7 @@ const ListingHistory = () => {
 
         const y = d3
             .scaleLinear()
-            .domain([0, d3.max(barData, d => d.count)!])
+            .domain([0, d3.max(barData, d => d.count)! || 1])
             .nice()
             .range([chartHeight, 0])
 
