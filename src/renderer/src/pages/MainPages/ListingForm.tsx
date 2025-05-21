@@ -140,7 +140,7 @@ const ListingForm = () => {
 
         description: '',
         upc: '', //changed to str because of leading zeros and easier to count digits
-        imageURL: [] as string[],
+        imageURL: '',
         condition: '',
         // condition enums
         packageWeightAndSize: '',
@@ -151,7 +151,7 @@ const ListingForm = () => {
         packageType: '',
         weight: 0,
         weightUnit: '',
-        quantity: 0,
+        quantity: 1,
         sku: 0
     })
 
@@ -229,7 +229,7 @@ const ListingForm = () => {
             console.log(listingData.aspects)
         }
 
-        listingData.imageURL = filePaths
+        // listingData.imageURL = filePaths
         listingData.status = 'Active'
         listingData.imageURL = filePaths.join(',')
 
