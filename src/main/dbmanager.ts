@@ -65,6 +65,7 @@ function createTables() {
         weightUnit TEXT,
         quantity INTEGER,
         imageURL TEXT,
+        shopifyURL TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         url TEXT
@@ -251,6 +252,11 @@ export function initializeDatabase(password: string, isCreateMode: boolean, dbPa
 //     return row
 // }
 //---------------------------------------------------------------------------------//
+
+export function setShopifyProductURL(itemId: number, url: string) {
+    if (!db) throw new Error('Database not initialized')
+    db.prepare(`UPDATE Shopify SET shopifyURL = ? WHERE item_id = ?`).run(url, itemId)
+}
 
 export function getLatestShopifyListing() {
     if (!db) throw new Error('Database not initialized.')
@@ -443,7 +449,7 @@ export function getListingHistory(): { success: boolean; data?: any[]; error?: s
         SELECT 
               Listings.item_id,
               COALESCE(Ebay.title, Etsy.title, Shopify.title, 'Untitled') AS title,
-              COALESCE(Ebay.url, Etsy.url, Shopify.url) AS url,
+              COALESCE(Ebay.url, Etsy.url, Shopify.shopifyURL, 'Untitled') AS url,
               Listings.created_at,
               L_Listing_Status.status AS status,
               Listings.price,
