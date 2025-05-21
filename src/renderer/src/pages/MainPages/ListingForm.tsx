@@ -338,7 +338,7 @@ const ListingForm = () => {
                         Upload Images
                         <button
                             className="form-button w-[150px] mx-[20px] my-[15px]"
-                            type="submit"
+                            type="button"
                             onClick={addImage}
                         >
                             Add Images
