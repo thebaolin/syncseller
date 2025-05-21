@@ -1,10 +1,8 @@
 import Database from 'better-sqlite3-multiple-ciphers'
 import fs from 'fs'
-import path from 'path'
 import crypto from 'crypto'
 
-//const PASSWORD = 'poop'; // Prompt user to set this for encryption
-let db: Database | undefined
+let db
 
 function createTables() {
     if (!db) throw new Error('Database is not initialized.')
@@ -219,43 +217,6 @@ export function initializeDatabase(password: string, isCreateMode: boolean, dbPa
         console.log('Database opened successfully.')
     }
 }
-/*-------------------------------Test Functions---------------------------------*/
-// export function getData(): { id: number; status: string }[] {
-//     if (!db) throw new Error('Database is not initialized.')
-
-//     const stmt = db.prepare('SELECT * FROM L_Listing_Status')
-//     return stmt.all()
-// }
-
-// export function insertData(status: string): void {
-//     if (!db) throw new Error('Database is not initialized.')
-
-//     const stmt = db.prepare('INSERT INTO L_Listing_Status (status) VALUES (?)')
-//     stmt.run(status)
-// }
-
-// export function getTableNames(): string[] {
-//     if (!db) throw new Error('Database is not initialized.')
-
-//     const stmt = db.prepare(`SELECT name FROM sqlite_master WHERE type='table'`)
-//     const tables = stmt.all() as { name: string }[]
-//     console.log(tables.map((table) => table.name))
-//     // return tables.map(table => table.name);
-//     //console.log(tables)
-//     return tables.map((table) => table.name)
-// }
-// export function getEbayListing() {
-//     const stmt = db.prepare(`
-//     SELECT ebay_listing_id, item_id, listing_id, title, description, upc, imageURL, condition,
-//            height, length, width, unit, weight, weightUnit, quantity
-//     FROM Ebay
-//     WHERE item_id = 12345
-//   `)
-//     const row = stmt.all()
-//     console.log(row)
-//     return row
-// }
-//---------------------------------------------------------------------------------//
 
 export function setShopifyProductURL(itemId: number, url: string) {
     if (!db) throw new Error('Database not initialized')
@@ -491,7 +452,6 @@ export function getListingHistory(): { success: boolean; data?: any[]; error?: s
 
 export function generateSecurityKey() {
     const key = crypto.randomBytes(32).toString('hex')
-    //console.log(key)
     return key
 }
 
