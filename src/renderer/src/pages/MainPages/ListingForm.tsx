@@ -117,7 +117,7 @@ const CheckboxInput = (props) => (
 // const ebaySignIn = async(): Promise<boolean> => {
 //     return await window.electron.ebaycreds() && await window.electron.warehouse()
 // }
-// const ebayIsAuthenticated = await ebaySignIn()
+const ebaySetup: boolean = await window.electron.policy()
 
 const ListingForm = () => {
     // Listing object
@@ -206,9 +206,7 @@ const ListingForm = () => {
         } else {
             alert(
                 'Missing required fields:\n' +
-                    missing.map((m) => `-${m}`).join('\n') +
-                    '\n' +
-                    listingData.aspects
+                    missing.map((m) => `-${m}`).join('\n')
             )
             return false
         }
@@ -218,43 +216,47 @@ const ListingForm = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
-        let listingAspects: string[] = []
-        Object.entries(myAspects).map(([key, value]) => {
-            if (value) {
-                listingAspects.push(key + ': ' + value)
+        const valid = validateListing()
+
+        if (valid){
+            let listingAspects: string[] = []
+            Object.entries(myAspects).map(([key, value]) => {
+                if (value) {
+                    listingAspects.push(key + ': ' + value)
+                }
+            })
+            listingData.aspects = listingAspects.join(',')
+            if (listingData.aspects) {
+                console.log(listingData.aspects)
             }
-        })
-        listingData.aspects = listingAspects.join(',')
-        if (listingData.aspects) {
-            console.log(listingData.aspects)
-        }
 
-        // listingData.imageURL = filePaths
-        listingData.status = 'Active'
-        listingData.imageURL = filePaths.join(',')
+            // listingData.imageURL = filePaths
+            listingData.status = 'Active'
+            listingData.imageURL = filePaths.join(',')
 
-        
-        const response = await window.database.insertFullListing({ ...listingData })
-        
-        //window.electron.post_ebay(listingData)
+            
+            const response = await window.database.insertFullListing({ ...listingData })
+            
+            //window.electron.post_ebay(listingData)
 
-        if (response.success) {
-            alert('Listing submitted successfully!')
-        
-            // if shopify button is checked
-            if (listingData.onShopify) {
-                // Delay to ensure DB write is complete before attempting to read from it
-                setTimeout(async () => {
-                    try {
-                        await window.shopifyAPI.createShopifyListing()
-                        console.log('Shopify listing successfully sent!!!!')
-                    } catch (err) {
-                        console.error('Failed to send listing to Shopify:', err)
-                    }
-                }, 250) // 250ms delay — adjust if needed
+            if (response.success) {
+                alert('Listing submitted successfully!')
+            
+                // if shopify button is checked
+                if (listingData.onShopify) {
+                    // Delay to ensure DB write is complete before attempting to read from it
+                    setTimeout(async () => {
+                        try {
+                            await window.shopifyAPI.createShopifyListing()
+                            console.log('Shopify listing successfully sent!!!!')
+                        } catch (err) {
+                            console.error('Failed to send listing to Shopify:', err)
+                        }
+                    }, 250) // 250ms delay — adjust if needed
+                }
+            } else {
+                alert(`Failed to submit listing: ${response.error}`)
             }
-        } else {
-            alert(`Failed to submit listing: ${response.error}`)
         }
     }
         
@@ -499,13 +501,14 @@ const ListingForm = () => {
                 <section>
                     <SectionHeader label="Listing Platforms" />
                     <div className="grid grid-cols-4 mx-[20px] my-[15px]">
-                        {/* {ebayIsAuthenticated ?  */}
-                        <CheckboxInput
-                            id="ebay"
-                            checked={listingData.onEbay}
-                            onChange={handleCheckboxChange}
-                            label="eBay"
-                        />
+                        {ebaySetup &&
+                            <CheckboxInput
+                                id="ebay"
+                                checked={listingData.onEbay}
+                                onChange={handleCheckboxChange}
+                                label="eBay"
+                            />
+                        }
 
                         <CheckboxInput
                             id="etsy"
