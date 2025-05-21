@@ -45,7 +45,8 @@ function createTables() {
       listing_id INTEGER NOT NULL,
       title TEXT NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      url TEXT
     );
 
     CREATE TABLE IF NOT EXISTS Shopify (
@@ -449,11 +450,11 @@ export function getListingHistory(): { success: boolean; data?: any[]; error?: s
         SELECT 
               Listings.item_id,
               COALESCE(Ebay.title, Etsy.title, Shopify.title, 'Untitled') AS title,
+              COALESCE(Ebay.url, Etsy.url, Shopify.shopifyURL, 'Untitled') AS url,
               Listings.created_at,
               L_Listing_Status.status AS status,
               Listings.price,
-              L_Platforms.name AS platform',
-              Shopify.shopifyURL as shopifyURL
+              L_Platforms.name AS platform
           FROM Listings
           LEFT JOIN Ebay ON Listings.listing_id = Ebay.listing_id
           LEFT JOIN Etsy ON Listings.listing_id = Etsy.listing_id
