@@ -84,8 +84,8 @@ let mainWindow: BrowserWindow | null = null
 function createWindow(): void {
     // Create the browser window.
     mainWindow = new BrowserWindow({
-        width: 900,
-        height: 670,
+        width: 1600,
+        height: 1000,
         show: false,
         autoHideMenuBar: true,
         ...(process.platform === 'linux' || process.platform === 'win32' ? { icon } : {}),

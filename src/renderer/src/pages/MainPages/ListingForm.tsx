@@ -114,9 +114,6 @@ const CheckboxInput = ( props ) => (
     </label>
 )
 
-// const ebaySignIn = async(): Promise<boolean> => {
-//     return await window.electron.ebaycreds() && await window.electron.warehouse()
-// }
 const ebaySetup: boolean = await window.electron.policy()
 
 const ListingForm = () => {
@@ -228,7 +225,6 @@ const ListingForm = () => {
                 console.log( listingData.aspects )
             }
 
-            // listingData.imageURL = filePaths
             listingData.status = 'Active'
             listingData.imageURL = filePaths.join( ',' )
 
@@ -567,16 +563,6 @@ const ListingForm = () => {
                                 onChange={ handleChange }
                             ></NumInput>
                         </div>
-
-                        {/* <div className="flex-1">
-                            <Dropdown
-                                id="status"
-                                value={listingData.status}
-                                label="Listing Status"
-                                options={['Active', 'Sold', 'Deleted', 'Draft']}
-                                onChange={handleChange}
-                            />
-                        </div> */}
                     </div>
                 </section>
 

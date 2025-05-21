@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom'
 import Ebay_logo from '../../assets/images/ebay-logo.png'
 import Etsy_logo from '../../assets/images/Etsy-Logo.png'
 import Shopify_logo from '../../assets/images/Shopify-Logo.png'
-import { electron } from 'process'
 
 const Icon = (props: { src: any }) => (
     <div className=" bg-white w-full h-[100px] flex items-center justify-center rounded-xl hover:bg-dustyrose">
@@ -76,5 +75,4 @@ const HomePage = () => {
         </div>
     )
 }
-
 export default HomePage
