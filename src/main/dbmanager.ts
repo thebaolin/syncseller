@@ -453,7 +453,7 @@ export function getListingHistory(): { success: boolean; data?: any[]; error?: s
               L_Listing_Status.status AS status,
               Listings.price,
               L_Platforms.name AS platform',
-              Shopify.shopifyURL
+              Shopify.shopifyURL as shopifyURL
           FROM Listings
           LEFT JOIN Ebay ON Listings.listing_id = Ebay.listing_id
           LEFT JOIN Etsy ON Listings.listing_id = Etsy.listing_id

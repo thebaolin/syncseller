@@ -43,8 +43,8 @@ const ListingHistory = () => {
                             <td>{ listing.platform }</td>
                             <td>${ listing.price }</td>
                             <td>
-                                {listing.url ? (
-                                    <a href={listing.shopifyUrl} target="_blank" rel="noopener noreferrer">
+                                {listing.shopifyURL ? (
+                                    <a href={listing.shopifyURL} target="_blank" rel="noopener noreferrer">
                                     View Listing
                                     </a>
                                 ) : (
