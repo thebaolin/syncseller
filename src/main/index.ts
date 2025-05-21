@@ -25,7 +25,6 @@ ipcMain.handle('shopify:create-listing', async () => {
     return await createDummyShopifyListing()
 })
 
-
 let mainWindow: BrowserWindow | null = null
 
 function createWindow(): void {

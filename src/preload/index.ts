@@ -60,7 +60,6 @@ if (process.contextIsolated) {
                 return ipcRenderer.invoke('policy')
             }
         }),
-
             contextBridge.exposeInMainWorld('database', {
                 getData: () => ipcRenderer.invoke('get-data'),
                 insertData: (name: string) => ipcRenderer.invoke('insert-data', name),

@@ -3,59 +3,59 @@ interface InputProps {
     id: string
     value: any
     label: string
-    onChange: ( e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> ) => void
+    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
 }
 
-const TextInput = ( props: InputProps ) => {
+const TextInput = (props: InputProps) => {
     const { id, label, value, onChange } = props
     return (
         <div className="flex-1 mx-[20px] my-[15px]">
-            <label htmlFor={ id }>{ label }</label>
+            <label htmlFor={id}>{label}</label>
             <br />
             <input
                 className="w-full"
-                id={ id }
-                name={ id }
+                id={id}
+                name={id}
                 type="text"
-                value={ value }
-                onChange={ onChange }
+                value={value}
+                onChange={onChange}
             ></input>
         </div>
     )
 }
 
-const NumInput = ( props: InputProps ) => {
+const NumInput = (props: InputProps) => {
     const { id, label, value, onChange } = props
     return (
         <div className="flex-1 mx-[20px] my-[15px]">
-            <label htmlFor={ id }>{ label }</label>
+            <label htmlFor={id}>{label}</label>
             <br />
             <input
                 className="w-full"
-                id={ id }
-                name={ id }
+                id={id}
+                name={id}
                 type="number"
                 step="any"
                 min="0"
-                value={ value }
-                onChange={ onChange }
+                value={value}
+                onChange={onChange}
             ></input>
         </div>
     )
 }
 
-const TextAreaInput = ( props: InputProps ) => {
+const TextAreaInput = (props: InputProps) => {
     const { id, label, value, onChange } = props
     return (
         <div className="flex-1 mx-[20px] my-[15px]">
-            <label htmlFor={ id }>{ label }</label>
+            <label htmlFor={id}>{label}</label>
             <br />
             <textarea
                 className="w-full h-[200px]"
-                id={ id }
-                name={ id }
-                value={ value }
-                onChange={ onChange }
+                id={id}
+                name={id}
+                value={value}
+                onChange={onChange}
             ></textarea>
         </div>
     )
@@ -67,50 +67,50 @@ interface SelectProps {
     value: any
     label: string
     options: any[]
-    onChange: ( e: React.ChangeEvent<HTMLSelectElement> ) => void
+    onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
 }
 
-const Dropdown = ( props: SelectProps ) => {
+const Dropdown = (props: SelectProps) => {
     const { id, label, value, options, onChange } = props
     return (
         <div className="mx-[20px] my-[15px]">
-            <label htmlFor={ id }>{ label }</label>
+            <label htmlFor={id}>{label}</label>
             <br />
-            <select className="w-full" id={ id } name={ id } value={ value } onChange={ onChange }>
+            <select className="w-full" id={id} name={id} value={value} onChange={onChange}>
                 <option value="" disabled>
                     Select an option
                 </option>
-                { options.map( ( option, index ) => (
-                    <option key={ index } value={ option }>
-                        { option }
+                {options.map((option, index) => (
+                    <option key={index} value={option}>
+                        {option}
                     </option>
-                ) ) }
+                ))}
             </select>
         </div>
     )
 }
 
-const SectionHeader = ( { label } ) => {
+const SectionHeader = ({ label }) => {
     return (
         <div>
-            <h1 className="text-lg font-bold mx-[20px]">{ label }</h1>
+            <h1 className="text-lg font-bold mx-[20px]">{label}</h1>
             <div className=" flex h-[1px] bg-black mx-[20px]"></div>
         </div>
     )
 }
 
-const CheckboxInput = ( props ) => (
+const CheckboxInput = (props) => (
     <label>
         <input
             className="mr-1 my-[15px]"
-            id={ props.id }
+            id={props.id}
             type="checkbox"
-            checked={ props.checked }
-            onChange={ props.onChange }
+            checked={props.checked}
+            onChange={props.onChange}
             name="option"
             value="option"
         />
-        { props.label }
+        {props.label}
     </label>
 )
 
@@ -118,7 +118,7 @@ const ebaySetup: boolean = await window.electron.policy()
 
 const ListingForm = () => {
     // Listing object
-    const [ listingData, setListingData ] = useState( {
+    const [listingData, setListingData] = useState({
         onEbay: false,
         onEtsy: false,
         onShopify: false,
@@ -150,26 +150,26 @@ const ListingForm = () => {
         weightUnit: '',
         quantity: 1,
         sku: 0
-    } )
+    })
 
-    const [ myAspects, setMyAspects ] = useState( {
+    const [myAspects, setMyAspects] = useState({
         size: '',
         color: '',
         brand: '',
         material: '',
         model: '',
         style: ''
-    } )
+    })
 
     // Handle change
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
         const { name, value } = e.target
-        setListingData( ( prevData ) => ( {
+        setListingData((prevData) => ({
             ...prevData,
-            [ name ]: value
-        } ) )
+            [name]: value
+        }))
     }
 
     const requiredFields = {
@@ -193,212 +193,211 @@ const ListingForm = () => {
     const validateListing = () => {
         let missing: string[] = []
 
-        for ( const key in requiredFields ) {
-            if ( !listingData[ key ] ) {
-                missing.push( requiredFields[ key ] )
+        for (const key in requiredFields) {
+            if (!listingData[key]) {
+                missing.push(requiredFields[key])
             }
         }
 
-        if ( missing.length === 0 ) {
+        if (missing.length === 0) {
             return true
         } else {
-            alert( 'Missing required fields:\n' + missing.map( ( m ) => `-${ m }` ).join( '\n' ) )
+            alert('Missing required fields:\n' + missing.map((m) => `-${m}`).join('\n'))
             return false
         }
     }
 
     // Handle Submit
-    const handleSubmit = async ( e: React.FormEvent ) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
         const valid = validateListing()
 
-        if ( valid ) {
+        if (valid) {
             let listingAspects: string[] = []
-            Object.entries( myAspects ).map( ( [ key, value ] ) => {
-                if ( value ) {
-                    listingAspects.push( key + ': ' + value )
+            Object.entries(myAspects).map(([key, value]) => {
+                if (value) {
+                    listingAspects.push(key + ': ' + value)
                 }
-            } )
-            listingData.aspects = listingAspects.join( ',' )
-            if ( listingData.aspects ) {
-                console.log( listingData.aspects )
+            })
+            listingData.aspects = listingAspects.join(',')
+            if (listingData.aspects) {
+                console.log(listingData.aspects)
             }
 
             listingData.status = 'Active'
-            listingData.imageURL = filePaths.join( ',' )
+            listingData.imageURL = filePaths.join(',')
 
             let response
 
-            if ( listingData.onEbay ) {
+            if (listingData.onEbay) {
                 listingData.onEbay = false
-                response = await window.database.insertFullListing( { ...listingData } )
+                response = await window.database.insertFullListing({ ...listingData })
                 listingData.onEbay = true
-            }
-            else {
-                response = await window.database.insertFullListing( { ...listingData } )
+            } else {
+                response = await window.database.insertFullListing({ ...listingData })
             }
 
-            if ( response.success ) {
+            if (response.success) {
                 // if shopify button is checked
-                if ( listingData.onShopify ) {
+                if (listingData.onShopify) {
                     // Delay to ensure DB write is complete before attempting to read from it
-                    setTimeout( async () => {
+                    setTimeout(async () => {
                         try {
                             await window.shopifyAPI.createShopifyListing()
-                            alert( "Successfully posted to Shopify" )
-                            console.log( 'Shopify listing successfully sent!!!!' )
-                        } catch ( err ) {
-                            alert( "Failed to post to Shopify" )
-                            console.error( 'Failed to send listing to Shopify:', err )
+                            alert('Successfully posted to Shopify')
+                            console.log('Shopify listing successfully sent!!!!')
+                        } catch (err) {
+                            alert('Failed to post to Shopify')
+                            console.error('Failed to send listing to Shopify:', err)
                         }
-                    }, 250 ) // 250ms delay — adjust if needed
+                    }, 250) // 250ms delay — adjust if needed
                 }
             } else {
-                alert( `Failed to submit listing: ${ response.error }` )
+                alert(`Failed to submit listing: ${response.error}`)
             }
 
-            if ( listingData.onEbay ) {
-                const url = await window.electron.post_ebay( listingData )
-                if ( typeof url === 'string' ) {
+            if (listingData.onEbay) {
+                const url = await window.electron.post_ebay(listingData)
+                if (typeof url === 'string') {
                     listingData.onShopify = false
-                    window.database.insertFullListing( { ...listingData, ebayurl: url } )
-                    alert( 'Successfully posted to Ebay' )
+                    window.database.insertFullListing({ ...listingData, ebayurl: url })
+                    alert('Successfully posted to Ebay')
                 } else {
-                    alert( 'Failed to post to Ebay' )
+                    alert('Failed to post to Ebay')
                 }
             }
         }
     }
 
-    const handleDraft = ( e: React.FormEvent ) => {
+    const handleDraft = (e: React.FormEvent) => {
         e.preventDefault()
     }
 
-    const handleCheckboxChange = ( e: React.ChangeEvent<HTMLInputElement> ) => {
+    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, checked } = e.target
-        setListingData( ( prev ) => ( {
+        setListingData((prev) => ({
             ...prev,
-            [ id === 'ebay'
+            [id === 'ebay'
                 ? 'onEbay'
                 : id === 'etsy'
-                    ? 'onEtsy'
-                    : id === 'shopify'
-                        ? 'onShopify'
-                        : '' ]: checked
-        } ) )
+                  ? 'onEtsy'
+                  : id === 'shopify'
+                    ? 'onShopify'
+                    : '']: checked
+        }))
     }
 
-    const [ imagePreview, setImagePreview ] = useState<string[]>( [] )
-    const [ filePaths, setFilePaths ] = useState<string[]>( [] )
+    const [imagePreview, setImagePreview] = useState<string[]>([])
+    const [filePaths, setFilePaths] = useState<string[]>([])
 
     const addImage = async () => {
         const filePaths = await window.electronAPI.openFileDialog() // get filepath
-        if ( filePaths && filePaths.length > 0 ) {
-            const filePath = filePaths[ 0 ]
-            const base64Image = await window.electronAPI.readImageAsBase64( filePath ) // get base64image
+        if (filePaths && filePaths.length > 0) {
+            const filePath = filePaths[0]
+            const base64Image = await window.electronAPI.readImageAsBase64(filePath) // get base64image
 
-            setImagePreview( ( prev ) => [ ...prev, base64Image ] )
-            setFilePaths( ( prev ) => [ ...prev, filePath ] )
+            setImagePreview((prev) => [...prev, base64Image])
+            setFilePaths((prev) => [...prev, filePath])
 
-            console.log( 'File selected:', base64Image )
-            console.log( 'File paths:', filePath )
+            console.log('File selected:', base64Image)
+            console.log('File paths:', filePath)
         }
     }
 
-    const handleAspects = ( event ) => {
+    const handleAspects = (event) => {
         const { name, value } = event.target
-        setMyAspects( ( prevData ) => ( {
+        setMyAspects((prevData) => ({
             ...prevData,
-            [ name ]: value
-        } ) )
-        setListingData( ( prev ) => ( {
+            [name]: value
+        }))
+        setListingData((prev) => ({
             ...prev,
-            [ name ]: value
-        } ) )
+            [name]: value
+        }))
     }
 
-    const removeImage = ( index: number ) => {
-        setFilePaths( ( prev ) => prev.filter( ( _, i ) => i != index ) )
-        setImagePreview( ( prev ) => prev.filter( ( _, i ) => i != index ) )
+    const removeImage = (index: number) => {
+        setFilePaths((prev) => prev.filter((_, i) => i != index))
+        setImagePreview((prev) => prev.filter((_, i) => i != index))
     }
 
     return (
         <div className="content" id="form-content">
-            <form className="" onSubmit={ handleSubmit }>
+            <form className="" onSubmit={handleSubmit}>
                 <section>
                     <SectionHeader label="General Properties" />
 
-                    {/* Title - Text Field*/ }
+                    {/* Title - Text Field*/}
                     <TextInput
                         id="title"
-                        value={ listingData.title }
+                        value={listingData.title}
                         label="Title"
-                        onChange={ handleChange }
+                        onChange={handleChange}
                     />
 
-                    {/* Description - Text Area */ }
+                    {/* Description - Text Area */}
                     <TextAreaInput
                         id="description"
-                        value={ listingData.description }
+                        value={listingData.description}
                         label="Description"
-                        onChange={ handleChange }
+                        onChange={handleChange}
                     />
 
-                    {/* Upload Images */ }
+                    {/* Upload Images */}
                     <div className="mx-[20px] my-[15px]">
                         Upload Images
                         <button
                             className="form-button w-[150px] mx-[20px] my-[15px]"
                             type="button"
-                            onClick={ addImage }
+                            onClick={addImage}
                         >
                             Add Images
                         </button>
                     </div>
 
-                    {/* Images Preview */ }
+                    {/* Images Preview */}
                     <div className="grid grid-cols-4 mx-[15px] my-[15px]">
-                        { imagePreview.map( ( image, index ) => (
-                            <div className="text-center" key={ index }>
+                        {imagePreview.map((image, index) => (
+                            <div className="text-center" key={index}>
                                 <div className="flex-1 aspect-square shadow bg-white m-[5px]">
                                     <img
                                         className="h-full object-cover"
                                         id="output"
-                                        src={ image }
-                                        alt={ filePaths[ index ]?.split( /[\\/]/ ).pop() }
+                                        src={image}
+                                        alt={filePaths[index]?.split(/[\\/]/).pop()}
                                     ></img>
                                 </div>
                                 <button
                                     className="cursor-pointer"
-                                    onClick={ () => removeImage( index ) }
+                                    onClick={() => removeImage(index)}
                                 >
                                     Remove
                                 </button>
                             </div>
-                        ) ) }
+                        ))}
                     </div>
                 </section>
 
                 <section>
                     <SectionHeader label="Item Specifications" />
 
-                    {/* Aspects - ?*/ }
+                    {/* Aspects - ?*/}
                     <div className="grid grid-cols-4">
-                        { Object.entries( myAspects ).map( ( [ key, value ] ) => (
-                            <div key={ key }>
+                        {Object.entries(myAspects).map(([key, value]) => (
+                            <div key={key}>
                                 <TextInput
-                                    id={ key }
-                                    value={ value }
-                                    label={ key.charAt( 0 ).toUpperCase() + key.slice( 1 ) }
-                                    onChange={ handleAspects }
+                                    id={key}
+                                    value={value}
+                                    label={key.charAt(0).toUpperCase() + key.slice(1)}
+                                    onChange={handleAspects}
                                 />
                             </div>
-                        ) ) }
+                        ))}
                     </div>
 
                     <div className="flex flex-col-2">
-                        {/* UPC - Integer */ }
+                        {/* UPC - Integer */}
                         <div className="flex-1">
                             <div className="flex-1 mx-[20px] my-[15px]">
                                 <label htmlFor="upc">Universal Product Code (UPC)</label>
@@ -410,27 +409,27 @@ const ListingForm = () => {
                                     type="text"
                                     pattern="^\d{12}$"
                                     max="12"
-                                    value={ listingData.upc }
-                                    onChange={ handleChange }
+                                    value={listingData.upc}
+                                    onChange={handleChange}
                                 ></input>
                             </div>
                         </div>
 
-                        {/* Condition - options taken from eBay's Clothing, Shoes & Accessories: Clothing */ }
+                        {/* Condition - options taken from eBay's Clothing, Shoes & Accessories: Clothing */}
                         <div className="flex-1">
                             <Dropdown
                                 id="condition"
-                                value={ listingData.condition }
+                                value={listingData.condition}
                                 label="Condition"
-                                options={ [
+                                options={[
                                     'New with tags',
                                     'New without tags',
                                     'New with imperfections',
                                     'Pre-owned: Excellent',
                                     'Pre-owned - Good',
                                     'Pre-owned - Fair'
-                                ] }
-                                onChange={ handleChange }
+                                ]}
+                                onChange={handleChange}
                             />
                         </div>
                     </div>
@@ -440,68 +439,68 @@ const ListingForm = () => {
                     <SectionHeader label="Package Size and Weight" />
 
                     <div>
-                        {/* packageType */ }
+                        {/* packageType */}
                         <div className="flex-1">
                             <Dropdown
                                 id="packageType"
-                                value={ listingData.packageType }
+                                value={listingData.packageType}
                                 label="Package Type"
-                                options={ [
+                                options={[
                                     'Letter',
                                     'Large Envelope',
                                     'Package/Thick Envelope',
                                     'Large Package'
-                                ] }
-                                onChange={ handleChange }
+                                ]}
+                                onChange={handleChange}
                             />
                         </div>
                     </div>
 
                     <div className="flex flex-col-2">
-                        {/* weight - integer */ }
+                        {/* weight - integer */}
                         <div className="flex-1">
                             <Dropdown
                                 id="unit"
-                                value={ listingData.unit }
+                                value={listingData.unit}
                                 label="Length unit"
-                                options={ [ 'inches', 'centimeters' ] }
-                                onChange={ handleChange }
+                                options={['inches', 'centimeters']}
+                                onChange={handleChange}
                             />
                             <NumInput
                                 id="height"
-                                value={ listingData.height }
-                                label={ `Height ${ listingData.unit ? `(${ listingData.unit })` : '' }` }
-                                onChange={ handleChange }
+                                value={listingData.height}
+                                label={`Height ${listingData.unit ? `(${listingData.unit})` : ''}`}
+                                onChange={handleChange}
                             />
                             <NumInput
                                 id="length"
-                                value={ listingData.length }
-                                label={ `Length ${ listingData.unit ? `(${ listingData.unit })` : '' }` }
-                                onChange={ handleChange }
+                                value={listingData.length}
+                                label={`Length ${listingData.unit ? `(${listingData.unit})` : ''}`}
+                                onChange={handleChange}
                             />
 
                             <NumInput
                                 id="width"
-                                value={ listingData.width }
-                                label={ `Width ${ listingData.unit ? `(${ listingData.unit })` : '' }` }
-                                onChange={ handleChange }
+                                value={listingData.width}
+                                label={`Width ${listingData.unit ? `(${listingData.unit})` : ''}`}
+                                onChange={handleChange}
                             />
                         </div>
 
-                        {/* Height - Integer */ }
+                        {/* Height - Integer */}
                         <div className="flex-1">
                             <Dropdown
                                 id="weightUnit"
-                                value={ listingData.weightUnit }
+                                value={listingData.weightUnit}
                                 label="Weight unit"
-                                options={ [ 'pounds', 'ounces', 'grams', 'kilograms' ] }
-                                onChange={ handleChange }
+                                options={['pounds', 'ounces', 'grams', 'kilograms']}
+                                onChange={handleChange}
                             />
                             <NumInput
                                 id="weight"
-                                value={ listingData.weight }
-                                label={ `Weight ${ listingData.weightUnit ? `(${ listingData.weightUnit })` : '' }` }
-                                onChange={ handleChange }
+                                value={listingData.weight}
+                                label={`Weight ${listingData.weightUnit ? `(${listingData.weightUnit})` : ''}`}
+                                onChange={handleChange}
                             ></NumInput>
                         </div>
                     </div>
@@ -510,26 +509,26 @@ const ListingForm = () => {
                 <section>
                     <SectionHeader label="Listing Platforms" />
                     <div className="grid grid-cols-4 mx-[20px] my-[15px]">
-                        { ebaySetup && (
+                        {ebaySetup && (
                             <CheckboxInput
                                 id="ebay"
-                                checked={ listingData.onEbay }
-                                onChange={ handleCheckboxChange }
+                                checked={listingData.onEbay}
+                                onChange={handleCheckboxChange}
                                 label="eBay"
                             />
-                        ) }
+                        )}
 
                         <CheckboxInput
                             id="etsy"
-                            checked={ listingData.onEtsy }
-                            onChange={ handleCheckboxChange }
+                            checked={listingData.onEtsy}
+                            onChange={handleCheckboxChange}
                             label="Etsy"
                         />
 
                         <CheckboxInput
                             id="shopify"
-                            checked={ listingData.onShopify }
-                            onChange={ handleCheckboxChange }
+                            checked={listingData.onShopify}
+                            onChange={handleCheckboxChange}
                             label="Shopify"
                         />
                     </div>
@@ -538,29 +537,29 @@ const ListingForm = () => {
                         <div className="flex-1">
                             <NumInput
                                 id="price"
-                                value={ listingData.price }
+                                value={listingData.price}
                                 label="Price (USD)"
-                                onChange={ handleChange }
+                                onChange={handleChange}
                             />
                         </div>
 
                         <div className="flex-1">
-                            {/* quantity - integer */ }
+                            {/* quantity - integer */}
                             <NumInput
                                 id="quantity"
-                                value={ listingData.quantity }
+                                value={listingData.quantity}
                                 label="Quantity"
-                                onChange={ handleChange }
+                                onChange={handleChange}
                             ></NumInput>
                         </div>
 
                         <div className="flex-1">
-                            {/* sku - integer */ }
+                            {/* sku - integer */}
                             <NumInput
                                 id="sku"
-                                value={ listingData.sku }
+                                value={listingData.sku}
                                 label="SKU"
-                                onChange={ handleChange }
+                                onChange={handleChange}
                             ></NumInput>
                         </div>
                     </div>
@@ -570,12 +569,12 @@ const ListingForm = () => {
                     <SectionHeader label="Submit Listing" />
 
                     <div className="flex flex-col-2 justify-evenly mt-[20px]">
-                        {/* Submit Draft */ }
+                        {/* Submit Draft */}
                         <button className="form-button w-[150px] mx-[20px] my-[15px] cursor-pointer">
                             Save Draft
                         </button>
 
-                        {/* Submit Listing */ }
+                        {/* Submit Listing */}
                         <button
                             className="form-button w-[150px] mx-[20px] my-[15px] cursor-pointer"
                             type="submit"
