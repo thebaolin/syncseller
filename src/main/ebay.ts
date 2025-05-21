@@ -51,14 +51,12 @@ export async function ebay_oauth_flow(client_id, client_secret, redirect_uri) {
     const oauth_url = ebayAuthToken.generateUserAuthorizationUrl('SANDBOX', scopes, {
         prompt: 'login'
     })
-    console.log(oauth_url)
 
     // try the url
     await win.loadURL(oauth_url)
 
     // handles error from url
     const html = await win.webContents.executeJavaScript('document.documentElement.innerHTML')
-    console.log(html.includes('error_id'))
     if (html.includes('error_id')) {
         new Notification({
             title: 'Ebay Credentials Error',
@@ -68,7 +66,7 @@ export async function ebay_oauth_flow(client_id, client_secret, redirect_uri) {
         return false
     }
 
-    // assumes no error in url
+    // no error in url
     win.webContents.on('will-redirect', async (details) => {
         const access_code = new URL(details.url).searchParams.get('code')
         if (access_code && !flag) {
@@ -77,7 +75,6 @@ export async function ebay_oauth_flow(client_id, client_secret, redirect_uri) {
                 'SANDBOX',
                 access_code
             )
-            console.log(accessToken)
             const response = JSON.parse(accessToken)
             // write access token to db
             setEbayOauth(
@@ -286,7 +283,6 @@ async function refresh() {
     }
 }
 
-// need ebay credentials and oauth set up
 // try to post image, then create inventory item, create offer and publish
 // if any of those fail, notify user
 // only write to db on a complete success
@@ -314,7 +310,6 @@ export async function post_listing(data) {
             return false
         }
     }
-    console.log(data)
 
     // create inventory call
     if (!(await create_inventory_item(data))) {
@@ -326,7 +321,6 @@ export async function post_listing(data) {
     if (offerid === undefined) {
         return false
     }
-    console.log(offerid)
 
     //publish offer call
     return publish_offer(offerid)
@@ -368,12 +362,10 @@ export async function post_image(path: string): Promise<string> {
         }).show()
         return 'Error'
     } else {
-        console.log(data.UploadSiteHostedPicturesResponse.SiteHostedPictureDetails[0].FullURL[0])
         return data.UploadSiteHostedPicturesResponse.SiteHostedPictureDetails[0].FullURL[0]
     }
 }
 
-// Data json which we have to selectively parse? or front end gives the correct ones...
 export async function create_inventory_item(data) {
     let condition
     if (data.condition === 'New with tags' || data.condition === 'New without tags') {
@@ -445,10 +437,7 @@ export async function create_inventory_item(data) {
         }
     )
 
-    console.log(content)
-    console.log(response.status)
     if (response.status !== 204) {
-        console.log(await response.json())
         new Notification({
             title: 'Listing Post Error',
             body: 'Issue with Listing Post; Check that field information is correct; Please try again'
@@ -458,6 +447,7 @@ export async function create_inventory_item(data) {
     return true
 }
 
+// parse concatenated string of files into array
 function imgurl(data) {
     if (typeof data !== 'string') {
         let s = '['
@@ -474,8 +464,7 @@ function imgurl(data) {
         return '[' + '"' + data + '"' + ']'
     }
 }
-
-// pass sku and json blob containing everything else?
+// given offerid publishes that offer onto ebay
 export async function publish_offer(id) {
     await refresh()
     const response = await fetch(
@@ -489,8 +478,8 @@ export async function publish_offer(id) {
             }
         }
     )
+    // delete bad offer
     if (response.status !== 200) {
-        console.log(await response.json())
         await refresh()
         await fetch(`https://api.sandbox.ebay.com/sell/inventory/v1/offer/${id}`, {
             method: 'DELETE',
@@ -506,6 +495,7 @@ export async function publish_offer(id) {
     return `https://sandbox.ebay.com/itm/${lid}`
 }
 
+// using sku of inventory item, creates an offer returning offerid
 async function create_offer(data) {
     await refresh()
     const policies = getEbayPolicies()[0]
@@ -529,7 +519,6 @@ async function create_offer(data) {
     "categoryId": "165260",
     "merchantLocationKey": "${policies.warehouse}"
 }`
-    console.log(content)
     const response = await fetch(`https://api.sandbox.ebay.com/sell/inventory/v1/offer`, {
         method: 'POST',
         headers: {
@@ -543,7 +532,6 @@ async function create_offer(data) {
         body: content
     })
     if (response.status !== 201) {
-        console.log(await response.json())
         new Notification({
             title: 'Offer publishing Error',
             body: 'Incorrect information supplied; Please try again'
@@ -659,10 +647,7 @@ export async function make_warehouse(data) {
             body: content
         }
     )
-    console.log(content)
-    console.log(`https://api.sandbox.ebay.com/sell/inventory/v1/location/${data.key}`)
     if (response.status !== 204) {
-        console.log(await response.json())
         new Notification({
             title: 'Warehouse Error',
             body: 'Incorrect information supplied; Please try again'
