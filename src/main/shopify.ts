@@ -13,6 +13,31 @@ const ACCESS_TOKEN = process.env.SHOPIFY_ACCESS_TOKEN!
 const ADMIN_API_VERSION = '2024-01'
 const ONLINE_STORE_PUBLICATION_ID = 'gid://shopify/Publication/269566476652'
 
+function generateDescriptionHtml(listing) {
+    const parts: string[] = []
+
+    if (listing.description) parts.push(`<strong>Description:</strong> ${listing.description}<br/>`)
+    if (listing.condition) parts.push(`<strong>Condition:</strong> ${listing.condition}<br/>`)
+    if (listing.size) parts.push(`<strong>Size:</strong> ${listing.size}<br/>`)
+    if (listing.color) parts.push(`<strong>Color:</strong> ${listing.color}<br/>`)
+    if (listing.brand) parts.push(`<strong>Brand:</strong> ${listing.brand}<br/>`)
+    if (listing.material) parts.push(`<strong>Material:</strong> ${listing.material}<br/>`)
+    if (listing.model) parts.push(`<strong>Model:</strong> ${listing.model}<br/>`)
+    if (listing.style) parts.push(`<strong>Style:</strong> ${listing.style}<br/>`)
+    if (listing.length && listing.width && listing.height)
+        parts.push(
+            `<strong>Dimensions:</strong> ${listing.length} x ${listing.width} x ${listing.height} ${listing.unit}<br/>`
+        )
+    if (listing.weight)
+        parts.push(
+            `<strong>Weight:</strong> ${listing.weight} ${listing.weightUnit}<br/>`
+        )
+    if (listing.upc) parts.push(`<strong>UPC:</strong> ${listing.upc}<br/>`)
+    if (listing.quantity) parts.push(`<strong>Quantity:</strong> ${listing.quantity}<br/>`)
+    if (listing.packageType) parts.push(`<strong>Package Type:</strong> ${listing.packageType}<br/>`)
+
+    return parts.join('\n')
+}
 
 export async function createDummyShopifyListing() {
     const endpoint = `https://${SHOPIFY_STORE}/admin/api/${ADMIN_API_VERSION}/graphql.json`
@@ -24,14 +49,16 @@ export async function createDummyShopifyListing() {
         return
     }
 
-    const descriptionHtml = `
-        <strong>Description:</strong> ${listing.description}<br/>
-        <strong>Condition:</strong> ${listing.condition}<br/>
-        <strong>Dimensions:</strong> ${listing.length} x ${listing.width} x ${listing.height} ${listing.unit}<br/>
-        <strong>Weight:</strong> ${listing.weight} ${listing.weightUnit}<br/>
-        <strong>UPC:</strong> ${listing.upc}<br/>
-        <strong>Quantity:</strong> ${listing.quantity}
-    `
+    const descriptionHtml = generateDescriptionHtml(listing)
+
+    // const descriptionHtml = `
+    //     <strong>Description:</strong> ${listing.description}<br/>
+    //     <strong>Condition:</strong> ${listing.condition}<br/>
+    //     <strong>Dimensions:</strong> ${listing.length} x ${listing.width} x ${listing.height} ${listing.unit}<br/>
+    //     <strong>Weight:</strong> ${listing.weight} ${listing.weightUnit}<br/>
+    //     <strong>UPC:</strong> ${listing.upc}<br/>
+    //     <strong>Quantity:</strong> ${listing.quantity}
+    // `
 
     const createProductQuery = `
         mutation productCreate($input: ProductInput!) {
@@ -93,7 +120,7 @@ export async function createDummyShopifyListing() {
         
         console.log(`Product created: ${product.title} (ID: ${product.id})`)
         
-        // ✅ Slugify the title and build product URL
+        // Slugify the title and build product URL
         const slugifiedTitle = listing.title
             .toLowerCase()
             .replace(/[^\w\s-]/g, '') // remove non-alphanumeric characters
@@ -103,7 +130,7 @@ export async function createDummyShopifyListing() {
         const productURL = `https://${SHOPIFY_STORE}/products/${slugifiedTitle}`
         console.log(`Generated Shopify URL: ${productURL}`)
         
-        // ✅ Save the URL to DB
+        // Save the URL to DB
         setShopifyProductURL(listing.item_id, productURL)
 
         console.log(`Product created: ${product.title} (ID: ${product.id})`)

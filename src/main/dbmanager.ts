@@ -66,6 +66,12 @@ function createTables() {
         quantity INTEGER,
         imageURL TEXT,
         shopifyURL TEXT,
+        size TEXT,
+        color TEXT,
+        brand TEXT,
+        material TEXT,
+        model TEXT,
+        style TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         url TEXT
@@ -400,11 +406,13 @@ export function insertFullListing(data: any): { success: boolean; error?: string
                     INSERT INTO Shopify (
                         item_id, listing_id, title, description, upc,
                         condition, height, length, width, unit,
-                        weight, weightUnit, quantity, imageURL
+                        weight, weightUnit, quantity, imageURL,
+                        shopifyURL, size, color, brand, material, model, style
                     ) VALUES (
                         @item_id, @listing_id, @title, @description, @upc,
                         @condition, @height, @length, @width, @unit,
-                        @weight, @weightUnit, @quantity, @imageURL
+                        @weight, @weightUnit, @quantity, @imageURL,
+                        @shopifyURL, @size, @color, @brand, @material, @model, @style
                     )
                 `)
                 shopifyStmt.run({
@@ -421,7 +429,14 @@ export function insertFullListing(data: any): { success: boolean; error?: string
                     weight: data.weight,
                     weightUnit: data.weightUnit,
                     quantity: data.quantity,
-                    imageURL: data.imageURL
+                    imageURL: data.imageURL,
+                    shopifyURL: null,
+                    size: data.size,
+                    color: data.color,
+                    brand: data.brand,
+                    material: data.material,
+                    model: data.model,
+                    style: data.style
                 })
             }
         }

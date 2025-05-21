@@ -225,6 +225,7 @@ const ListingForm = () => {
         listingData.imageURL = filePaths
         listingData.status = 'Active'
         listingData.imageURL = filePaths.join(',')
+
         
         const response = await window.database.insertFullListing({ ...listingData })
         
