@@ -240,11 +240,7 @@ app.whenReady().then(() => {
     //initializeDatabase();
 })
 import {
-    getData,
-    insertData,
     initializeDatabase,
-    getTableNames,
-    getEbayListing,
     getEbayCredentials,
     setEbayCredentials,
     get_ebay_oauth,
@@ -255,7 +251,9 @@ import {
     closeDB,
     getAnalyticsData,
     set_policies,
-    getEbayPolicies
+    getEbayPolicies,
+    getProfitByMonth,
+    getSoldByPlatform
 } from './dbmanager'
 
 // Listen for the 'create-listing' message from the rendering thing
@@ -263,29 +261,29 @@ ipcMain.handle('create-listing', async () => {
     await createListing()
     return 'Listing creation triggered'
 })
-// Handle "get-data" event
-ipcMain.handle('get-data', async () => {
-    return getData() // Return data to the renderer
-})
+// // Handle "get-data" event
+// ipcMain.handle('get-data', async () => {
+//     return getData() // Return data to the renderer
+// })
 
-// Handle "insert-data" event
-ipcMain.handle('insert-data', async (_, name: string) => {
-    insertData(name)
-})
+// // Handle "insert-data" event
+// ipcMain.handle('insert-data', async (_, name: string) => {
+//     insertData(name)
+// })
 
-ipcMain.handle('get-table-names', () => {
-    return getTableNames()
-})
+// ipcMain.handle('get-table-names', () => {
+//     return getTableNames()
+// })
 
-ipcMain.handle('get-ebay-listing', async () => {
-    try {
-        const listing = getEbayListing()
-        return listing
-    } catch (error) {
-        console.error('Error fetching eBay listing:', error)
-        throw error
-    }
-})
+// ipcMain.handle('get-ebay-listing', async () => {
+//     try {
+//         const listing = getEbayListing()
+//         return listing
+//     } catch (error) {
+//         console.error('Error fetching eBay listing:', error)
+//         throw error
+//     }
+// })
 
 // returns assorted ebay policies in JSON
 ipcMain.handle('get-ebay-policies', async () => {
@@ -307,6 +305,14 @@ ipcMain.handle('get-listing-history', async () => {
 
 ipcMain.handle('get-analytics-data', async () => {
     return getAnalyticsData()
+})
+
+ipcMain.handle('get-profit-by-month', () => {
+    return getProfitByMonth()
+})
+
+ipcMain.handle('get-sold-by-platform', () => {
+    return getSoldByPlatform()
 })
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

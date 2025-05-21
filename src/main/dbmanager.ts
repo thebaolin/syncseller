@@ -67,7 +67,8 @@ function createTables() {
         imageURL TEXT,
         shopifyURL TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        url TEXT
       );
 
 
@@ -88,7 +89,9 @@ function createTables() {
       status_id INTEGER NOT NULL,
       price REAL NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      url TEXT,
+      date_sold DATETIME 
     );
 
     CREATE TABLE IF NOT EXISTS L_Platform_Status (
@@ -211,49 +214,44 @@ export function initializeDatabase(password: string, isCreateMode: boolean, dbPa
         console.log('Database opened successfully.')
     }
 }
+/*-------------------------------Test Functions---------------------------------*/
+// export function getData(): { id: number; status: string }[] {
+//     if (!db) throw new Error('Database is not initialized.')
 
-export function getData(): { id: number; status: string }[] {
-    if (!db) throw new Error('Database is not initialized.')
+//     const stmt = db.prepare('SELECT * FROM L_Listing_Status')
+//     return stmt.all()
+// }
 
-    const stmt = db.prepare('SELECT * FROM L_Listing_Status')
-    return stmt.all()
-}
 
-// export function getOAuth(): { id: number; status: string }[] {
-//   if (!db) throw new Error('Database is not initialized.');
+// export function insertData(status: string): void {
+//     if (!db) throw new Error('Database is not initialized.')
 
-//   const stmt = db.prepare('SELECT * FROM L_Listing_Status');
-//   return stmt.all();
+//     const stmt = db.prepare('INSERT INTO L_Listing_Status (status) VALUES (?)')
+//     stmt.run(status)
+// }
 
-export function insertData(status: string): void {
-    if (!db) throw new Error('Database is not initialized.')
+// export function getTableNames(): string[] {
+//     if (!db) throw new Error('Database is not initialized.')
 
-    const stmt = db.prepare('INSERT INTO L_Listing_Status (status) VALUES (?)')
-    stmt.run(status)
-}
-
-export function getTableNames(): string[] {
-    if (!db) throw new Error('Database is not initialized.')
-
-    const stmt = db.prepare(`SELECT name FROM sqlite_master WHERE type='table'`)
-    const tables = stmt.all() as { name: string }[]
-    console.log(tables.map((table) => table.name))
-    // return tables.map(table => table.name);
-    //console.log(tables)
-    return tables.map((table) => table.name)
-}
-
-export function getEbayListing() {
-    const stmt = db.prepare(`
-    SELECT ebay_listing_id, item_id, listing_id, title, description, upc, imageURL, condition,
-           height, length, width, unit, weight, weightUnit, quantity
-    FROM Ebay
-    WHERE item_id = 12345
-  `)
-    const row = stmt.all()
-    console.log(row)
-    return row
-}
+//     const stmt = db.prepare(`SELECT name FROM sqlite_master WHERE type='table'`)
+//     const tables = stmt.all() as { name: string }[]
+//     console.log(tables.map((table) => table.name))
+//     // return tables.map(table => table.name);
+//     //console.log(tables)
+//     return tables.map((table) => table.name)
+// }
+// export function getEbayListing() {
+//     const stmt = db.prepare(`
+//     SELECT ebay_listing_id, item_id, listing_id, title, description, upc, imageURL, condition,
+//            height, length, width, unit, weight, weightUnit, quantity
+//     FROM Ebay
+//     WHERE item_id = 12345
+//   `)
+//     const row = stmt.all()
+//     console.log(row)
+//     return row
+// }
+//---------------------------------------------------------------------------------//
 
 export function setShopifyProductURL(itemId: number, url: string) {
     if (!db) throw new Error('Database not initialized')
@@ -348,7 +346,8 @@ export function insertFullListing(data: any): { success: boolean; error?: string
                 platform.platform_id,
                 data.external_listing,
                 status.id,
-                data.price
+                data.price,
+                
             )
             const listingId = listingResult.lastInsertRowid
 
@@ -489,6 +488,7 @@ export function getAnalyticsData(): { success: boolean; data?: any[]; error?: st
             SELECT 
                 Listings.created_at,
                 Listings.price,
+                Listings.date_sold,
                 L_Platforms.name AS platform,
                 L_Listing_Status.status
             FROM Listings
@@ -504,6 +504,63 @@ export function getAnalyticsData(): { success: boolean; data?: any[]; error?: st
         return { success: false, error: err.message }
     }
 }
+
+export function getProfitByMonth(): {
+  success: boolean
+  data?: { month: string; total_sales: number }[]
+  error?: string
+} {
+  if (!db) {
+    console.error("DB not initialized")
+    return { success: false, error: 'Database not initialized' }
+  }
+
+  try {
+    const stmt = `
+      SELECT 
+        strftime('%Y-%m', date_sold) AS month,
+        SUM(price) AS total_sales
+      FROM Listings
+      WHERE date_sold IS NOT NULL
+      GROUP BY month
+      ORDER BY month;
+    `
+
+    const data = db.prepare(stmt).all()
+
+    return { success: true, data }
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Unknown error' }
+  }
+}
+
+
+export function getSoldByPlatform(): {
+  success: boolean
+  data?: { platform: string; sold_count: number }[]
+  error?: string
+} {
+  if (!db) return { success: false, error: 'Database not initialized' }
+
+  try {
+    const data = db.prepare(`
+      SELECT 
+        L_Platforms.name AS platform,
+        COUNT(*) AS sold_count
+      FROM Listings
+      JOIN L_Platforms ON Listings.platform_id = L_Platforms.platform_id
+      JOIN L_Listing_Status ON Listings.status_id = L_Listing_Status.id
+      WHERE L_Listing_Status.status = 'Sold'
+      GROUP BY platform;
+    `).all()
+
+    return { success: true, data }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+
 
 // for ebay app
 export function getEbayCredentials() {
