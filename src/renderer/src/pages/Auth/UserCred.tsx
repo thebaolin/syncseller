@@ -19,16 +19,6 @@ const UserCred = () => {
             return false
         }
 
-        // write credentials to db
-        console.log(typeof client_id)
-        console.log(client_id)
-        console.log(typeof client_secret)
-        console.log(client_secret)
-        console.log(typeof redirect_uri)
-        console.log(redirect_uri)
-        if (await window.electron.setEbayCredentials(client_id, client_secret, redirect_uri)) {
-            navigate('/app')
-        }
         return true
     }
 

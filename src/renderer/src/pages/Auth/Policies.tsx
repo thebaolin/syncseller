@@ -79,11 +79,6 @@ const PoliciesForm = () => {
             setPaymentOptions(payment)
             setReturnOptions(returnPolicy)
             setWarehouseOptions(warehouse)
-
-            console.log('fulfillment: ', fulfillment)
-            console.log('payment: ', payment)
-            console.log('return: ', returnPolicy)
-            console.log('warehouse: ', warehouse)
         } catch (err) {
             console.error('Failed policies: ', err)
         }
